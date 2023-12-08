@@ -1,6 +1,6 @@
 # Ecologistics: Shared Calendar
 
-{One sentence description of the project}
+Shared calendar for Ecologistics by H4I.
 
 ## Table of Contents
 
@@ -19,10 +19,10 @@
 
 The {non-profit name} team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
-- [First Last](https://www.linkedin.com/) - Project Manager
+- [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
 - [First Last](https://www.linkedin.com/) - Designer
-- [First Last](https://www.linkedin.com/) - Tech Lead
-- [First Last](https://www.linkedin.com/) - Tech Lead
+- [Hannah Mosh](https://www.linkedin.com/in/hannah-mosh/) - Tech Lead
+- [Muzart Tuman](https://www.linkedin.com/in/muzart-tuman/) - Tech Lead
 - [First Last](https://www.linkedin.com/) - Software Developer
 
 ## Getting Started And Contributing
