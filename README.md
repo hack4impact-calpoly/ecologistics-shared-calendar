@@ -21,7 +21,7 @@ The {non-profit name} team consists of {#} Cal Poly students. Over the course of
 
 - [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
 - [First Last](https://www.linkedin.com/) - Designer
-- [Hannah Mosh](https://www.linkedin.com/in/hannah-mosh/) - Tech Lead
+- [Hannah Mosh](https://www.linkedin.com/in/hannah-moshtaghi/) - Tech Lead
 - [Muzart Tuman](https://www.linkedin.com/in/muzart-tuman/) - Tech Lead
 - [First Last](https://www.linkedin.com/) - Software Developer
 
