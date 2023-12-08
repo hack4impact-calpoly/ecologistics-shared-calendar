@@ -1,4 +1,4 @@
-# Ecologistics: Calendar
+# Ecologistics: Shared Calendar
 
 {One sentence description of the project}
 
