@@ -1,4 +1,4 @@
-# name of non-profit
+# Ecologistics: Calendar
 
 {One sentence description of the project}
 
