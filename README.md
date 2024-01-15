@@ -29,9 +29,9 @@ The Ecologistics Calendar team consists of {#} Cal Poly students. Over the cours
 - [Aaron Ahmadyar](https://www.linkedin.com/in/aaron-ahmadyar-3564961b7/) - Software Developer
 - [Sumedha Kundurthi](https://www.linkedin.com/in/sumedha-kundurthi-514013235/) - Software Developer
 - [Jodi Yamane](http://linkedin.com/in/jodi-yamane-615708253) - Software Developer
-- [Devin Hadley](linkedin.devinhadley.com) - Software Developer
+- [Devin Hadley](https://www.linkedin.com/in/devin-hadley-6666871b7/) - Software Developer
 - Sameer Maheshwari - Software Developer
-- [Belal Elshenety]([https://www.linkedin.com/](https://www.linkedin.com/in/belal-elshenety-53095a24b)) - Software Developer
+- [Belal Elshenety](https://www.linkedin.com/in/belal-elshenety-53095a24b) - Software Developer
 
 ## Getting Started And Contributing
 
