@@ -1,4 +1,4 @@
-# Ecologistics: Shared Calendar
+# :earth_americas: Ecologistics: Shared Calendar
 
 Shared calendar for Ecologistics by H4I.
 
