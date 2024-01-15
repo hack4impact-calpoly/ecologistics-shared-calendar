@@ -17,13 +17,21 @@ Shared calendar for Ecologistics by H4I.
 
 ### Team
 
-The {non-profit name} team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The Ecologistics Calendar team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
 - [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
 - [First Last](https://www.linkedin.com/) - Designer
 - [Hannah Moshtaghi](https://www.linkedin.com/in/hannah-moshtaghi/) - Tech Lead
 - [Muzart Tuman](https://www.linkedin.com/in/muzart-tuman/) - Tech Lead
-- [First Last](https://www.linkedin.com/) - Software Developer
+- [Wesley Luu](https://www.linkedin.com/in/wesley-luu-067771204/) - Software Developer
+- [Matt Bosio](https://www.linkedin.com/in/matthew-bosio-194779253/) - Software Developer
+- [Lindsay Minami](https://www.linkedin.com/in/lindsay-minami-990041254/) - Software Developer
+- [Aaron Ahmadyar](https://www.linkedin.com/in/aaron-ahmadyar-3564961b7/) - Software Developer
+- [Sumedha Kundurthi](https://www.linkedin.com/in/sumedha-kundurthi-514013235/) - Software Developer
+- [Jodi Yamane](http://linkedin.com/in/jodi-yamane-615708253) - Software Developer
+- [Devin Hadley](linkedin.devinhadley.com) - Software Developer
+- Sameer Maheshwari - Software Developer
+- [Belal Elshenety]([https://www.linkedin.com/](https://www.linkedin.com/in/belal-elshenety-53095a24b)) - Software Developer
 
 ## Getting Started And Contributing
 
