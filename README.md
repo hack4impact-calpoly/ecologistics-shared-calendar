@@ -17,7 +17,7 @@ Shared calendar for Ecologistics by H4I.
 
 ### Team
 
-The Ecologistics Calendar team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The Ecologistics Calendar team consists of 15 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
 - [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
 - [Christine Ha](https://www.linkedin.com/in/christinenha/) - Designer
