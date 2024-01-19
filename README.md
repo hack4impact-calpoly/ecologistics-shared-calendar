@@ -20,7 +20,9 @@ Shared calendar for Ecologistics by H4I.
 The Ecologistics Calendar team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
 - [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
-- [First Last](https://www.linkedin.com/) - Designer
+- [Christine Ha](https://www.linkedin.com/in/christinenha/) - Designer
+- [Davis Morales](https://www.linkedin.com/in/davismoralescs/) - Designer
+- [Emily Yarvis](https://www.linkedin.com/in/emily-yarvis/) - Designer
 - [Hannah Moshtaghi](https://www.linkedin.com/in/hannah-moshtaghi/) - Tech Lead
 - [Muzart Tuman](https://www.linkedin.com/in/muzart-tuman/) - Tech Lead
 - [Wesley Luu](https://www.linkedin.com/in/wesley-luu-067771204/) - Software Developer
