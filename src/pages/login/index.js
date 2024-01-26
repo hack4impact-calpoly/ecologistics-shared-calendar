@@ -30,7 +30,7 @@ export default function CalendarPage() {
             />
           </div>
           <label className={`${styles.inputLabel}`} htmlFor="lname">
-            Last name:
+            Password
           </label>
           <div className={`${styles.iconContainer}`}>
             <LockIcon className={`${styles.iconLogin}`} />
