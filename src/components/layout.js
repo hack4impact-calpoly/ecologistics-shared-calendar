@@ -13,6 +13,7 @@ export default function Layout({ children }) {
         <Link prefetch={false} href='/'>Home</Link>
         <Link prefetch={false} href='/calendar'>Calendar</Link>
         <Link prefetch={false} href='/about'>About</Link>
+        <Link prefetch={false} href='/login'>Login</Link>
       </div>
       <div>
         {children}

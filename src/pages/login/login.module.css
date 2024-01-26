@@ -1,0 +1,99 @@
+.loginContainer {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 20%);
+    height: 400px;
+    width: 500px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border: 3px solid black;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .loginHeading {
+    width: 100%;
+    font-size: 30px;
+    font-weight: 700;
+    padding-top: 30px;
+  }
+  
+  .inputContainer {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items:start;
+    padding-top: 30px;
+    padding-left: 80px;
+  }
+  
+  .iconContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .iconLogin{
+      z-index: 1;
+  }
+  .inputLabel {
+    font-size: 16px;
+    font-weight: 400;
+  }
+  
+  .input {
+    border-radius: 5px;
+    width: 300px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: 400;
+    border: 2px solid black;
+    margin-left: -24px;
+    padding-left: 30px;
+  }
+  
+  .inputButton {
+    margin-top: 20px;
+    height: 30px;
+    width: 100px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 4px;
+  }
+  
+  .inputFooterText {
+    margin-top: 40px;
+  }
+  
+  @media (max-width: 600px) {
+    .loginContainer {
+      height: 250px;
+      width: 300px;
+    }
+    .loginHeading {
+      font-size: 20px;
+      padding-top: 0px;
+    }
+    .inputContainer {
+      padding-left: 30px;
+      padding-top: 20px;
+      width: 80%;
+    }
+    .inputLabel {
+      font-size: 16px;
+    }
+    .input {
+      height: 20px;
+      font-size: 16px;
+      width: 100%;
+    }
+    .inputButton {
+      margin-top: 2px;
+    }
+    .inputFooterText {
+      margin-top: 16px;
+    }
+  }
+  
