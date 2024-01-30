@@ -4,11 +4,34 @@ import Link from "next/link";
 export default function LoginPage() {
   const [email, setEmail] = useState(""); // to update the email the user enters
   const [password, setPassword] = useState(""); // to update the password the user enters
+  const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
+  const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
 
   const handleSubmit = (e) => {
     // We will implement this later
     // Activated when login button is clicked
     e.preventDefault();
+
+    // Set initial error values to empty
+    setEmailError("");
+    setPasswordError("");
+
+    // Check if the user has entered both fields correctly
+    if ("" === email) {
+      setEmailError("Please enter your email");
+      return;
+    }
+
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      setEmailError("Please enter a valid email");
+      return;
+    }
+
+    if ("" === password) {
+      setPasswordError("Please enter a password");
+      return;
+    }
+
     console.log(email);
     console.log(password);
   };
@@ -30,6 +53,7 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             style={styles.inputBox}
           />
+          <label style={styles.errorLabel}>{emailError}</label>
         </div>
         <br />
         {/* Password Input Box */}
@@ -41,6 +65,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             style={styles.inputBox}
           />
+          <label style={styles.errorLabel}>{passwordError}</label>
         </div>
         {/* Login Button */}
         <div>
@@ -191,5 +216,8 @@ const styles = {
     color: "#000",
     width: "144px",
     height: "44px",
+  },
+  errorLabel: {
+    color: "red",
   },
 };
