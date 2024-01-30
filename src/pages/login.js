@@ -1,6 +1,11 @@
 import { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+//icons
+import PersonIcon from "@mui/icons-material/Person";
+import LockIcon from "@mui/icons-material/Lock";
+//
+
 export default function LoginPage() {
   const [email, setEmail] = useState(""); // to update the email the user enters
   const [password, setPassword] = useState(""); // to update the password the user enters
@@ -47,6 +52,7 @@ export default function LoginPage() {
         {/* Email Input Box */}
         <div style={styles.inputEmailAddress}>
           <div style={styles.textAboveInputBox}>Username</div>
+          <PersonIcon style={styles.personIcon}></PersonIcon>
           <input
             value={email}
             placeholder="Enter Your Email Address"
@@ -59,6 +65,7 @@ export default function LoginPage() {
         {/* Password Input Box */}
         <div style={styles.inputPassword}>
           <div style={styles.textAboveInputBox}>Password</div>
+          <LockIcon style={styles.lockIcon}></LockIcon>
           <input
             value={password}
             placeholder="Enter Your Password"
@@ -93,14 +100,14 @@ export default function LoginPage() {
 const styles = {
   // Inline Styling
   mainContainer: {
-    height: "796px",
-    width: "1067px",
     // used this instead of flex, it may be better to use flex
     display: "inline-block",
     position: "absolute",
     left: "331px",
     top: "161px",
     //
+    height: "796px",
+    width: "1067px",
     margin: "auto",
     padding: 0,
     border: "6px solid black",
@@ -122,26 +129,27 @@ const styles = {
     float: "258px",
   },
   inputEmailAddress: {
-    width: "784px",
-    height: "95px",
     // read above
     display: "inline-block",
     position: "absolute",
     left: "128px",
     top: "258px",
     //
-  },
-  inputPassword: {
     width: "784px",
     height: "95px",
+  },
+  inputPassword: {
     // read above
     display: "inline-block",
     position: "absolute",
     left: "128px",
     top: "368px",
     //
+    width: "784px",
+    height: "95px",
   },
   inputBox: {
+    padding: "0 0 0 75px",
     color: "#000",
     height: "50px",
     width: "100%",
@@ -219,5 +227,22 @@ const styles = {
   },
   errorLabel: {
     color: "red",
+  },
+  // icons
+  personIcon: {
+    fontSize: "40px",
+    width: "40px",
+    height: "40px",
+    position: "absolute",
+    left: "12px",
+    top: "37px",
+  },
+  lockIcon: {
+    fontSize: "40px",
+    width: "40px",
+    height: "40px",
+    position: "absolute",
+    left: "12px",
+    top: "37px",
   },
 };
