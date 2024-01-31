@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from "../components/layout";
+import EmailIcon from '@mui/icons-material/Email';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export default function ForgotPassword() {
         event.preventDefault();
         setSent(true);
         setStatusMessage('Instructions have been sent to your email.');
+        // Here, you'd also include the API call to actually send the email
     }
 
     return (
@@ -22,14 +24,23 @@ export default function ForgotPassword() {
                 <form style={styles.formBox} onSubmit={handleSubmit}>
                     <h2 style={styles.title}>Forgot Your Password?</h2>
                     <p style={styles.subtitle}>Enter your email and we will send you instructions to reset your password</p>
-                    <input
-                        type="email"
-                        placeholder="Enter Your Email Address"
-                        style={styles.input}
-                        value={email}
-                        onChange={handleChange}
-                        required
-                    />
+
+                    <div className="inputBox" style={styles.inputBox}>
+                        <label htmlFor="email" style={styles.label}>Email</label>
+                        <div style={styles.inputContainer}>
+                            <EmailIcon style={styles.icon} />
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="Enter Your Email Address"
+                                style={styles.input}
+                                value={email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
                     <button
                         type="submit"
                         style={sent ? { ...styles.button, ...styles.buttonSent } : styles.button}
@@ -37,6 +48,7 @@ export default function ForgotPassword() {
                     >
                         {sent ? "Sent" : "Submit"}
                     </button>
+
                     {statusMessage && <p style={styles.statusMessage}>{statusMessage}</p>}
                 </form>
             </div>
@@ -47,6 +59,7 @@ export default function ForgotPassword() {
 const styles = {
     container: {
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '70vh',
@@ -64,44 +77,65 @@ const styles = {
         flexDirection: 'column',
         alignItems: 'center',
     },
-    input: {
-        padding: '15px',
+    title: {
+        fontFamily: "Inter",
+        fontSize: '2em',
+        textAlign: 'center',
+        marginBottom: '10px',
+    },
+    subtitle: {
+        fontFamily: "Inter",
+        textAlign: 'center',
+        marginBottom: '20px',
+    },
+    inputBox: {
+        marginTop: '20px',
         width: '100%',
-        margin: '10px 0',
-        boxSizing: 'border-box',
+        marginBottom: '40px',
+    },
+    label: {
+        fontFamily: "Inter",
+        fontSize: '0.5em',
+        marginBottom: '4px',
+        marginLeft: '3px',
+    },
+    inputContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative',
+    },
+    icon: {
+        position: 'absolute',
+        left: '10px',
+    },
+    input: {
+        fontFamily: "Inter",
+        padding: '15px',
+        paddingLeft: '40px',
+        fontSize: '1em',
+        width: '100%',
         border: '1px solid black',
         borderRadius: '4px',
     },
     button: {
-        marginTop: '20px',
         padding: '15px 20px',
         fontSize: '1em',
-        color: 'white',
-        backgroundColor: 'blue',
-        border: 'none',
+        color: 'black',
+        backgroundColor: 'white',
+        border: '1px solid black',
         borderRadius: '4px',
+        width: '50%',
         cursor: 'pointer',
-        width: '100%',
-        boxSizing: 'border-box',
         transition: 'background-color 0.3s',
     },
     buttonSent: {
         backgroundColor: 'green',
     },
-    title: {
-        fontSize: '1.5em',
-        textAlign: 'center',
-        margin: '0 0 20px 0',
-    },
-    subtitle: {
-        fontSize: '1em',
-        textAlign: 'center',
-        marginBottom: '20px',
-    },
     statusMessage: {
-        color: 'green',
+        fontFamily: "Inter",
         textAlign: 'center',
         marginTop: '20px',
         fontSize: '1em',
+        color: '#28a745',
     },
 };
