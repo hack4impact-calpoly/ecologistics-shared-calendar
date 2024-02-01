@@ -21,7 +21,8 @@
     "mongoose": "^7.6.3",
     "next": "14.0.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-icons": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
