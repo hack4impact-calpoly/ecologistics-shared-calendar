@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+
 //icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
@@ -9,14 +10,16 @@ import LockIcon from "@mui/icons-material/Lock";
 export default function LoginPage() {
   const [email, setEmail] = useState(""); // to update the email the user enters
   const [password, setPassword] = useState(""); // to update the password the user enters
-  const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
-  const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
+  //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
+  //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
 
   const handleSubmit = (e) => {
     // We will implement this later
     // Activated when login button is clicked
+
     e.preventDefault();
 
+    /*
     // Set initial error values to empty
     setEmailError("");
     setPasswordError("");
@@ -36,6 +39,7 @@ export default function LoginPage() {
       setPasswordError("Please enter a password");
       return;
     }
+    */
 
     console.log(email);
     console.log(password);
@@ -46,52 +50,76 @@ export default function LoginPage() {
       {/* Main Container */}
       <div style={styles.mainContainer}>
         {/* Title Container */}
-        <div style={styles.titleContainer}>
-          <div>Login To Your Account</div>
+        <div
+          style={{
+            ...styles.subContainer,
+            height: "26%",
+            justifyContent: "flex-end",
+          }}
+        >
+          <div style={{ fontSize: "60%", fontWeight: "700" }}>
+            Login To Your Account
+          </div>
+          <div style={{ fontSize: "32%" }}>Organizations & Charities Only</div>
         </div>
-        {/* Email Input Box */}
-        <div style={styles.inputEmailAddress}>
-          <div style={styles.textAboveInputBox}>Username</div>
-          <PersonIcon style={styles.personIcon}></PersonIcon>
-          <input
-            value={email}
-            placeholder="Enter Your Email Address"
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.inputBox}
-          />
-          <label style={styles.errorLabel}>{emailError}</label>
-        </div>
-        <br />
-        {/* Password Input Box */}
-        <div style={styles.inputPassword}>
-          <div style={styles.textAboveInputBox}>Password</div>
-          <LockIcon style={styles.lockIcon}></LockIcon>
-          <input
-            value={password}
-            placeholder="Enter Your Password"
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.inputBox}
-          />
-          <label style={styles.errorLabel}>{passwordError}</label>
-        </div>
-        {/* Login Button */}
-        <div>
-          <button
-            style={styles.loginButton}
-            type="submit"
-            onClick={handleSubmit}
-          >
-            Login
-          </button>
+        <div
+          style={{
+            ...styles.subContainer,
+            height: "46%",
+            justifyContent: "flex-start",
+          }}
+        >
+          {/* Email Input Box */}
+          <PersonIcon style={styles.icon}></PersonIcon>
+          <div style={styles.inputContainer}>
+            <div style={styles.textAboveInputBox}>Username</div>
+            <input
+              value={email}
+              placeholder="Enter Your Email Address"
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.inputBox}
+            />
+            {/*<label style={styles.errorLabel}>{emailError}</label>*/}
+          </div>
+          {/* Password Input Box */}
+          <LockIcon style={styles.icon}></LockIcon>
+          <div style={styles.inputContainer}>
+            <div style={styles.textAboveInputBox}>Password</div>
+            <input
+              value={password}
+              placeholder="Enter Your Password"
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.inputBox}
+            />
+            {/* <label style={styles.errorLabel}>{passwordError}</label> */}
+          </div>
+          {/* Login Button */}
+          <div style={styles.loginButtonContainer}>
+            <button
+              style={styles.loginButton}
+              type="submit"
+              onClick={handleSubmit}
+            >
+              Login
+            </button>
+          </div>
         </div>
         {/* Signup Button */}
-        <div>
+        <div
+          style={{
+            ...styles.subContainer,
+            height: "28%",
+            justifyContent: "flex-end",
+          }}
+        >
           <div style={styles.textAboveSignup}>
             Dont Have an Account? Apply for one now!
           </div>
-          <Link prefetch={false} href="/" style={styles.signupLink}>
-            <button style={styles.signupButton}>Sign up</button>
-          </Link>
+          <div style={styles.signupButtonContainer}>
+            <Link prefetch={false} href="/" style={styles.signupLink}>
+              <button style={styles.signupButton}>Sign up</button>
+            </Link>
+          </div>
         </div>
       </div>
     </Layout>
@@ -100,120 +128,71 @@ export default function LoginPage() {
 const styles = {
   // Inline Styling
   mainContainer: {
-    // used this instead of flex, it may be better to use flex
-    display: "inline-block",
-    position: "absolute",
-    left: "331px",
-    top: "161px",
-    //
-    height: "796px",
-    width: "1067px",
-    margin: "auto",
+    fontFamily: "Inter, sans-serif",
+    fontStyle: "normal",
+    fontWeight: "400",
+    color: "#000",
+    fontSize: "5vw",
+    display: "flex",
+    flexDirection: "column",
+    width: "61vw",
+    height: "73vh",
+    alignItems: "stretch",
+    justifyContent: "start",
+    margin: "10vh auto 10vh auto",
     padding: 0,
     border: "6px solid black",
     borderRadius: "9px",
-    fontFamily: "Inter, sans-serif",
   },
-  titleContainer: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "203px",
-    top: "97px",
-    //
-    fontSize: "60px",
-    fontStyle: "normal",
-    fontWeight: "700",
-    height: "73px",
-    width: "661px",
-    float: "258px",
+  subContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
-  inputEmailAddress: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "128px",
-    top: "258px",
-    //
-    width: "784px",
-    height: "95px",
-  },
-  inputPassword: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "128px",
-    top: "368px",
-    //
-    width: "784px",
-    height: "95px",
+  inputContainer: {
+    display: "flex",
+    flexDirection: "column",
+    height: "26%",
+    width: "73%",
   },
   inputBox: {
-    padding: "0 0 0 75px",
-    color: "#000",
-    height: "50px",
-    width: "100%",
-    border: "3px solid #000",
+    height: "68%",
+    padding: "0 0 0 5vw",
+    border: "1px solid #000",
     borderRadius: "9px",
-    fontFamily: "Inter",
-    fontStyle: "normal",
-    fontWeight: "400",
-    fontSize: "30px",
+    fontSize: "30%",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
   textAboveInputBox: {
-    // read above
-    fontFamily: "Inter",
-    display: "inline-block",
-    position: "relative",
-    left: "8px",
-    //
-    color: "#000",
-    fontSize: "25px",
-    fontStyle: "normal",
-    fontWeight: "400",
-    lineHeight: "normal",
+    height: "32%",
+    fontSize: "25%",
+  },
+  loginButtonContainer: {
+    height: "18%",
+    width: "20%",
   },
   loginButton: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "428px",
-    top: "508px",
-    //
-    color: "#000",
-    fontSize: "30px",
-    width: "211px",
-    height: "65px",
+    fontSize: "30%",
+    width: "100%",
+    height: "100%",
     border: "3px solid #000",
     borderRadius: "9px",
     background: "white",
   },
   textAboveSignup: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "331px",
-    top: "673px",
-    //
-    color: "#000",
-    fontFamily: "Inter",
-    fontSize: "20px",
-    fontStyle: "normal",
-    fontWeight: "400",
+    height: "11%",
+    margin: "1vh",
+    fontSize: "20%",
+  },
+  signupButtonContainer: {
+    height: "20%",
+    width: "14%",
+    margin: "0 0 3vh 0",
   },
   signupButton: {
-    // read above
-    display: "inline-block",
-    position: "absolute",
-    left: "461px",
-    top: "714px",
-    //
-    width: "144px",
-    height: "44px",
-    fontFamily: "Inter",
-    fontSize: "20px",
-    fontStyle: "normal",
-    fontWeight: "400",
+    height: "100%",
+    width: "100%",
+    fontSize: "20%",
     textDecoration: "none",
     textAlign: "center",
     background: "white",
@@ -221,28 +200,20 @@ const styles = {
     border: "3px solid black",
   },
   signupLink: {
-    color: "#000",
-    width: "144px",
-    height: "44px",
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    textDecoration: "none",
   },
-  errorLabel: {
+  /*errorLabel: {
     color: "red",
-  },
+    fontSize: "20%",
+  },*/
   // icons
-  personIcon: {
-    fontSize: "40px",
-    width: "40px",
-    height: "40px",
-    position: "absolute",
-    left: "12px",
-    top: "37px",
-  },
-  lockIcon: {
-    fontSize: "40px",
-    width: "40px",
-    height: "40px",
-    position: "absolute",
-    left: "12px",
-    top: "37px",
+  icon: {
+    fontSize: "45%",
+    position: "relative",
+    top: "8vh",
+    right: "20vw",
   },
 };
