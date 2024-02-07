@@ -1,11 +1,24 @@
 import Layout from "../components/layout";
-import React from "react";
+import React, { useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { useDropzone } from "react-dropzone";
 
 export default function AddEventPage() {
+  const [photo, setPhoto] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: "image/*",
+    onDrop: (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      setPhoto(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
+    },
+  });
+
   return (
     <>
-      {/*This is a hacky solution to ensure the form works on mobile for now. Should be reworked.*/}
+      {/*This is a hacky solution to ensure the form works on mobile for now. CSS should be moved eventually.*/}
       <style>
         {`
           .responsive {
@@ -67,6 +80,7 @@ export default function AddEventPage() {
               />
             </div>
           </div>
+          <h3>Description</h3>
           <textarea style={styles.textarea}></textarea>
           <h3>Location</h3>
           <div style={styles.radioContainer}>
@@ -90,12 +104,25 @@ export default function AddEventPage() {
             </label>
           </div>
           <input type="text" placeholder="Link" style={styles.input} />
-          <div style={styles.uploadContainer}>
+          <div {...getRootProps()} style={styles.uploadContainer}>
+            <input {...getInputProps()} />
+            {imagePreviewUrl && (
+              <img
+                src={imagePreviewUrl}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100px",
+                  marginBottom: "20px",
+                }}
+              />
+            )}
             <label htmlFor="file-upload" style={styles.uploadButton}>
               <MdOutlineFileUpload size={30} />
-              Upload Event Image
+              {isDragActive
+                ? "Drop the files here."
+                : "Drag and drop or select image."}
             </label>
-            <input id="file-upload" type="file" style={{ display: "none" }} />
           </div>
           <button style={styles.button}>Add Event</button>
         </div>
@@ -111,7 +138,6 @@ const styles = {
     margin: "0 auto",
     alignContent: "center",
     justifyContent: "center",
-    padding: "20px",
     boxSizing: "border-box",
   },
   title: {
@@ -183,6 +209,5 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     width: "48%",
-    marginBottom: "10px",
   },
 };
