@@ -13,7 +13,7 @@ Shared calendar for Ecologistics by H4I.
 
 ### Purpose
 
-{Short paragraph description of the non-profit mission and the purpose of this project. Who will this project help, why is it necessary. Impact of the project.}
+The environmental community in San Luis Obispo has repeatedly had scheduling conflicts between different organizations that split the possible attendees, and confuse volunteers. We aim to create a centralized place for different charitable groups to post events on a calendar, to create better communication for volunteer-to-organization, and organization-to-organization.
 
 ### Team
 
