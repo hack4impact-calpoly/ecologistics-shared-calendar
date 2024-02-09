@@ -8,7 +8,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 export default function CalendarPage() {
   return (
     <Layout>
-      <div className="calendar-container">
+      <div className="calendar-container" style={style.calendarContainer}>
         <FullCalendar
           plugins={[
             resourceTimelinePlugin,
@@ -19,18 +19,12 @@ export default function CalendarPage() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "resourceTimelineWeek,dayGridMonth,timeGridWeek",
           }}
-          initialView="resourceTimelineWeek"
+          
+          initialView="dayGridMonth"
           nowIndicator={true}
           editable={true}
           selectable={true}
-          selectMirror={true}
-          resources={[
-            { id: "a", title: "Auditorium A" },
-            { id: "b", title: "Auditorium B", eventColor: "green" },
-            { id: "c", title: "Auditorium C", eventColor: "orange" },
-          ]}
           initialEvents={[
             { title: "nice event", start: new Date(), resourceId: "a" },
           ]}
@@ -39,3 +33,9 @@ export default function CalendarPage() {
     </Layout>
   );
 }
+
+const style = {
+  calendarContainer: {
+    padding: '10px',
+  },
+};
