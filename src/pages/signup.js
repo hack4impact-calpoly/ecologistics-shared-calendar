@@ -38,24 +38,45 @@ export default function SignUp() {
 
 const styles = {
   signupContainer: {
-    height: "55vh",
-    width: "50vw",
+    // height: "55vh",
+    // width: "45vw",
     display: "inline-block",
     position: "absolute",
-    padding: "0",
+    padding: "2vw",
     border: "thick solid black",
     borderRadius: "1vh",
     left: "calc(50vw / 2)",
     textAlign: "center",
   },
+  inputContainer: {
+    marginLeft: "2vw",
+    marginRight: "2vw"
+  },
   signUpInput: {
     color: "black",
     height: "3vh",
-    width: "33vw",
+    width: "27vw",
     border: "thin solid black",
     borderRadius: "0.25vh",
   },
   inputTitle: {
     marginBottom: "0",
+    textAlign: "left"
+  },
+  loginButton: {
+    border: "mediun solid black",
+    borderRadius: "0.5vh",
+    background: "white",
+    height: "3vh",
+    width: "7vh",
+  },
+  signUpButton: {
+    margin: ".5vw",
+    border: "mediun solid black",
+    borderRadius: "0.5vh",
+    background: "white",
+    height: "4vh",
+    width: "10vh",
+    fontSize: "medium"
   },
 };
