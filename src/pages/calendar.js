@@ -8,7 +8,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 export default function CalendarPage() {
   return (
     <Layout>
-      <div className="calendar-container" style={style.calendarContainer}>
+      <div className="calendar-container">
+      <style>{calendarStyles}</style>
         <FullCalendar
           plugins={[
             resourceTimelinePlugin,
@@ -16,9 +17,19 @@ export default function CalendarPage() {
             interactionPlugin,
             timeGridPlugin,
           ]}
+          customButtons={{
+            AddEvent: {
+              text: 'Add Event',
+              click: function() {
+                alert("clicked");
+              }
+            }
+          }}
+
           headerToolbar={{
-            left: "prev,next today",
-            center: "title",
+            left: "prev, title",
+            center: "next",
+            right: "next AddEvent"
           }}
           
           initialView="dayGridMonth"
@@ -26,7 +37,12 @@ export default function CalendarPage() {
           editable={true}
           selectable={true}
           initialEvents={[
-            { title: "nice event", start: new Date(), resourceId: "a" },
+            { 
+              title: "nice event", 
+              start: new Date(), 
+              resourceId: "a",
+              display: "auto"
+            },
           ]}
         />
       </div>
@@ -34,8 +50,46 @@ export default function CalendarPage() {
   );
 }
 
-const style = {
-  calendarContainer: {
-    padding: '10px',
-  },
-};
+const calendarStyles = `
+  .fc-header-toolbar {
+    display: flex;
+  }
+
+  .fc-toolbar-chunk:first-child {
+    display: flex;
+    background: blue;
+  }
+
+
+  .fc-toolbar-chunk:nth-child(2) {
+    display: inline-block;
+    background: blue;
+  }
+
+  .fc-toolbar-chunk:last-child {
+    justify-content: end;
+    background: blue;
+  }
+
+  .fc-col-header-cell {
+    background: #335543;
+    color: #FFF;
+  }
+
+  .fc-event {
+    background-color: #F07F2D;
+    border: none; 
+    color: black;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 5%;
+    padding-right: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fc-daygrid-event-dot {
+    display: none;
+  }
+`;
