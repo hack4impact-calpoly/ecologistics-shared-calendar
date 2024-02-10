@@ -8,7 +8,9 @@ export default function AddEventPage() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: "image/*",
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png"],
+    },
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
       setPhoto(file);
