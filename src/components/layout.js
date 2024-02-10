@@ -16,9 +16,6 @@ export default function Layout({ children }) {
         <Link prefetch={false} href='/forgot_password'>Forgot Password</Link>
         <Link prefetch={false} href='/login'>Login</Link>
       </div>
-      <div>
-        {children}
-      </div>
       <div>{children}</div>
     </>
   );
