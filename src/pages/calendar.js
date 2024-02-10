@@ -78,6 +78,10 @@ const calendarStyles = `
     font-size: 1em;
   }
 
+  .fc .fc-daygrid-event-harness {
+    max-width: 100%;
+  }
+
   .fc-event {
     background-color: #F7AB74;
     border: none; 
@@ -89,6 +93,7 @@ const calendarStyles = `
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
   }
 
   .fc-daygrid-event-dot {
