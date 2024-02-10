@@ -22,14 +22,14 @@ export default function CalendarPage() {
               text: 'Add Event',
               click: function() {
                 alert("clicked");
-              }
+              },
             }
           }}
 
           headerToolbar={{
-            left: "prev, title",
-            center: "next",
-            right: "next AddEvent"
+            left: "",
+            center: "prev title next",
+            right: "AddEvent"
           }}
           
           initialView="dayGridMonth"
@@ -53,34 +53,36 @@ export default function CalendarPage() {
 const calendarStyles = `
   .fc-header-toolbar {
     display: flex;
+    text-transform: uppercase;
   }
-
-  .fc-toolbar-chunk:first-child {
-    display: flex;
-    background: blue;
-  }
-
 
   .fc-toolbar-chunk:nth-child(2) {
-    display: inline-block;
-    background: blue;
+    display: flex;
   }
 
   .fc-toolbar-chunk:last-child {
     justify-content: end;
-    background: blue;
   }
 
   .fc-col-header-cell {
     background: #335543;
     color: #FFF;
   }
+  
+  .fc .fc-AddEvent-button {
+    background-color: #F7AB74;
+    color: black;
+    border-radius: 1em;
+    padding: 0.5em 1em;
+    border-color: #F7AB74;
+    font-size: 1em;
+  }
 
   .fc-event {
-    background-color: #F07F2D;
+    background-color: #F7AB74;
     border: none; 
     color: black;
-    border-radius: 15px;
+    border-radius: 1em;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 5%;
     padding-right: 25%;
@@ -92,4 +94,5 @@ const calendarStyles = `
   .fc-daygrid-event-dot {
     display: none;
   }
+
 `;
