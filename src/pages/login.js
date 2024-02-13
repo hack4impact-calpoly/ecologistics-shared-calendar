@@ -96,7 +96,7 @@ export default function LoginPage() {
           {/* Login Button */}
           <div style={styles.loginButtonContainer}>
             <button
-              style={styles.loginButton}
+              style={{...styles.loginButton, fontFamily: "DM Sans, sans-serif"}}
               type="submit"
               onClick={handleSubmit}
             >
@@ -117,7 +117,7 @@ export default function LoginPage() {
           </div>
           <div style={styles.signupButtonContainer}>
             <Link prefetch={false} href="/" style={styles.signupLink}>
-              <button style={styles.signupButton}>Sign up</button>
+              <button style={{...styles.signupButton, fontFamily: "DM Sans, sans-serif"}}>Sign up</button>
             </Link>
           </div>
         </div>
@@ -162,7 +162,7 @@ const styles = {
     border: "1px solid #000",
     borderRadius: "9px",
     fontSize: "30%",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.15)",
   },
   textAboveInputBox: {
     height: "32%",
@@ -186,6 +186,7 @@ const styles = {
     height: "11%",
     margin: "1vh",
     fontSize: "20%",
+    fontWeight: "500"
   },
   signupButtonContainer: {
     height: "20%",
