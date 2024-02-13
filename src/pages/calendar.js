@@ -6,12 +6,36 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useEffect, useState } from "react";
 
 export default function CalendarPage() {
+  const [resize, setResize] = useState(false);
+
+  function adjustAddEventButtonWidth() {
+    const gridCell = document.querySelector('.fc-daygrid-day');
+    if (gridCell) {
+      const cellWidth = gridCell.offsetWidth;
+  
+      const addButton = document.querySelector('.fc-AddEvent-button');
+      if (addButton) {
+        addButton.style.width = `${cellWidth}px`;
+      }
+    }
+  }
+
+  useEffect((resize) => {
+    adjustAddEventButtonWidth();
+    window.addEventListener('resize', adjustAddEventButtonWidth);
+
+    return () => {
+      window.removeEventListener('resize', adjustAddEventButtonWidth);
+    }
+  }, [resize]);
+
   return (
     <Layout>
       <div className="calendar-container">
-      <style>{calendarStyles}</style>
+        <style>{calendarStyles}</style>
         <FullCalendar
           themeSystem='bootstrap5'
           plugins={[
@@ -21,6 +45,10 @@ export default function CalendarPage() {
             timeGridPlugin,
             bootstrap5Plugin
           ]}
+
+          windowResize={function () {
+            setResize(!resize);
+          }}
 
           customButtons={{
             AddEvent: {
@@ -40,7 +68,6 @@ export default function CalendarPage() {
           buttonIcons={{
             prev: 'bi-arrow-left', 
             next: 'bi-arrow-right'
-
           }}
           initialView="dayGridMonth"
           nowIndicator={true}
@@ -67,8 +94,12 @@ const calendarStyles = `
     border: none;
     color: #FFF;
     font-size: 1.5em;
-    border-radius: 1em; 
+    border-radius: 2em; 
     line-height: 1;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 2.5em;
   }
 
   .fc .fc-prev-button:hover,
@@ -90,6 +121,7 @@ const calendarStyles = `
 
   .fc-toolbar-chunk:last-child {
     justify-content: end;
+
   }
 
   .fc-col-header-cell {
@@ -100,10 +132,10 @@ const calendarStyles = `
   .fc .fc-AddEvent-button {
     background-color: #F7AB74;
     color: black;
-    border-radius: 1em;
-    padding: 0.5em 1em;
+    border-radius: 2em;
+    // padding: 0.6em 2.1em;
     border-color: #F7AB74;
-    font-size: 1em;
+    font-size: 1.1em;
     border: none;
   }
 
@@ -135,5 +167,4 @@ const calendarStyles = `
     border: 1px solid #ddd;
     border-right: 1px solid #ddd;
   }
-
 `;
