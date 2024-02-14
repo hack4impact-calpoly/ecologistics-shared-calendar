@@ -15,6 +15,7 @@ export default function Layout({ children }) {
         <Link prefetch={false} href='/about'>About</Link>
         <Link prefetch={false} href='/forgot_password'>Forgot Password</Link>
         <Link prefetch={false} href='/login'>Login</Link>
+        <Link prefetch={false} href='/signup'>Sign Up</Link>
         <Link prefetch={false} href="/addEvent">Add Event</Link>
       </div>
       <div>{children}</div>
