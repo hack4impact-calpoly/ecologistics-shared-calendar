@@ -11,20 +11,28 @@ import { useEffect, useState } from "react";
 export default function CalendarPage() {
   const [resize, setResize] = useState(false);
 
-  function adjustAddEventButtonWidth() {
+  function adjustButtons() {
     const gridCell = document.querySelector('.fc-daygrid-day');
     const headerCell = document.querySelector('.fc-col-header-cell');
-
+    
     if (gridCell) {
       const cellWidth = gridCell.offsetWidth * 0.9;
       const cellHeight = headerCell.offsetHeight * 1.5;
       const cellFont = headerCell.offsetFont * 1.5;
-  
+      
       const addButton = document.querySelector('.fc-AddEvent-button');
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight}px`;
+        addButton.style.height = `${cellHeight*1.1}px`;
         addButton.style.font = `${cellFont}px`;
+      }
+      const prevButton = document.querySelector('.fc-prev-button');
+      const nextButton = document.querySelector('.fc-next-button');
+      if (prevButton && nextButton) {
+        prevButton.style.width = `${cellHeight}px`;
+        nextButton.style.width = `${cellHeight}px`;
+        prevButton.style.height = `${cellHeight}px`;
+        nextButton.style.height = `${cellHeight}px`;
       }
     }
   }
@@ -35,28 +43,22 @@ export default function CalendarPage() {
   
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = gridCells[0].offsetWidth;
-      const totalWidth = cellWidth * 3;
+      const totalWidth = cellWidth * 2.9;
   
-      let fontSize = totalWidth / (titleElement.textContent.length / 2); 
-  
-      const maxSize = 30;
-      fontSize = Math.min(fontSize, maxSize);
-  
-      titleElement.style.fontSize = `${totalWidth/10}px`;
+      titleElement.style.fontSize = `${totalWidth/9.5}px`;
       titleElement.style.width = `${totalWidth}px`;
     }
   }
-  
 
   useEffect((resize) => {
-    adjustAddEventButtonWidth();
+    adjustButtons();
     setTitleFontSize();
 
-    window.addEventListener('resize', adjustAddEventButtonWidth);
+    window.addEventListener('resize', adjustButtons);
     window.addEventListener('resize', setTitleFontSize);
 
     return () => {
-      window.removeEventListener('resize', adjustAddEventButtonWidth);
+      window.removeEventListener('resize', adjustButtons);
       window.removeEventListener('resize', setTitleFontSize);
     }
   }, [resize]);
@@ -95,8 +97,8 @@ export default function CalendarPage() {
             right: "AddEvent"
           }}
           buttonIcons={{
-            prev: 'bi-arrow-left', 
-            next: 'bi-arrow-right'
+            prev: 'arrow-left', 
+            next: 'arrow-right'
           }}
           initialView="dayGridMonth"
           nowIndicator={true}
@@ -122,36 +124,54 @@ const calendarStyles = `
     background-color: #335543;
     border: none;
     color: #FFF;
+    font-size: 2em;
     font-size: 1.5em;
-    border-radius: 2em; 
+    border-radius: 50%; 
     line-height: 1;
   }
-
-  .fc .fc-toolbar-title {
-    // font-size: 2.5em;
-  }
-
+  
   .fc .fc-prev-button:hover,
   .fc .fc-next-button:hover,
   .fc .fc-AddEvent-button:hover {
     background-color: #eaeaea; 
   }
 
+  .fc-prev-button {
+    margin-left: 3%;
+  }
+
+  .fc-next-button {
+    margin-right: 3%;
+  }
+
   .fc-header-toolbar {
+    margin-top: 5%;
     display: flex;
+    justify-content: space-between;
     text-transform: uppercase;
     padding-bottom: 1%;
   }
+  
+  .fc .fc-toolbar-title {
+    text-align: center;
+    margin-right: 2.5%;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .fc-toolbar-chunk:nth-child(2) {
-    display: flex;
-    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
     justify-content: center;
+    position: absolute;
   }
 
   .fc-toolbar-chunk:last-child {
     justify-content: end;
-
   }
 
   .fc-col-header-cell {
@@ -162,8 +182,7 @@ const calendarStyles = `
   .fc .fc-AddEvent-button {
     background-color: #F7AB74;
     color: black;
-    border-radius: 2em;
-    // padding: 0.6em 2.1em;
+    border-radius: 0.9em;
     border-color: #F7AB74;
     font-size: 1.1em;
     border: none;
