@@ -13,22 +13,51 @@ export default function CalendarPage() {
 
   function adjustAddEventButtonWidth() {
     const gridCell = document.querySelector('.fc-daygrid-day');
+    const headerCell = document.querySelector('.fc-col-header-cell');
+
     if (gridCell) {
-      const cellWidth = gridCell.offsetWidth;
+      const cellWidth = gridCell.offsetWidth * 0.9;
+      const cellHeight = headerCell.offsetHeight * 1.5;
+      const cellFont = headerCell.offsetFont * 1.5;
   
       const addButton = document.querySelector('.fc-AddEvent-button');
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
+        addButton.style.height = `${cellHeight}px`;
+        addButton.style.font = `${cellFont}px`;
       }
     }
   }
+  
+  function setTitleFontSize() {
+    const gridCells = document.querySelectorAll('.fc-daygrid-day');
+    const titleElement = document.querySelector('.fc-toolbar-title');
+  
+    if (gridCells.length > 0 && titleElement) {
+      const cellWidth = gridCells[0].offsetWidth;
+      const totalWidth = cellWidth * 3;
+  
+      let fontSize = totalWidth / (titleElement.textContent.length / 2); 
+  
+      const maxSize = 30;
+      fontSize = Math.min(fontSize, maxSize);
+  
+      titleElement.style.fontSize = `${totalWidth/10}px`;
+      titleElement.style.width = `${totalWidth}px`;
+    }
+  }
+  
 
   useEffect((resize) => {
     adjustAddEventButtonWidth();
+    setTitleFontSize();
+
     window.addEventListener('resize', adjustAddEventButtonWidth);
+    window.addEventListener('resize', setTitleFontSize);
 
     return () => {
       window.removeEventListener('resize', adjustAddEventButtonWidth);
+      window.removeEventListener('resize', setTitleFontSize);
     }
   }, [resize]);
 
@@ -99,7 +128,7 @@ const calendarStyles = `
   }
 
   .fc .fc-toolbar-title {
-    font-size: 2.5em;
+    // font-size: 2.5em;
   }
 
   .fc .fc-prev-button:hover,
@@ -116,7 +145,8 @@ const calendarStyles = `
 
   .fc-toolbar-chunk:nth-child(2) {
     display: flex;
-    justify-content: space-between;
+    text-align: center;
+    justify-content: center;
   }
 
   .fc-toolbar-chunk:last-child {
