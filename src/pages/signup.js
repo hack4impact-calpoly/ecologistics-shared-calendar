@@ -3,33 +3,46 @@ import Layout from "../components/layout";
 export default function SignUp() {
   return (
     <Layout>
-      <div style={styles.signupContainer}>
-        <h1>Apply For an Account</h1>
-        <div style={styles.inputContainer}>
-          <p style={styles.inputTitle}>Name of Organization:</p>
-          <input
-            placeholder="Enter Organization Name"
-            style={styles.signUpInput}
-          />
+      <div style={styles.contentWrapper}>
+        <div style={styles.headerContainer}>
+          <h1 style={styles.title}>Apply For an Account</h1>
+          <p style={styles.subtitle}>Organizations & Charities Only</p>
         </div>
-        <div style={styles.inputContainer}>
-          <p style={styles.inputTitle}>Email Address:</p>
-          <input
-            placeholder="Enter Your Email Address"
-            style={styles.signUpInput}
-          />
+        <div style={styles.signupContainer}>
+          <div style={styles.inputContainer}>
+            <p style={styles.inputTitle}>Name of Organization:</p>
+            <input
+              placeholder="Enter Organization Name"
+              style={styles.signUpInput}
+            />
+          </div>
+          <div style={styles.inputContainer}>
+            <p style={styles.inputTitle}>Email Address:</p>
+            <input
+              placeholder="Enter Your Email Address"
+              style={styles.signUpInput}
+            />
+          </div>
+          <div style={styles.inputContainer}>
+            <p style={styles.inputTitle}>Password:</p>
+            <input 
+              placeholder="Enter Your Password" 
+              style={styles.signUpInput} 
+            />
+          </div>
+          <div style={styles.signupButtonContainer}>
+            <button style={styles.signupButton} type="submit">
+              Sign Up
+            </button>
+          </div>
         </div>
-        <div style={styles.inputContainer}>
-          <p style={styles.inputTitle}>Password:</p>
-          <input placeholder="Enter Your Password" style={styles.signUpInput} />
-        </div>
-        <button style={styles.signUpButton}>Sign Up</button>
-        <br />
-        <div style={styles.accountHaveContainer}>
+        <div style={styles.bottomContainer}>
           <p style={styles.accountHaveText}>
             Already Have an Account? Login Here!
           </p>
-          <button style={styles.loginButton}>Login</button>
+          <div style={styles.loginButtonContainer}>
+            <button style={styles.loginButton} type="submit">Login</button>
+          </div>
         </div>
       </div>
     </Layout>
@@ -37,46 +50,99 @@ export default function SignUp() {
 }
 
 const styles = {
+  // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
+  contentWrapper: {
+    // fontSize: "xxx-large",
+    display: "flex",
+    flexDirection: "column",
+    width: "61vw",
+    height: "73vh",
+    alignItems: "stretch",
+    justifyContent: "start",
+    margin: "10vh auto 10vh auto",
+    padding: 0,
+    border: "6px solid black",
+    borderRadius: "9px",
+  },
+  title: {
+    fontSize: "xxx-large",
+    fontWeight: "700",
+    margin: 0
+  },
+  subtitle: {
+    fontSize: "x-large",
+    margin: 0
+  },
+  headerContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "25%",
+    justifyContent: "flex-end",
+  },
   signupContainer: {
-    // height: "55vh",
-    // width: "45vw",
-    display: "inline-block",
-    position: "absolute",
-    padding: "2vw",
-    border: "thick solid black",
-    borderRadius: "1vh",
-    left: "calc(50vw / 2)",
-    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "50%",
+    justifyContent: "flex-start",
+  },
+  bottomContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "23%",
+    justifyContent: "flex-end",
   },
   inputContainer: {
-    marginLeft: "2vw",
-    marginRight: "2vw"
+    display: "flex",
+    flexDirection: "column",
+    height: "28%",
+    width: "73%",
   },
   signUpInput: {
-    color: "black",
-    height: "3vh",
-    width: "27vw",
-    border: "thin solid black",
-    borderRadius: "0.25vh",
+    padding: "0 0 0 2vw",
+    border: "1px solid #000",
+    borderRadius: "9px",
+    fontSize: "large",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    height: "5.5vh"
   },
   inputTitle: {
-    marginBottom: "0",
-    textAlign: "left"
+    fontSize: "medium",
+    marginBottom: "0"
+  },
+  signupButtonContainer: {
+    height: "16%",
+    width: "20%",
+  },
+  signupButton: {
+    fontSize: "larger",
+    width: "100%",
+    height: "100%",
+    border: "3px solid #000",
+    borderRadius: "9px",
+    background: "white",
+    marginTop: "1vh",
+  },
+  loginButtonContainer: {
+    height: "20%",
+    width: "14%",
+    margin: "0 0 3vh 0",
+    display: "flex",
+    justifyContent: "center"
   },
   loginButton: {
-    border: "mediun solid black",
-    borderRadius: "0.5vh",
+    height: "100%",
+    width: "75%",
+    textDecoration: "none",
+    textAlign: "center",
     background: "white",
-    height: "3vh",
-    width: "7vh",
+    borderRadius: "9px",
+    border: "3px solid black",
   },
-  signUpButton: {
-    margin: ".5vw",
-    border: "mediun solid black",
-    borderRadius: "0.5vh",
-    background: "white",
-    height: "4vh",
-    width: "10vh",
-    fontSize: "medium"
+  accountHaveText: {
+    height: "11%",
+    margin: "1vh",
   },
 };
