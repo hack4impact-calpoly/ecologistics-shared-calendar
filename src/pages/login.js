@@ -96,9 +96,11 @@ export default function LoginPage() {
           {/* Login Button */}
           <div style={styles.loginButtonContainer}>
             <button
-              style={{...styles.loginButton, fontFamily: "DM Sans, sans-serif"}}
+              style={{...styles.loginButton ,fontFamily: "DM Sans, sans-serif"}}
               type="submit"
               onClick={handleSubmit}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
             >
               Login
             </button>
@@ -113,11 +115,14 @@ export default function LoginPage() {
           }}
         >
           <div style={styles.textAboveSignup}>
-            Dont Have an Account? Apply for one now!
+            Don't Have an Account? Apply for one now!
           </div>
           <div style={styles.signupButtonContainer}>
             <Link prefetch={false} href="/" style={styles.signupLink}>
-              <button style={{...styles.signupButton, fontFamily: "DM Sans, sans-serif"}}>Sign up</button>
+              <button 
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
+              style={{...styles.signupButton, fontFamily: "DM Sans, sans-serif", hover: "#ccc"}}>Sign up</button>
             </Link>
           </div>
         </div>
@@ -174,13 +179,14 @@ const styles = {
   },
   loginButton: {
     fontSize: "30%",
-    fontWeight: "bold",
+    fontWeight: "700",
     width: "100%",
     height: "100%",
     border: "0px",
     borderRadius: "12px",
     background: "#f7ab74",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    cursor: "pointer",
   },
   textAboveSignup: {
     height: "11%",
@@ -197,13 +203,14 @@ const styles = {
     height: "100%",
     width: "100%",
     fontSize: "20%",
-    fontWeight: "bold",
+    fontWeight: "600",
     textDecoration: "none",
     textAlign: "center",
     background: "#f7ab74",
     borderRadius: "12px",
     border: "0px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    cursor: "pointer",
   },
   signupLink: {
     display: "flex",
