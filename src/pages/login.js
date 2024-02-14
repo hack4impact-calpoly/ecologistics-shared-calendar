@@ -115,7 +115,7 @@ export default function LoginPage() {
           }}
         >
           <div style={styles.textAboveSignup}>
-            Don't Have an Account? Apply for one now!
+            Don&apos;t Have an Account? Apply for one now!
           </div>
           <div style={styles.signupButtonContainer}>
             <Link prefetch={false} href="/" style={styles.signupLink}>
