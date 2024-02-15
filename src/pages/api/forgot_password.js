@@ -15,7 +15,7 @@ export default async function handler(req, res) {
                 from: "Acme <onboarding@resend.dev>",
                 to: [email],
                 subject: "Hello world",
-                react: EmailTemplate({ firstName: "John" }),
+                react: EmailTemplate({ firstName: "Name" }),
             });
 
             //error on send email
