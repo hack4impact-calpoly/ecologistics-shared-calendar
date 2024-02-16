@@ -16,7 +16,7 @@ export default function CalendarPage() {
     const headerCell = document.querySelector('.fc-col-header-cell');
     
     if (gridCell) {
-      const cellWidth = gridCell.offsetWidth * 0.9;
+      const cellWidth = gridCell.offsetWidth * 0.95;
       const cellHeight = headerCell.offsetHeight * 1.5;
       const cellFont = headerCell.offsetFont * 1.5;
       
