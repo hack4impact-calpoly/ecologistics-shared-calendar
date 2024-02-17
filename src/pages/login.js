@@ -110,8 +110,7 @@ export default function LoginPage() {
         <div
           style={{
             ...styles.subContainer,
-            height: "28%",
-            justifyContent: "flex-end",
+            height: "28%", justifyContent: "flex-end",
           }}
         >
           <div style={styles.textAboveSignup}>
