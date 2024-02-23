@@ -1,197 +1,165 @@
 import React from "react";
 
-export default function EventBar() {
-    const styles = {
-        container: {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            width: "80%"
-        },
-        header: {
-            backgroundColor: 'white',
-            borderStyle: 'solid',
-            borderWidth: '4px',
-            borderRadius: '12px',
-            fontFamily: 'Inter',
-            flexGrow: '1',
-            padding: '0.5% 7%', // Adjusted padding using percentages
-            display: 'flex',
-            margin: '2%', // Adjusted margin using percentages
-            width: '40%', // Adjusted width using percentages
-            justifyContent: 'center',
-        },
-        allEventContainer: {
-            display: 'flex', // Use flexbox layout
-            justifyContent: 'center', // Center children horizontally
-            alignItems: 'center', // Center children vertically
-            flexDirection: 'column', // Stack children vertically
+// eventually connect to data from backend
+const eventData = [
+  {
+    id: 1,
+    title: "Event 1",
+    location: "Location",
+    websiteURL: "Website URL",
+    date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },
+  {
+    id: 1,
+    title: "Event 2",
+    location: "Location",
+    websiteURL: "Website URL",
+    date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },
+];
 
-           /* borderStyle: 'solid',
-            borderWidth: '7px', // Adjusted border width to match eventContainer
-            borderRadius: '12px',
-            margin: '2%', // Adjusted margin using percentages
-            padding: '3%', // Adjusted padding using percentages to match eventContainer*/
-        },
-        eventContainer: {
-            borderStyle: 'solid',
-            borderWidth: '7px',
-            borderRadius: '12px',
-            whiteSpace: 'wrap',
-            width: '70%',
-            height: 'auto',
-            backgroundColor: "#D9D9D9",
-            padding: '2% 1%'
-        },
-        headerContainer: {
-            display: 'flex',
-            flexDirection: 'row',
-            
-        },
-        tagContainer: {
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            margin: '0'
-        },
-        eventTag: {
-            color: 'purple'
-        },
-        dateContainer: {
-            borderStyle: 'solid',
-            borderWidth: '5px',
-            borderRadius: '16px',
-            flexGrow: '1',
-            display: 'grid',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '30%',
-            height: 'auto',
-        },
-        titleContainer: {
-            display: 'grid',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '70%',
-            height: 'auto',
-        },
-        title: {
-            fontSize: '3.5vw',
-            margin: '0', // Adjust margin to remove extra space around the title
-            
-        },
-        month: {
-            fontSize: '1.5vw',
-            fontWeight: 'bold',
-            margin: '0', // Adjust margin to remove extra space around the month
-            textAlign: 'center'
-        },
-        day: {
-            fontSize: '2vw',
-            fontWeight: 'bold',
-            margin: '0', // Adjust margin to remove extra space around the day
-            textAlign: 'center'
-        },
-        eventText: {
-            textAlign: 'left',
-            display: 'flex',
-            justifyContent: 'center',
-            paddingLeft: '2%'
-        },
+function Event({ title, location, websiteURL, date, description }) {
+  const { styles } = useEventBarStyles();
 
-
-    };
-    return (
-        <div style={styles.container}>
-            <div style={styles.header}>
-                <h1>Selected Date</h1>
+  return (
+    <div
+      style={{
+        ...styles.eventContainer,
+        display: "flex",
+        justifyContent: "space-between",
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        {" "}
+        <div style={styles.headerContainer}>
+          <div style={styles.titleContainer}>
+            <h1 style={styles.title}>{title}</h1>
+            <p
+              style={styles.dateAndTime}
+            >{`${date.time} ${date.month} ${date.day}`}</p>
+            <div style={styles.tagContainer}>
+              <p style={styles.eventTag}>Event Tags</p>
+              <p style={{ marginRight: "15px", color: "#335543" }}>
+                {location}
+              </p>
+              <p style={{ marginRight: "15px", color: "#335543" }}>
+                {websiteURL}
+              </p>
             </div>
-            <div style={styles.allEventContainer}>
-                <div style={styles.eventContainer}>
-                    <div style={styles.headerContainer}>
-                        <div style={styles.titleContainer}>
-                            <h1 style={styles.title}>Event 1</h1>
-                            <div style={styles.tagContainer}>
-                                <p style={styles.eventTag}>Event Tags</p>
-                                <p>  &#128205; Location</p>
-                                <p>  &#128204; Website URL</p>
-                            </div>
-                        </div>
-                        <div style={styles.dateContainer}>
-                            <p style={styles.day}>2</p>
-                            <p style={styles.month}>February</p>
-                            <p>1:00pm - 2:00pm</p>
-                        </div>
-
-                    </div>
-                    <div style={styles.eventText}>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                    </div>
-                </div>
-                <div style={styles.eventContainer}>
-                    <div style={styles.headerContainer}>
-                        <div style={styles.titleContainer}>
-                            <h1 style={styles.title}>Event 2</h1>
-                            <div style={styles.tagContainer}>
-                                <p style={styles.eventTag}>Event Tags</p>
-                                <p>&#128205; Location</p>
-                                <p>&#128204; Website URL</p>
-                            </div>
-                        </div>
-                        <div style={styles.dateContainer}>
-                            <p style={styles.day}>2</p>
-                            <p style={styles.month}>February</p>
-                            <p>1:00pm - 2:00pm</p>
-                        </div>
-
-                    </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                    
-                </div>
-                <div style={styles.eventContainer}>
-                    <div style={styles.headerContainer}>
-                        <div style={styles.titleContainer}>
-                            <h1 style={styles.title}>Event 3</h1>
-                            <div style={styles.tagContainer}>
-                                <p style={styles.eventTag}>Event Tags</p>
-                                <p>&#128205; Location</p>
-                                <p>&#128204; Website URL</p>
-                            </div>
-                        </div>
-                        <div style={styles.dateContainer}>
-                            <p style={styles.day}>2</p>
-                            <p style={styles.month}>February</p>
-                            <p>1:00pm - 2:00pm</p>
-                        </div>
-
-                    </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                    
-                </div>
-                <div style={styles.eventContainer}>
-                    <div style={styles.headerContainer}>
-                        <div style={styles.titleContainer}>
-                            <h1 style={styles.title}>Event 4</h1>
-                            <div style={styles.tagContainer}>
-                                <p style={styles.eventTag}>Event Tags</p>
-                                <p>&#128205; Location</p>
-                                <p>&#128204; Website URL</p>
-                            </div>
-                        </div>
-                        <div style={styles.dateContainer}>
-                            <p style={styles.day}>2</p>
-                            <p style={styles.month}>February</p>
-                            <p>1:00pm - 2:00pm</p>
-                        </div>
-
-                    </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                    
-                </div>
-            </div>
+          </div>
         </div>
-    );
+        <div style={styles.eventText}>
+          <p>{description}</p>
+        </div>
+      </div>
+      <div
+        style={{
+          width: "150px",
+          height: "150px",
+          backgroundColor: "#F07F2D",
+          alignSelf: "center",
+          borderRadius: "12px",
+        }}
+      >
+        {" "}
+        {/* Image placeholder */}
+        {/* If you have an image URL you can use an <img> tag here */}
+      </div>
+    </div>
+  );
+}
+
+// Main EventBar Component
+export default function EventBar() {
+  const styles = useEventBarStyles();
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.search}>
+        <h1>Search Bar</h1>
+      </div>
+      <div style={styles.allEventContainer}>
+        {eventData.map((event) => (
+          <Event key={event.id} {...event} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function useEventBarStyles() {
+  const styles = {
+    container: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+      width: "80%",
+    },
+    allEventContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+    },
+    eventContainer: {
+      borderStyle: "solid",
+      borderWidth: "1px",
+      borderColor: "#ccc",
+      borderRadius: "12px",
+      whiteSpace: "wrap",
+      width: "80%",
+      backgroundColor: "white",
+      padding: "20px",
+      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+      marginBottom: "2%",
+      marginLeft: "15%",
+    },
+    tagContainer: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      flexWrap: "wrap",
+    },
+    eventTag: {
+      marginRight: "15px",
+      color: "#F07F2D",
+      display: "flex",
+      alignItems: "center",
+    },
+    dateContainer: {
+      borderStyle: "solid",
+      borderWidth: "1px",
+      borderRadius: "16px",
+      flexGrow: "1",
+      display: "grid",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "30%",
+      height: "auto",
+    },
+    titleContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+    },
+    title: {
+      fontSize: "1.5 rem",
+      fontWeight: "bold",
+      margin: "0 0 10px 0",
+    },
+    dateAndTime: {
+      marginBottom: "5px",
+    },
+    eventText: {
+      textAlign: "left",
+    },
+  };
+
+  return { styles };
 }
