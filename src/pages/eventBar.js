@@ -78,29 +78,52 @@ export default function EventBar() {
   const styles = useEventBarStyles();
 
   return (
-    <div style={styles.container}>
-      <div style={styles.search}>
-        <h1>Search Bar</h1>
+    <div style={{ marginLeft: "5%" }}>
+      <div
+        style={{
+          width: "100%", // Make the search bar the same width as the event containers
+          padding: "10px 0",
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {/* add icon here */}
+        <input
+          type="text"
+          placeholder="Search..."
+          style={{
+            width: "100%", // The search input should fill the width of the search div
+            padding: "10px 20px",
+            fontSize: "16px",
+            borderRadius: "20px",
+            border: "1px solid #ccc",
+            outline: "none",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+          }}
+          // Add onChange event handler if you want to capture input
+          // onChange={handleSearchChange}
+        />
       </div>
-      <div style={styles.allEventContainer}>
-        {eventData.map((event) => (
-          <Event key={event.id} {...event} />
-        ))}
-      </div>
+      {eventData.map((event) => (
+        <Event key={event.id} {...event} />
+      ))}
     </div>
   );
 }
 
 function useEventBarStyles() {
   const styles = {
-    container: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      width: "80%",
+    searchInput: {
+      width: "100%",
+      padding: "10px 20px",
+      fontSize: "16px",
+      borderRadius: "20px",
+      border: "1px solid #ccc",
+      outline: "none",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
     },
-    allEventContainer: {
+    allItemContainer: {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -112,12 +135,11 @@ function useEventBarStyles() {
       borderColor: "#ccc",
       borderRadius: "12px",
       whiteSpace: "wrap",
-      width: "80%",
+      width: "95%",
       backgroundColor: "white",
       padding: "20px",
       boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
       marginBottom: "2%",
-      marginLeft: "15%",
     },
     tagContainer: {
       display: "flex",
@@ -149,7 +171,6 @@ function useEventBarStyles() {
       alignItems: "flex-start",
     },
     title: {
-      fontSize: "1.5 rem",
       fontWeight: "bold",
       margin: "0 0 10px 0",
     },
