@@ -4,30 +4,64 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import bootstrap5Plugin from '@fullcalendar/bootstrap5';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import EventBar from "./eventBar";
+import bootstrap5Plugin from "@fullcalendar/bootstrap5";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
-
 export default function CalendarPage() {
+  const styles = {
+    pageLayout: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "start",
+      padding: "20px",
+      margin: "20px",
+      whiteSpace: "nowrap",
+    },
+    calendar: {
+      width: "120%",
+    },
+  };
+
+  //for adding events
+  const [events, setEvents] = useState([]);
+  const handleSelect = (info) => {
+    const eventNamePrompt = prompt("Enter event name");
+    const eventStart=prompt("Enter start time (hh:mm)");
+    var startTime = info.startStr.replace("00:00:00 GMT-0800 (Pacific Standard Time)","")
+    startTime=startTime+" "+eventStart
+    if (eventNamePrompt) {
+      setEvents([
+        ...events,
+        {
+          start: new Date(startTime),
+          title: eventNamePrompt,
+          id: Math.random().toString(),
+        },
+      ]);
+    }
+  };
+
+  //styling
   const [resize, setResize] = useState(false);
 
   function adjustButtons() {
-    const gridCell = document.querySelector('.fc-daygrid-day');
-    const headerCell = document.querySelector('.fc-col-header-cell');
-    
+    const gridCell = document.querySelector(".fc-daygrid-day");
+    const headerCell = document.querySelector(".fc-col-header-cell");
+
     if (gridCell) {
       const cellWidth = gridCell.offsetWidth * 0.95;
       const cellHeight = headerCell.offsetHeight * 1.5;
       const cellFont = headerCell.offsetFont * 1.5;
-      
-      const addButton = document.querySelector('.fc-AddEvent-button');
+
+      const addButton = document.querySelector(".fc-AddEvent-button");
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight*1.1}px`;
+        addButton.style.height = `${cellHeight * 1.1}px`;
         addButton.style.font = `${cellFont}px`;
       }
-      const prevButton = document.querySelector('.fc-prev-button');
-      const nextButton = document.querySelector('.fc-next-button');
+      const prevButton = document.querySelector(".fc-prev-button");
+      const nextButton = document.querySelector(".fc-next-button");
       if (prevButton && nextButton) {
         prevButton.style.width = `${cellHeight}px`;
         nextButton.style.width = `${cellHeight}px`;
@@ -36,85 +70,93 @@ export default function CalendarPage() {
       }
     }
   }
-  
+
   function setTitleFontSize() {
-    const gridCells = document.querySelectorAll('.fc-daygrid-day');
-    const titleElement = document.querySelector('.fc-toolbar-title');
-  
+    const gridCells = document.querySelectorAll(".fc-daygrid-day");
+    const titleElement = document.querySelector(".fc-toolbar-title");
+
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = gridCells[0].offsetWidth;
       const totalWidth = cellWidth * 2.9;
-  
-      titleElement.style.fontSize = `${totalWidth/9.5}px`;
+
+      titleElement.style.fontSize = `${totalWidth / 9.5}px`;
       titleElement.style.width = `${totalWidth}px`;
     }
   }
 
-  useEffect((resize) => {
-    adjustButtons();
-    setTitleFontSize();
+  useEffect(
+    (resize) => {
+      adjustButtons();
+      setTitleFontSize();
 
-    window.addEventListener('resize', adjustButtons);
-    window.addEventListener('resize', setTitleFontSize);
+      window.addEventListener("resize", adjustButtons);
+      window.addEventListener("resize", setTitleFontSize);
 
-    return () => {
-      window.removeEventListener('resize', adjustButtons);
-      window.removeEventListener('resize', setTitleFontSize);
-    }
-  }, [resize]);
-
+      return () => {
+        window.removeEventListener("resize", adjustButtons);
+        window.removeEventListener("resize", setTitleFontSize);
+      };
+    },
+    [resize]
+  );
   return (
     <Layout>
       <div className="calendar-container">
         <style>{calendarStyles}</style>
+
         <FullCalendar
-          themeSystem='bootstrap5'
+          themeSystem="bootstrap5"
           plugins={[
             resourceTimelinePlugin,
             dayGridPlugin,
             interactionPlugin,
             timeGridPlugin,
-            bootstrap5Plugin
+            bootstrap5Plugin,
           ]}
-
           windowResize={function () {
             setResize(!resize);
           }}
-
           customButtons={{
             AddEvent: {
-              text: 'Add Event',
-              click: function() {
+              text: "Add Event",
+              click: function () {
                 alert("clicked");
               },
-              hint: 'none',
-            }
+              hint: "none",
+            },
           }}
-
           headerToolbar={{
             left: "",
             center: "prev title next",
-            right: "AddEvent"
+            right: "AddEvent",
           }}
           buttonIcons={{
-            prev: 'arrow-left', 
-            next: 'arrow-right'
+            prev: "arrow-left",
+            next: "arrow-right",
           }}
           initialView="dayGridMonth"
           nowIndicator={true}
           editable={true}
+          select={handleSelect}
           selectable={true}
           initialEvents={[
-            { 
-              title: "nice event", 
-              start: new Date(), 
-              resourceId: "a",
-              display: "auto"
-            }
+            { title: "nice event", start: new Date(), resourceId: "a" },
+            
           ]}
-          dayHeaderFormat={{ weekday: 'long' }}
+          events={events}
+          eventClick={
+            function(info){
+              alert('Event: ' + info.event.title+ '\nTime: '+info.event.start)
+            
+            }
+          }
+          
+          eventColor="#c293ff"
+         
         />
       </div>
+<EventBar></EventBar>
+
     </Layout>
   );
 }
