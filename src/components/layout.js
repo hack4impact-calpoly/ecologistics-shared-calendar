@@ -1,5 +1,5 @@
-import Head from 'next/head'
-import Link from 'next/link'
+import Head from "next/head";
+import Link from "next/link";
 
 export default function Layout({ children }) {
   return (
@@ -13,11 +13,14 @@ export default function Layout({ children }) {
         <Link prefetch={false} href='/'>Home</Link>
         <Link prefetch={false} href='/calendar'>Calendar</Link>
         <Link prefetch={false} href='/about'>About</Link>
+        <Link prefetch={false} href='/forgot_password'>Forgot Password</Link>
+        <Link prefetch={false} href='/login'>Login</Link>
+        <Link prefetch={false} href='/signup'>Sign Up</Link>
+        <Link prefetch={false} href="/addEvent">Add Event</Link>
         <Link prefetch={false} href='/eventDetails'>Event Details</Link>
+        <Link prefetch={false} href="/admin">Admin Page</Link>
       </div>
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </>
-  )
+  );
 }
