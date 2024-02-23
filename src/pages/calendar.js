@@ -5,8 +5,22 @@ import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { useState } from "react";
+import EventBar from "./eventBar";
 
+  const styles = {
+    pageLayout: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'start',
+      padding: '20px',
+      margin: '20px',
+      whiteSpace: 'nowrap'
 
+    },
+    calendar: {
+      width: "120%"
+    }
+  };
 
 
 export default function CalendarPage() {
@@ -30,7 +44,8 @@ export default function CalendarPage() {
   };
   return (    
     <Layout>
-      <div className="calendar-container">
+      <div style={styles.pageLayout}>
+          <div className="calendar-container" style={styles.calendar}>
         <FullCalendar
           plugins={[
             resourceTimelinePlugin,
@@ -70,7 +85,11 @@ export default function CalendarPage() {
          
         />
       </div>
+<EventBar></EventBar>
+        </div>
     </Layout>
     
   );
 }
+
+
