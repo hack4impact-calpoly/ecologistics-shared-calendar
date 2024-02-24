@@ -81,7 +81,7 @@ export default function EventBar() {
     <div style={{ marginLeft: "5%" }}>
       <div
         style={{
-          width: "50%", 
+          width: "50%",
           padding: "10px 0",
           marginBottom: "20px",
           display: "flex",
@@ -93,7 +93,7 @@ export default function EventBar() {
           type="text"
           placeholder="Search..."
           style={{
-            width: "50%", // The search input should fill the width of the search div
+            width: "100%", // The search input should fill the width of the search div
             padding: "10px 20px",
             fontSize: "16px",
             borderRadius: "20px",
@@ -135,7 +135,7 @@ function useEventBarStyles() {
       borderColor: "#ccc",
       borderRadius: "12px",
       whiteSpace: "wrap",
-      width: "50%",
+      width: "85%",
       backgroundColor: "white",
       padding: "20px",
       boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
