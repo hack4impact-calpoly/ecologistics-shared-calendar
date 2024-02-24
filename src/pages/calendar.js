@@ -27,9 +27,12 @@ export default function CalendarPage() {
   const [events, setEvents] = useState([]);
   const handleSelect = (info) => {
     const eventNamePrompt = prompt("Enter event name");
-    const eventStart=prompt("Enter start time (hh:mm)");
-    var startTime = info.startStr.replace("00:00:00 GMT-0800 (Pacific Standard Time)","")
-    startTime=startTime+" "+eventStart
+    const eventStart = prompt("Enter start time (hh:mm)");
+    var startTime = info.startStr.replace(
+      "00:00:00 GMT-0800 (Pacific Standard Time)",
+      ""
+    );
+    startTime = startTime + " " + eventStart;
     if (eventNamePrompt) {
       setEvents([
         ...events,
@@ -101,62 +104,68 @@ export default function CalendarPage() {
   );
   return (
     <Layout>
-      <div className="calendar-container">
-        <style>{calendarStyles}</style>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "start",
+          padding: "0px",
+          margin: "0px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <div className="calendar-container">
+          <style>{calendarStyles}</style>
 
-        <FullCalendar
-          themeSystem="bootstrap5"
-          plugins={[
-            resourceTimelinePlugin,
-            dayGridPlugin,
-            interactionPlugin,
-            timeGridPlugin,
-            bootstrap5Plugin,
-          ]}
-          windowResize={function () {
-            setResize(!resize);
-          }}
-          customButtons={{
-            AddEvent: {
-              text: "Add Event",
-              click: function () {
-                alert("clicked");
+          <FullCalendar
+            themeSystem="bootstrap5"
+            plugins={[
+              resourceTimelinePlugin,
+              dayGridPlugin,
+              interactionPlugin,
+              timeGridPlugin,
+              bootstrap5Plugin,
+            ]}
+            windowResize={function () {
+              setResize(!resize);
+            }}
+            customButtons={{
+              AddEvent: {
+                text: "Add Event",
+                click: function () {
+                  alert("clicked");
+                },
+                hint: "none",
               },
-              hint: "none",
-            },
-          }}
-          headerToolbar={{
-            left: "",
-            center: "prev title next",
-            right: "AddEvent",
-          }}
-          buttonIcons={{
-            prev: "arrow-left",
-            next: "arrow-right",
-          }}
-          initialView="dayGridMonth"
-          nowIndicator={true}
-          editable={true}
-          select={handleSelect}
-          selectable={true}
-          initialEvents={[
-            { title: "nice event", start: new Date(), resourceId: "a" },
-            
-          ]}
-          events={events}
-          eventClick={
-            function(info){
-              alert('Event: ' + info.event.title+ '\nTime: '+info.event.start)
-            
-            }
-          }
-          
-          eventColor="#c293ff"
-         
-        />
+            }}
+            headerToolbar={{
+              left: "",
+              center: "prev title next",
+              right: "AddEvent",
+            }}
+            buttonIcons={{
+              prev: "arrow-left",
+              next: "arrow-right",
+            }}
+            initialView="dayGridMonth"
+            nowIndicator={true}
+            editable={true}
+            select={handleSelect}
+            selectable={true}
+            initialEvents={[
+              { title: "nice event", start: new Date(), resourceId: "a" },
+            ]}
+            events={events}
+            eventClick={function (info) {
+              alert(
+                "Event: " + info.event.title + "\nTime: " + info.event.start
+              );
+            }}
+            eventColor="#c293ff"
+          />
+        </div>
+        <EventBar />
       </div>
-<EventBar></EventBar>
-
     </Layout>
   );
 }
