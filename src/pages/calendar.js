@@ -60,16 +60,17 @@ export default function CalendarPage() {
       const addButton = document.querySelector(".fc-AddEvent-button");
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 1.1}px`;
-        addButton.style.font = `${cellFont}px`;
+        addButton.style.height = `${cellHeight * 0.9}px`;
+        console.log(cellHeight);
+        addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
       const prevButton = document.querySelector(".fc-prev-button");
       const nextButton = document.querySelector(".fc-next-button");
       if (prevButton && nextButton) {
-        prevButton.style.width = `${cellHeight}px`;
-        nextButton.style.width = `${cellHeight}px`;
-        prevButton.style.height = `${cellHeight}px`;
-        nextButton.style.height = `${cellHeight}px`;
+        prevButton.style.width = `${cellHeight * 0.9}px`;
+        nextButton.style.width = `${cellHeight * 0.9}px`;
+        prevButton.style.height = `${cellHeight * 0.9}px`;
+        nextButton.style.height = `${cellHeight * 0.9}px`;
       }
     }
   }
@@ -215,10 +216,7 @@ const calendarStyles = `
   }
 
   .fc-toolbar-chunk:nth-child(2) {
-    left: 50%;
-    transform: translateX(-50%);
     justify-content: center;
-    position: absolute;
   }
 
   .fc-toolbar-chunk:last-child {
