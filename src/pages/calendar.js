@@ -92,10 +92,8 @@ export default function CalendarPage() {
     (resize) => {
       adjustButtons();
       setTitleFontSize();
-
       window.addEventListener("resize", adjustButtons);
       window.addEventListener("resize", setTitleFontSize);
-
       return () => {
         window.removeEventListener("resize", adjustButtons);
         window.removeEventListener("resize", setTitleFontSize);
