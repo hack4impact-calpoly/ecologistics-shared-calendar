@@ -81,7 +81,7 @@ export default function EventBar() {
     <div style={{ marginLeft: "5%" }}>
       <div
         style={{
-          width: "100%", // Make the search bar the same width as the event containers
+          width: "50%",
           padding: "10px 0",
           marginBottom: "20px",
           display: "flex",
@@ -135,7 +135,7 @@ function useEventBarStyles() {
       borderColor: "#ccc",
       borderRadius: "12px",
       whiteSpace: "wrap",
-      width: "95%",
+      width: "85%",
       backgroundColor: "white",
       padding: "20px",
       boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
