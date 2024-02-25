@@ -1,4 +1,5 @@
 import Layout from "../components/layout";
+import React from "react";
 
 export default function SignUp() {
   return (
@@ -32,8 +33,8 @@ export default function SignUp() {
           </div>
           <div style={styles.signupButtonContainer}>
             <button style={styles.signupButton} type="submit"
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
             >
               Sign Up
             </button>
@@ -45,8 +46,8 @@ export default function SignUp() {
           </p>
           <div style={styles.loginButtonContainer}>
             <button style={styles.loginButton} type="submit"
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
             >
               Login
             </button>
@@ -57,7 +58,7 @@ export default function SignUp() {
   );
 }
 
-const styles = {
+const styles : { [key: string]: React.CSSProperties } = {
   // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
   contentWrapper: {
     // fontSize: "xxx-large",
@@ -71,7 +72,7 @@ const styles = {
     justifyContent: "start",
     margin: "10vh auto 10vh auto",
     padding: 0,
-    border: "6px solid black",
+    border: "1px solid black",
     borderRadius: "9px",
   },
   title: {
