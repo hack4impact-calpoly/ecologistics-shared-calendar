@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import Layout from "../components/layout";
 import Image from "next/image";
 // placeholder profile image
-import profileImage from "../images/profileImage.webp";
 
 export default function AdminPage() {
+
+  const profileImage = require('../images/profileImage.webp');
+
   const [accountRequests, setAccountRequests] = useState([
     { id: 1, name: "John Doe", image: profileImage },
     { id: 2, name: "Jane Smith", image: profileImage },
@@ -65,7 +67,7 @@ export default function AdminPage() {
   );
 }
 
-const styles = {
+const styles : { [key: string]: React.CSSProperties } = {
   mainContainer: {
     display: "flex",
     justifyContent: "space-evenly",
