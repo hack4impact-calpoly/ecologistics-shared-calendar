@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Layout from "../../components/layout";
+import Layout from "../components/layout";
 import Image from "next/image";
 // placeholder profile image
 
