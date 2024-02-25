@@ -21,8 +21,19 @@ const eventData = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
   },
 ];
+type EventProps = {
+  title: string;
+  location: string;
+  websiteURL: string;
+  date: {
+    time: string;
+    month: string;
+    day: string;
+  };
+  description: string;
+};
 
-function Event({ title, location, websiteURL, date, description }) {
+function Event({ title, location, websiteURL, date, description }: EventProps) {
   const { styles } = useEventBarStyles();
 
   return (
@@ -113,7 +124,7 @@ export default function EventBar() {
 }
 
 function useEventBarStyles() {
-  const styles = {
+  const styles: { [key: string]: React.CSSProperties } = {
     searchInput: {
       width: "100%",
       padding: "10px 20px",
@@ -134,7 +145,7 @@ function useEventBarStyles() {
       borderWidth: "1px",
       borderColor: "#ccc",
       borderRadius: "12px",
-      whiteSpace: "wrap",
+      whiteSpace: "normal",
       width: "85%",
       backgroundColor: "white",
       padding: "20px",

@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import Layout from "../components/layout";
 import Image from "next/image";
 // placeholder profile image
-import profileImage from "../images/profileImage.webp";
 
 export default function AdminPage() {
+
+  const profileImage = require('../images/profileImage.webp');
+
   const [accountRequests, setAccountRequests] = useState([
     { id: 1, name: "John Doe", image: profileImage },
     { id: 2, name: "Jane Smith", image: profileImage },
@@ -14,13 +16,13 @@ export default function AdminPage() {
     { id: 6, name: "D Smith", image: profileImage },
     { id: 7, name: "E Smith", image: profileImage },
   ]);
-  const handleAction = (requestId, action) => {
+  const handleAction = (requestId: string, action: string) => {
     // Just log whether the account is accepted or declined for now
     console.log(`Account request ${requestId} ${action}`);
 
     // Update the state to remove the handled request
     setAccountRequests((prevRequests) =>
-      prevRequests.filter((request) => request.id !== requestId)
+      prevRequests.filter((request) => request.id !== Number(requestId))
     );
   };
   return (
@@ -46,13 +48,13 @@ export default function AdminPage() {
               <div style={styles.buttonContainer}>
                 <button
                   style={styles.button}
-                  onClick={() => handleAction(request.id, "accepted")}
+                  onClick={() => handleAction(request.id.toString(), "accepted")}
                 >
                   Accept
                 </button>
                 <button
                   style={styles.button}
-                  onClick={() => handleAction(request.id, "declined")}
+                  onClick={() => handleAction(request.id.toString(), "declined")}
                 >
                   Decline
                 </button>
@@ -65,7 +67,7 @@ export default function AdminPage() {
   );
 }
 
-const styles = {
+const styles : { [key: string]: React.CSSProperties } = {
   mainContainer: {
     display: "flex",
     justifyContent: "space-evenly",
