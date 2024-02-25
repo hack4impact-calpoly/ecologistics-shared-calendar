@@ -69,7 +69,7 @@ export default function ForgotPassword() {
     );
 }
 
-const styles = {
+const styles : { [key: string]: React.CSSProperties }= {
     container: {
         display: "flex",
         flexDirection: "column",
