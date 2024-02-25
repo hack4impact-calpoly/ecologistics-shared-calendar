@@ -13,7 +13,7 @@ export default function LoginPage() {
   //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
   //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     // We will implement this later
     // Activated when login button is clicked
 

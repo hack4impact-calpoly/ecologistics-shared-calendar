@@ -9,10 +9,23 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
+
+interface Event {
+  start: Date | string;
+  title: string;
+  id: string;
+}
+
+// If FullCalendar provides a type for the event selection info, use that instead
+interface SelectInfo {
+  startStr: string; // Add more properties as needed based on the library's documentation
+}
+
 export default function CalendarPage() {
-  //for adding events
-  const [events, setEvents] = useState([]);
-  const handleSelect = (info) => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [resize, setResize] = useState(false);
+
+  const handleSelect = (info: { startStr: string }) => {
     const eventNamePrompt = prompt("Enter event name");
     const eventStart = prompt("Enter start time (hh:mm)");
     var startTime = info.startStr.replace(
@@ -32,9 +45,6 @@ export default function CalendarPage() {
     }
   };
 
-  //styling
-  const [resize, setResize] = useState(false);
-
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
     const headerCell = document.querySelector(".fc-col-header-cell");
@@ -46,15 +56,21 @@ export default function CalendarPage() {
       ) as HTMLElement;
       const cellWidth = gridCell.offsetWidth * 0.95;
       const cellHeight = headerCell.offsetHeight * 1.5;
-      const addButton = document.querySelector(".fc-AddEvent-button") as HTMLElement;
+      const addButton = document.querySelector(
+        ".fc-AddEvent-button"
+      ) as HTMLElement;
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
         addButton.style.height = `${cellHeight * 0.9}px`;
         console.log(cellHeight);
         addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
-      const prevButton = document.querySelector(".fc-prev-button") as HTMLElement;
-      const nextButton = document.querySelector(".fc-next-button") as HTMLElement;
+      const prevButton = document.querySelector(
+        ".fc-prev-button"
+      ) as HTMLElement;
+      const nextButton = document.querySelector(
+        ".fc-next-button"
+      ) as HTMLElement;
       if (prevButton && nextButton) {
         prevButton.style.width = `${cellHeight * 0.9}px`;
         nextButton.style.width = `${cellHeight * 0.9}px`;
@@ -66,7 +82,9 @@ export default function CalendarPage() {
 
   function setTitleFontSize() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
-    const titleElement = document.querySelector(".fc-toolbar-title") as HTMLElement;
+    const titleElement = document.querySelector(
+      ".fc-toolbar-title"
+    ) as HTMLElement;
 
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;

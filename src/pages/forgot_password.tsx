@@ -8,11 +8,11 @@ export default function ForgotPassword() {
     const [sent, setSent] = useState(false);
     const [statusMessage, setStatusMessage] = useState("");
 
-    const handleChange = (event) => {
+    const handleChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setEmail(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         setSent(true);
         axios.post("/api/forgot_password", { email: email });
