@@ -113,7 +113,7 @@ export default function EventBar() {
 }
 
 function useEventBarStyles() {
-  const styles = {
+  const styles: { [key: string]: React.CSSProperties }= {
     searchInput: {
       width: "100%",
       padding: "10px 20px",
@@ -134,7 +134,7 @@ function useEventBarStyles() {
       borderWidth: "1px",
       borderColor: "#ccc",
       borderRadius: "12px",
-      whiteSpace: "wrap",
+      whiteSpace: "normal",
       width: "85%",
       backgroundColor: "white",
       padding: "20px",
