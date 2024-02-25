@@ -8,21 +8,8 @@ import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
+import React from "react";
 export default function CalendarPage() {
-  const styles = {
-    pageLayout: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "start",
-      padding: "20px",
-      margin: "20px",
-      whiteSpace: "nowrap",
-    },
-    calendar: {
-      width: "120%",
-    },
-  };
-
   //for adding events
   const [events, setEvents] = useState([]);
   const handleSelect = (info) => {
@@ -53,19 +40,21 @@ export default function CalendarPage() {
     const headerCell = document.querySelector(".fc-col-header-cell");
 
     if (gridCell) {
+      const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement;
+      const headerCell = document.querySelector(
+        ".fc-col-header-cell"
+      ) as HTMLElement;
       const cellWidth = gridCell.offsetWidth * 0.95;
       const cellHeight = headerCell.offsetHeight * 1.5;
-      const cellFont = headerCell.offsetFont * 1.5;
-
-      const addButton = document.querySelector(".fc-AddEvent-button");
+      const addButton = document.querySelector(".fc-AddEvent-button") as HTMLElement;
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
         addButton.style.height = `${cellHeight * 0.9}px`;
         console.log(cellHeight);
         addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
-      const prevButton = document.querySelector(".fc-prev-button");
-      const nextButton = document.querySelector(".fc-next-button");
+      const prevButton = document.querySelector(".fc-prev-button") as HTMLElement;
+      const nextButton = document.querySelector(".fc-next-button") as HTMLElement;
       if (prevButton && nextButton) {
         prevButton.style.width = `${cellHeight * 0.9}px`;
         nextButton.style.width = `${cellHeight * 0.9}px`;
@@ -77,10 +66,10 @@ export default function CalendarPage() {
 
   function setTitleFontSize() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
-    const titleElement = document.querySelector(".fc-toolbar-title");
+    const titleElement = document.querySelector(".fc-toolbar-title") as HTMLElement;
 
     if (gridCells.length > 0 && titleElement) {
-      const cellWidth = gridCells[0].offsetWidth;
+      const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
       const totalWidth = cellWidth * 2.9;
 
       titleElement.style.fontSize = `${totalWidth / 9.5}px`;
@@ -88,19 +77,17 @@ export default function CalendarPage() {
     }
   }
 
-  useEffect(
-    (resize) => {
-      adjustButtons();
-      setTitleFontSize();
-      window.addEventListener("resize", adjustButtons);
-      window.addEventListener("resize", setTitleFontSize);
-      return () => {
-        window.removeEventListener("resize", adjustButtons);
-        window.removeEventListener("resize", setTitleFontSize);
-      };
-    },
-    [resize]
-  );
+  useEffect(() => {
+    adjustButtons();
+    setTitleFontSize();
+    window.addEventListener("resize", adjustButtons);
+    window.addEventListener("resize", setTitleFontSize);
+    return () => {
+      window.removeEventListener("resize", adjustButtons);
+      window.removeEventListener("resize", setTitleFontSize);
+    };
+  }, [resize]);
+
   return (
     <Layout>
       <div
