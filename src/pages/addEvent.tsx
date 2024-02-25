@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 
+
 export default function AddEventPage() {
   const [photo, setPhoto] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
@@ -133,7 +134,7 @@ export default function AddEventPage() {
   );
 }
 
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     flexDirection: "column",
