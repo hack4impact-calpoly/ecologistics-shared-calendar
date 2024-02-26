@@ -57,10 +57,10 @@ export default function LoginPage() {
             justifyContent: "flex-end",
           }}
         >
-          <div style={{ fontSize: "60%", fontWeight: "700" }}>
+          <div style={styles.title}>
             Login To Your Account
           </div>
-          <div style={{ fontSize: "32%" , fontWeight: "500" }}>Organizations & Charities Only</div>
+          <div style={styles.subtitle}>Organizations & Charities Only</div>
         </div>
         <div
           style={{
@@ -72,7 +72,7 @@ export default function LoginPage() {
           {/* Email Input Box */}
           <PersonIcon style={styles.icon}></PersonIcon>
           <div style={styles.inputContainer}>
-            <div style={styles.textAboveInputBox}>Username</div>
+            <div style={styles.inputTitle}>Username</div>
             <input
               value={email}
               placeholder="Enter Your Email Address"
@@ -84,7 +84,7 @@ export default function LoginPage() {
           {/* Password Input Box */}
           <LockIcon style={styles.icon}></LockIcon>
           <div style={styles.inputContainer}>
-            <div style={styles.textAboveInputBox}>Password</div>
+            <div style={styles.inputTitle}>Password</div>
             <input
               value={password}
               placeholder="Enter Your Password"
@@ -96,7 +96,7 @@ export default function LoginPage() {
           {/* Login Button */}
           <div style={styles.loginButtonContainer}>
             <button
-              style={{...styles.loginButton ,fontFamily: "DM Sans, sans-serif"}}
+              style={{...styles.loginButton }}
               type="submit"
               onClick={handleSubmit}
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
@@ -113,7 +113,7 @@ export default function LoginPage() {
             height: "28%", justifyContent: "flex-end",
           }}
         >
-          <div style={styles.textAboveSignup}>
+          <div style={styles.noAccountText}>
             Don&apos;t Have an Account? Apply for one now!
           </div>
           <div style={styles.signupButtonContainer}>
@@ -149,6 +149,14 @@ const styles : { [key: string]: React.CSSProperties } = {
     border: "1px solid black",
     borderRadius: "9px",
   },
+  title: {
+    fontSize: "xxx-large", 
+    fontWeight: "700"
+  },
+  subtitle: {
+    fontSize: "x-large",
+    margin: 0
+  },
   subContainer: {
     display: "flex",
     flexDirection: "column",
@@ -167,18 +175,24 @@ const styles : { [key: string]: React.CSSProperties } = {
     borderRadius: "9px",
     fontSize: "30%",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.15)",
+    fontFamily: "DM Sans, sans-serif",
+    color: "black"
+
   },
-  textAboveInputBox: {
+  inputTitle: {
     height: "32%",
     fontSize: "25%",
   },
   loginButtonContainer: {
     height: "12%",
     width: "20%",
+    display: "flex",
+    margin: "2%"
   },
   loginButton: {
-    fontSize: "30%",
-    fontWeight: "700",
+    fontFamily: "DM Sans, sans-serif",
+    fontSize: "20%",
+    fontWeight: "500",
     width: "100%",
     height: "100%",
     border: "0px",
@@ -187,7 +201,7 @@ const styles : { [key: string]: React.CSSProperties } = {
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
     cursor: "pointer",
   },
-  textAboveSignup: {
+  noAccountText: {
     height: "11%",
     margin: "1vh",
     fontSize: "20%",
@@ -202,7 +216,7 @@ const styles : { [key: string]: React.CSSProperties } = {
     height: "100%",
     width: "100%",
     fontSize: "20%",
-    fontWeight: "600",
+    fontWeight: "500",
     textDecoration: "none",
     textAlign: "center",
     background: "#f7ab74",
