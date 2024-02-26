@@ -1,5 +1,7 @@
 import Layout from "../components/layout";
 import React from "react";
+import SignUpLoginButton from "@/components/sign-up-login-button";
+
 
 export default function SignUp() {
   return (
@@ -36,7 +38,9 @@ export default function SignUp() {
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
               onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
             >
-              Sign Up
+              <div style={styles.text}>
+                  Sign Up
+              </div>
             </button>
           </div>
         </div>
@@ -49,7 +53,9 @@ export default function SignUp() {
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
               onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
             >
-              Login
+              <div style={styles.text}>
+                  Login
+              </div>
             </button>
           </div>
         </div>
@@ -110,23 +116,27 @@ const styles : { [key: string]: React.CSSProperties } = {
     flexDirection: "column",
     height: "28%",
     width: "73%",
+    color: "black"
   },
   signUpInput: {
     padding: "0 0 0 1vw",
     border: "1px solid #000",
     borderRadius: "9px",
-    color: "black",
     fontSize: "x-large",
+    fontFamily: "DM Sans, sans-serif",
+    color: "black",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
     height: "5.5vh",
+
   },
   inputTitle: {
     fontSize: "large",
-    marginBottom: "0"
+    marginBottom: "0",
   },
   signupButtonContainer: {
     height: "16%",
     width: "15%",
+    margin: "1%",
   },
   signupButton: {
     fontWeight: "500",
@@ -138,14 +148,16 @@ const styles : { [key: string]: React.CSSProperties } = {
     border: "0px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
     cursor: "pointer",
+    padding: "5%"
+
   },
   loginButtonContainer: {
     height: "20%",
     width: "20%",
     margin: "0 0 3vh 0",
     display: "flex",
-    justifyContent: "center"
-  },
+    justifyContent: "center",
+   },
   loginButton: {
     height: "100%",
     fontWeight: "500",
@@ -158,6 +170,10 @@ const styles : { [key: string]: React.CSSProperties } = {
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
     cursor: "pointer",
   },
+  text: {
+    fontFamily: "DM Sans, sans-serif",
+    fontWeight: "500"
+},
   accountHaveText: {
     height: "11%",
     margin: "1vh",
