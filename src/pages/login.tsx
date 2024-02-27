@@ -1,40 +1,50 @@
 import { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+
 //icons
 import PersonIcon from "@mui/icons-material/Person";
-import LockIcon from "@mui/icons-material/LockOutlined";
+import LockIcon from "@mui/icons-material/Lock";
 //
+
 export default function LoginPage() {
   const [email, setEmail] = useState(""); // to update the email the user enters
   const [password, setPassword] = useState(""); // to update the password the user enters
   //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
   //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
+
   const handleSubmit = (e) => {
     // We will implement this later
     // Activated when login button is clicked
+
     e.preventDefault();
+
     /*
     // Set initial error values to empty
     setEmailError("");
     setPasswordError("");
+
     // Check if the user has entered both fields correctly
     if ("" === email) {
       setEmailError("Please enter your email");
       return;
     }
+
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       setEmailError("Please enter a valid email");
       return;
     }
+
     if ("" === password) {
       setPasswordError("Please enter a password");
       return;
     }
     */
+
     console.log(email);
     console.log(password);
   };
+
   return (
     <Layout>
       {/* Main Container */}
@@ -50,7 +60,7 @@ export default function LoginPage() {
           <div style={{ fontSize: "60%", fontWeight: "700" }}>
             Login To Your Account
           </div>
-          <div style={{ fontSize: "32%" , fontWeight: "500" }}>Organizations & Charities Only</div>
+          <div style={{ fontSize: "32%" }}>Organizations & Charities Only</div>
         </div>
         <div
           style={{
@@ -79,18 +89,16 @@ export default function LoginPage() {
               value={password}
               placeholder="Enter Your Password"
               onChange={(e) => setPassword(e.target.value)}
-              style={{ ...styles.inputBox, color: "black"}}
+              style={styles.inputBox}
             />
             {/* <label style={styles.errorLabel}>{passwordError}</label> */}
           </div>
           {/* Login Button */}
           <div style={styles.loginButtonContainer}>
             <button
-              style={{...styles.loginButton ,fontFamily: "DM Sans, sans-serif"}}
+              style={styles.loginButton}
               type="submit"
               onClick={handleSubmit}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
             >
               Login
             </button>
@@ -105,14 +113,11 @@ export default function LoginPage() {
           }}
         >
           <div style={styles.textAboveSignup}>
-            Don&apos;t Have an Account? Apply for one now!
+            Dont Have an Account? Apply for one now!
           </div>
           <div style={styles.signupButtonContainer}>
             <Link prefetch={false} href="/" style={styles.signupLink}>
-              <button 
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#e69153")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#f7ab74")}
-              style={{...styles.signupButton, fontFamily: "DM Sans, sans-serif", hover: "#ccc"}}>Sign up</button>
+              <button style={styles.signupButton}>Sign up</button>
             </Link>
           </div>
         </div>
@@ -123,8 +128,7 @@ export default function LoginPage() {
 const styles = {
   // Inline Styling
   mainContainer: {
-    fontfamily: "DM Sans, sans-serif",
-    // fontFamily: "Inter, sans-serif",
+    fontFamily: "Inter, sans-serif",
     fontStyle: "normal",
     fontWeight: "400",
     color: "#000",
@@ -137,7 +141,7 @@ const styles = {
     justifyContent: "start",
     margin: "10vh auto 10vh auto",
     padding: 0,
-    border: "1px solid black",
+    border: "6px solid black",
     borderRadius: "9px",
   },
   subContainer: {
@@ -157,50 +161,43 @@ const styles = {
     border: "1px solid #000",
     borderRadius: "9px",
     fontSize: "30%",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.15)",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
   textAboveInputBox: {
     height: "32%",
     fontSize: "25%",
   },
   loginButtonContainer: {
-    height: "12%",
+    height: "18%",
     width: "20%",
   },
   loginButton: {
     fontSize: "30%",
-    fontWeight: "700",
     width: "100%",
     height: "100%",
-    border: "0px",
-    borderRadius: "12px",
-    background: "#f7ab74",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    cursor: "pointer",
+    border: "3px solid #000",
+    borderRadius: "9px",
+    background: "white",
   },
   textAboveSignup: {
     height: "11%",
     margin: "1vh",
     fontSize: "20%",
-    fontWeight: "500"
   },
   signupButtonContainer: {
     height: "20%",
-    width: "20%",
+    width: "14%",
     margin: "0 0 3vh 0",
   },
   signupButton: {
     height: "100%",
     width: "100%",
     fontSize: "20%",
-    fontWeight: "600",
     textDecoration: "none",
     textAlign: "center",
-    background: "#f7ab74",
-    borderRadius: "12px",
-    border: "0px",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    cursor: "pointer",
+    background: "white",
+    borderRadius: "9px",
+    border: "3px solid black",
   },
   signupLink: {
     display: "flex",

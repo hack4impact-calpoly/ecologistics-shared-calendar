@@ -4,17 +4,17 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 
 export default function AddEventPage() {
-  const [photo, setPhoto] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       "image/*": [".jpeg", ".jpg", ".png"],
     },
-    onDrop: (acceptedFiles) => {
+    onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      setPhoto(file);
-      setImagePreviewUrl(URL.createObjectURL(file));
+      setPhoto(file); 
+      setImagePreviewUrl(URL.createObjectURL(file)); 
     },
   });
 
@@ -133,7 +133,7 @@ export default function AddEventPage() {
   );
 }
 
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     flexDirection: "column",

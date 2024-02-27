@@ -1,4 +1,5 @@
 import Layout from "../components/layout";
+import React from "react";
 
 export default function SignUp() {
   return (
@@ -31,7 +32,10 @@ export default function SignUp() {
             />
           </div>
           <div style={styles.signupButtonContainer}>
-            <button style={styles.signupButton} type="submit">
+            <button style={styles.signupButton} type="submit"
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
+            >
               Sign Up
             </button>
           </div>
@@ -41,7 +45,12 @@ export default function SignUp() {
             Already Have an Account? Login Here!
           </p>
           <div style={styles.loginButtonContainer}>
-            <button style={styles.loginButton} type="submit">Login</button>
+            <button style={styles.loginButton} type="submit"
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
+            >
+              Login
+            </button>
           </div>
         </div>
       </div>
@@ -49,19 +58,21 @@ export default function SignUp() {
   );
 }
 
-const styles = {
+const styles : { [key: string]: React.CSSProperties } = {
   // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
   contentWrapper: {
     // fontSize: "xxx-large",
+    fontFamily: "DM Sans, sans-serif",
     display: "flex",
     flexDirection: "column",
     width: "61vw",
+    fontWeight: "400",
     height: "73vh",
     alignItems: "stretch",
     justifyContent: "start",
     margin: "10vh auto 10vh auto",
     padding: 0,
-    border: "6px solid black",
+    border: "1px solid black",
     borderRadius: "9px",
   },
   title: {
@@ -101,45 +112,51 @@ const styles = {
     width: "73%",
   },
   signUpInput: {
-    padding: "0 0 0 2vw",
+    padding: "0 0 0 1vw",
     border: "1px solid #000",
     borderRadius: "9px",
-    fontSize: "large",
+    color: "black",
+    fontSize: "x-large",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    height: "5.5vh"
+    height: "5.5vh",
   },
   inputTitle: {
-    fontSize: "medium",
+    fontSize: "large",
     marginBottom: "0"
   },
   signupButtonContainer: {
     height: "16%",
-    width: "20%",
+    width: "15%",
   },
   signupButton: {
-    fontSize: "larger",
+    fontWeight: "500",
     width: "100%",
-    height: "100%",
-    border: "3px solid #000",
-    borderRadius: "9px",
-    background: "white",
+    height: "75%",
     marginTop: "1vh",
+    background: "#f7ab74",
+    borderRadius: "9px",
+    border: "0px",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    cursor: "pointer",
   },
   loginButtonContainer: {
     height: "20%",
-    width: "14%",
+    width: "20%",
     margin: "0 0 3vh 0",
     display: "flex",
     justifyContent: "center"
   },
   loginButton: {
     height: "100%",
+    fontWeight: "500",
     width: "75%",
     textDecoration: "none",
     textAlign: "center",
-    background: "white",
+    background: "#f7ab74",
     borderRadius: "9px",
-    border: "3px solid black",
+    border: "0px",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    cursor: "pointer",
   },
   accountHaveText: {
     height: "11%",
