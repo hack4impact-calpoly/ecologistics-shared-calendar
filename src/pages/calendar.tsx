@@ -9,6 +9,7 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
+import AddEventPanel from "../components/addEventPanel";
 
 interface Event {
   start: Date | string;
@@ -24,6 +25,7 @@ interface SelectInfo {
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
+  const [isAddingEvent, setIsAddingEvent] = useState(false);
 
   const handleSelect = (info: { startStr: string }) => {
     const eventNamePrompt = prompt("Enter event name");
@@ -137,7 +139,7 @@ export default function CalendarPage() {
               AddEvent: {
                 text: "Add Event",
                 click: function () {
-                  alert("clicked");
+                  setIsAddingEvent((prev) => !prev);
                 },
                 hint: "none",
               },
@@ -168,11 +170,15 @@ export default function CalendarPage() {
             eventColor="#c293ff"
           />
         </div>
-        <EventBar />
+        {!isAddingEvent ? <EventBar /> : <AddEventPanel />}
       </div>
     </Layout>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  spaced: {},
+};
 
 const calendarStyles = `
   .fc .fc-prev-button, .fc .fc-next-button {
