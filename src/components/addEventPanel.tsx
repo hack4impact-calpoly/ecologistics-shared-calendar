@@ -19,97 +19,99 @@ export default function AddEventPanel() {
   });
 
   return (
-    <>
-      <div className={"responsive"} style={styles.container}>
-        <h2 style={styles.title}>Add Event</h2>
-        <input type="text" style={styles.input} />
-        <div style={styles.horizontal}>
-          <div style={styles.inputContainer}>
-            <h3>Start Date</h3>
-            <input
-              type="date"
-              style={{
-                ...styles.input,
-                marginRight: "10px",
-                display: "inline-block",
-              }}
-            />
-            <h3>Start Time</h3>
-            <input
-              type="time"
-              style={{
-                ...styles.input,
-                display: "inline-block",
-              }}
-            />
-          </div>
-          <div style={styles.inputContainer}>
-            <h3>End Date</h3>
-            <input
-              type="date"
-              style={{
-                ...styles.input,
-                marginRight: "10px",
-                display: "inline-block",
-              }}
-            />
-            <h3>End Time</h3>
-            <input
-              type="time"
-              style={{
-                ...styles.input,
-                display: "inline-block",
-              }}
-            />
-          </div>
+    <div style={styles.container}>
+      <h3 style={styles.title}>Add Event</h3>
+      <input type="text" style={styles.input} />
+      <div style={styles.horizontal}>
+        <div style={styles.inputContainer}>
+          <h4 style={styles.inputTitle}>Start Date</h4>
+          <input
+            type="date"
+            style={{
+              ...styles.input,
+              marginRight: "10px",
+              display: "inline-block",
+            }}
+          />
+          <h4 style={styles.inputTitle}>Start Time</h4>
+          <input
+            type="time"
+            style={{
+              ...styles.input,
+              display: "inline-block",
+            }}
+          />
         </div>
-        <h3>Description</h3>
-        <textarea style={styles.textarea}></textarea>
-        <h3>Location</h3>
-        <div style={styles.radioContainer}>
-          <label>
-            <input
-              type="radio"
-              name="location"
-              value="virtual"
-              style={styles.radioButton}
-            />
-            Virtual
-          </label>
-          <label style={{ marginLeft: "20px" }}>
-            <input
-              type="radio"
-              name="location"
-              value="in-person"
-              style={styles.radioButton}
-            />
-            In Person
-          </label>
+        <div style={styles.inputContainer}>
+          <h4 style={styles.inputTitle}>End Date</h4>
+          <input
+            type="date"
+            style={{
+              ...styles.input,
+              marginRight: "10px",
+              display: "inline-block",
+            }}
+          />
+          <h4 style={styles.inputTitle}>End Time</h4>
+          <input
+            type="time"
+            style={{
+              ...styles.input,
+              display: "inline-block",
+            }}
+          />
         </div>
-        <input type="text" placeholder="Link" style={styles.input} />
-        <div {...getRootProps()} style={styles.uploadContainer}>
-          <input {...getInputProps()} />
-          {imagePreviewUrl && (
+      </div>
+      <h4 style={styles.inputTitle}>Description</h4>
+      <textarea style={styles.textarea}></textarea>
+      <h4 style={styles.inputTitle}>Location</h4>
+      <div style={styles.radioContainer}>
+        <label>
+          <input
+            type="radio"
+            name="location"
+            value="virtual"
+            style={styles.radioButton}
+          />
+          Virtual
+        </label>
+        <label style={{ marginLeft: "20px" }}>
+          <input
+            type="radio"
+            name="location"
+            value="in-person"
+            style={styles.radioButton}
+          />
+          In Person
+        </label>
+      </div>
+      <input type="text" placeholder="Link" style={styles.input} />
+      <div {...getRootProps()} style={styles.uploadContainer}>
+        <input {...getInputProps()} />
+        {imagePreviewUrl ? (
+          <div>
             <img
               src={imagePreviewUrl}
               alt="Preview"
               style={{
-                maxWidth: "100%",
-                maxHeight: "100px",
-                marginBottom: "20px",
+                maxWidth: "20%",
+                maxHeight: "20%",
               }}
             />
-          )}
-          <label htmlFor="file-upload" style={styles.uploadButton}>
+          </div>
+        ) : (
+          <div>
+            <label htmlFor="file-upload" style={styles.uploadButton}>
+              {isDragActive
+                ? "Drop the files here."
+                : "Drag and drop or select image."}
+            </label>
             <MdOutlineFileUpload size={30} />
-            {isDragActive
-              ? "Drop the files here."
-              : "Drag and drop or select image."}
-          </label>
-        </div>
-        <button style={styles.button}>Add Event</button>
+          </div>
+        )}
       </div>
-    </>
+      <button style={styles.button}>Add Event</button>
+    </div>
   );
 }
 
@@ -129,15 +131,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "20px",
     margin: "10px",
     width:
-      "30%" /* Ensure this is responsive to the parent container or viewport size */,
+      "40%" /* Ensure this is responsive to the parent container or viewport size */,
   },
   title: {
-    marginBottom: "20px",
+    marginBottom: "10px",
   },
   input: {
     width: "calc(100% - 20px)",
     padding: "10px",
-    marginBottom: "10px",
+    marginBottom: "5px",
     borderRadius: "15px",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
@@ -147,7 +149,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "calc(100% - 20px)",
     height: "100px",
     padding: "10px",
-    marginBottom: "20px",
+    marginBottom: "5px",
     borderRadius: "15px",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
@@ -200,5 +202,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     width: "48%",
+  },
+  inputTitle: {
+    fontWeight: "bold",
   },
 };
