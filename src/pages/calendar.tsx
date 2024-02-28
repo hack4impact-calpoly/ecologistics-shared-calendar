@@ -170,7 +170,11 @@ export default function CalendarPage() {
             eventColor="#c293ff"
           />
         </div>
-        {!isAddingEvent ? <EventBar /> : <AddEventPanel />}
+        {!isAddingEvent ? (
+          <EventBar />
+        ) : (
+          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+        )}
       </div>
     </Layout>
   );

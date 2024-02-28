@@ -1,9 +1,13 @@
 import Layout from "./layout";
 import React, { useState } from "react";
-import { MdOutlineFileUpload } from "react-icons/md";
+import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 
-export default function AddEventPanel() {
+interface AddEventPanelProps {
+  onClose: () => void;
+}
+
+export default function AddEventPanel({ onClose }: AddEventPanelProps) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
@@ -20,6 +24,7 @@ export default function AddEventPanel() {
 
   return (
     <div style={styles.container}>
+      <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
       <input type="text" style={styles.input} />
       <div style={styles.horizontal}>
@@ -122,16 +127,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
     boxSizing: "border-box",
-    maxWidth: "60vw" /* Adjusted based on viewport width */,
-    maxHeight:
-      "92vh" /* Adjusted based on viewport height, consider adjusting or removing if necessary */,
+    maxWidth: "60vw",
+    maxHeight: "92vh",
     borderRadius: "10px",
     border: "1px solid black",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     padding: "20px",
     margin: "10px",
-    width:
-      "40%" /* Ensure this is responsive to the parent container or viewport size */,
+    width: "40%",
+    position: "relative",
   },
   title: {
     marginBottom: "10px",
@@ -205,5 +209,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   inputTitle: {
     fontWeight: "bold",
+  },
+  close: {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    margin: "5px",
+    cursor: "pointer",
   },
 };
