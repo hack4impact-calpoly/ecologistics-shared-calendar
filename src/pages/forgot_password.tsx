@@ -118,7 +118,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   bottomText: {
     marginTop: "1.5625em",
     marginBottom: "1.5625em",
-    fontFamily: "Normal",
     fontSize: "1em",
   },
   button: {
