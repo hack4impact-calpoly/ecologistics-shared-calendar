@@ -9,6 +9,7 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
+import Link from "next/link";
 
 interface Event {
   start: Date | string;
@@ -110,65 +111,92 @@ export default function CalendarPage() {
     <Layout>
       <div
         style={{
+          height: "90vh",
+          boxSizing: "border-box",
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          padding: "0px",
-          margin: "0px",
-          whiteSpace: "nowrap",
+          flexDirection: "column",
         }}
       >
-        <div className="calendar-container">
-          <style>{calendarStyles}</style>
-
-          <FullCalendar
-            themeSystem="bootstrap5"
-            plugins={[
-              resourceTimelinePlugin,
-              dayGridPlugin,
-              interactionPlugin,
-              timeGridPlugin,
-              bootstrap5Plugin,
-            ]}
-            windowResize={function () {
-              setResize(!resize);
-            }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  alert("clicked");
-                },
-                hint: "none",
-              },
-            }}
-            headerToolbar={{
-              left: "",
-              center: "prev title next",
-              right: "AddEvent",
-            }}
-            buttonIcons={{
-              prev: "arrow-left",
-              next: "arrow-right",
-            }}
-            initialView="dayGridMonth"
-            nowIndicator={true}
-            editable={true}
-            select={handleSelect}
-            selectable={true}
-            initialEvents={[
-              { title: "nice event", start: new Date(), resourceId: "a" },
-            ]}
-            events={events}
-            eventClick={function (info) {
-              alert(
-                "Event: " + info.event.title + "\nTime: " + info.event.start
-              );
-            }}
-            eventColor="#c293ff"
-          />
+        <div style={styles.signoutContainer}>
+          <Link prefetch={false} href="/">
+            <button
+              onMouseOver={(e) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              style={styles.signoutButton}
+            >
+              Logout
+            </button>
+          </Link>
         </div>
-        <EventBar />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            whiteSpace: "nowrap",
+            margin: "0 3%",
+            padding: "0",
+            height: "90%",
+          }}
+        >
+          <div className="calendar-container">
+            <style>{calendarStyles}</style>
+
+            <FullCalendar
+              themeSystem="bootstrap5"
+              plugins={[
+                resourceTimelinePlugin,
+                dayGridPlugin,
+                interactionPlugin,
+                timeGridPlugin,
+                bootstrap5Plugin,
+              ]}
+              windowResize={function () {
+                setResize(!resize);
+              }}
+              customButtons={{
+                AddEvent: {
+                  text: "Add Event",
+                  click: function () {
+                    alert("clicked");
+                  },
+                  hint: "none",
+                },
+              }}
+              headerToolbar={{
+                left: "prev title next",
+                center: "",
+                right: "AddEvent",
+              }}
+              buttonIcons={{
+                prev: "arrow-left",
+                next: "arrow-right",
+              }}
+              initialView="dayGridMonth"
+              nowIndicator={true}
+              editable={true}
+              select={handleSelect}
+              selectable={true}
+              initialEvents={[
+                { title: "nice event", start: new Date(), resourceId: "a" },
+              ]}
+              events={events}
+              eventClick={function (info) {
+                alert(
+                  "Event: " + info.event.title + "\nTime: " + info.event.start
+                );
+              }}
+              eventColor="#c293ff"
+            />
+          </div>
+
+          <EventBar />
+        </div>
       </div>
     </Layout>
   );
@@ -269,3 +297,25 @@ const calendarStyles = `
     border-right: 1px solid #ddd;
   }
 `;
+const styles: { [key: string]: React.CSSProperties } = {
+  signoutContainer: {
+    boxSizing: "border-box",
+    margin: "1.5% 2.5%",
+    height: "2.57rem",
+    width: "13.71rem",
+  },
+  signoutButton: {
+    padding: "0.625rem 4.375rem",
+    width: "100%",
+    height: "100%",
+    fontSize: "1.143rem",
+    fontWeight: "500",
+    textDecoration: "none",
+    textAlign: "center",
+    background: "#f7ab74",
+    borderRadius: "0.75rem",
+    border: "0px",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+    cursor: "pointer",
+  },
+};
