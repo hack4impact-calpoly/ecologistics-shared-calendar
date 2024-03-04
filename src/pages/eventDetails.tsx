@@ -59,6 +59,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "DM Sans",
     fontSize: "16px",
     margin: "0 0 16px 0",
+    fontWeight: "bold",
     color: "#333",
   },
   imagePlaceholder: {
