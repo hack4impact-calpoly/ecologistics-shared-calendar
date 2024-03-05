@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
-import { Delete, DeleteOutline} from "@mui/icons-material";
+import { DeleteOutline} from "@mui/icons-material";
 
 const ITEMS_PER_PAGE = 11
 
@@ -33,7 +33,7 @@ export default function AdminPage() {
   const currentRequests = accountRequests.slice(startIndex, endIndex);
 
   // Handle page change
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
