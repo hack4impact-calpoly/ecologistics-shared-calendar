@@ -33,7 +33,7 @@ export default function AdminPage() {
   const currentRequests = accountRequests.slice(startIndex, endIndex);
 
   // Handle page change
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: React.SetStateAction<number>) => {
     setCurrentPage(page);
   };
 
