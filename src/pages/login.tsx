@@ -104,7 +104,7 @@ export default function LoginPage() {
           <div style={styles.bottomText}>Forgot Password?</div>
 
           <div style={styles.bottomText}>
-            Don't Have an Account? Apply for one now!
+            Don&apos;t Have an Account? Apply for one now!
           </div>
 
           <button
