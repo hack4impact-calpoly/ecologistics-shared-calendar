@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
-import EmailIcon from "@mui/icons-material/Email";
+//import EmailIcon from "@mui/icons-material/Email";
 import axios from "axios";
 
 export default function ForgotPassword() {
