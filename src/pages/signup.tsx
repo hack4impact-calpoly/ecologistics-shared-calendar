@@ -2,6 +2,12 @@ import Layout from "../components/layout";
 import React from "react";
 
 export default function SignUp() {
+  const goToConfirm = () => {
+    window.location.href = "/confirmation-page";
+  };
+  const goToLogin = () => {
+    window.location.href = "/login";
+  };
   return (
     <Layout>
       <div style={styles.contentWrapper}>
@@ -26,15 +32,25 @@ export default function SignUp() {
           </div>
           <div style={styles.inputContainer}>
             <p style={styles.inputTitle}>Password:</p>
-            <input 
-              placeholder="Enter Your Password" 
-              style={styles.signUpInput} 
+            <input
+              placeholder="Enter Your Password"
+              style={styles.signUpInput}
             />
           </div>
+
           <div style={styles.signupButtonContainer}>
-            <button style={styles.signupButton} type="submit"
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
+            <button
+              onClick={goToConfirm}
+              style={styles.signupButton}
+              type="submit"
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
             >
               Sign Up
             </button>
@@ -45,9 +61,18 @@ export default function SignUp() {
             Already Have an Account? Login Here!
           </p>
           <div style={styles.loginButtonContainer}>
-            <button style={styles.loginButton} type="submit"
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
+            <button
+              onClick={goToLogin}
+              style={styles.loginButton}
+              type="submit"
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
             >
               Login
             </button>
@@ -58,7 +83,7 @@ export default function SignUp() {
   );
 }
 
-const styles : { [key: string]: React.CSSProperties } = {
+const styles: { [key: string]: React.CSSProperties } = {
   // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
   contentWrapper: {
     // fontSize: "xxx-large",
@@ -78,11 +103,11 @@ const styles : { [key: string]: React.CSSProperties } = {
   title: {
     fontSize: "xxx-large",
     fontWeight: "700",
-    margin: 0
+    margin: 0,
   },
   subtitle: {
     fontSize: "x-large",
-    margin: 0
+    margin: 0,
   },
   headerContainer: {
     display: "flex",
@@ -122,7 +147,7 @@ const styles : { [key: string]: React.CSSProperties } = {
   },
   inputTitle: {
     fontSize: "large",
-    marginBottom: "0"
+    marginBottom: "0",
   },
   signupButtonContainer: {
     height: "16%",
@@ -144,7 +169,7 @@ const styles : { [key: string]: React.CSSProperties } = {
     width: "20%",
     margin: "0 0 3vh 0",
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   loginButton: {
     height: "100%",

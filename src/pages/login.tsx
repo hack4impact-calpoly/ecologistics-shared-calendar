@@ -13,7 +13,11 @@ export default function LoginPage() {
   //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
   //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const goToSignUp = () => {
+    window.location.href = "/signup";
+  };
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     // We will implement this later
     // Activated when login button is clicked
 
@@ -43,6 +47,7 @@ export default function LoginPage() {
 
     console.log(email);
     console.log(password);
+    window.location.href = "/calendar";
   };
 
   return (
@@ -60,7 +65,9 @@ export default function LoginPage() {
           <div style={{ fontSize: "60%", fontWeight: "700" }}>
             Login To Your Account
           </div>
-          <div style={{ fontSize: "32%" , fontWeight: "500" }}>Organizations & Charities Only</div>
+          <div style={{ fontSize: "32%", fontWeight: "500" }}>
+            Organizations & Charities Only
+          </div>
         </div>
         <div
           style={{
@@ -89,18 +96,27 @@ export default function LoginPage() {
               value={password}
               placeholder="Enter Your Password"
               onChange={(e) => setPassword(e.target.value)}
-              style={{ ...styles.inputBox, color: "black"}}
+              style={{ ...styles.inputBox, color: "black" }}
             />
             {/* <label style={styles.errorLabel}>{passwordError}</label> */}
           </div>
           {/* Login Button */}
           <div style={styles.loginButtonContainer}>
             <button
-              style={{...styles.loginButton ,fontFamily: "DM Sans, sans-serif"}}
+              style={{
+                ...styles.loginButton,
+                fontFamily: "DM Sans, sans-serif",
+              }}
               type="submit"
               onClick={handleSubmit}
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
             >
               Login
             </button>
@@ -110,7 +126,8 @@ export default function LoginPage() {
         <div
           style={{
             ...styles.subContainer,
-            height: "28%", justifyContent: "flex-end",
+            height: "28%",
+            justifyContent: "flex-end",
           }}
         >
           <div style={styles.textAboveSignup}>
@@ -118,10 +135,23 @@ export default function LoginPage() {
           </div>
           <div style={styles.signupButtonContainer}>
             <Link prefetch={false} href="/" style={styles.signupLink}>
-              <button 
-              onMouseOver={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
-              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
-              style={{...styles.signupButton, fontFamily: "DM Sans, sans-serif"}}>Sign up</button>
+              <button
+                onClick={goToSignUp}
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                style={{
+                  ...styles.signupButton,
+                  fontFamily: "DM Sans, sans-serif",
+                }}
+              >
+                Sign up
+              </button>
             </Link>
           </div>
         </div>
@@ -129,7 +159,7 @@ export default function LoginPage() {
     </Layout>
   );
 }
-const styles : { [key: string]: React.CSSProperties } = {
+const styles: { [key: string]: React.CSSProperties } = {
   // Inline Styling
   mainContainer: {
     fontFamily: "DM Sans, sans-serif",
@@ -191,7 +221,7 @@ const styles : { [key: string]: React.CSSProperties } = {
     height: "11%",
     margin: "1vh",
     fontSize: "20%",
-    fontWeight: "500"
+    fontWeight: "500",
   },
   signupButtonContainer: {
     height: "20%",
