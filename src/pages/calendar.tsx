@@ -9,7 +9,7 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
-import AddEventPanel from "@/components/addEventPanel";
+import AddEventPanel from "../components/addEventPanel";
 
 interface Event {
   start: Date | string;
