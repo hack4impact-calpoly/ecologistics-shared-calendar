@@ -166,7 +166,28 @@ export default function AdminPage() {
   };
 
   const handleAction = (requestId: string, action: string) => {
-    // Handle action logic (similar to before)
+    if (action === "trash") {
+      // Filter out the request with the given id
+      const updatedRequests = accountRequests.filter(
+        (request) => request.id.toString() !== requestId
+      );
+      // Update the state with the filtered requests array
+      setAccountRequests(updatedRequests);
+    } else {
+      // For accept/decline actions, update the status accordingly
+      const updatedRequests = accountRequests.map((request) => {
+        if (request.id.toString() === requestId) {
+          return {
+            ...request,
+            status: action === "accepted" ? "Accepted" : "Declined",
+          };
+        }
+        return request;
+      });
+
+      // Update the state with the new account requests array
+      setAccountRequests(updatedRequests);
+    }
   };
 
   //use effect: updates current page continuously
@@ -255,9 +276,18 @@ export default function AdminPage() {
                     <span
                       style={{
                         color:
-                          request.status === "Pending" ? "#0d4f90" : "#105631",
+                          request.status === "Accepted"
+                            ? "#007500"
+                            : request.status === "Declined"
+                            ? "#9C0006"
+                            : "#0d4f90",
                         background:
-                          request.status === "Pending" ? "#d4eaff" : "#E0F5EC",
+                          request.status === "Accepted"
+                            ? "#DFF0D8"
+                            : request.status === "Declined"
+                            ? "#FADBD8"
+                            : "#d4eaff",
+
                         padding: "5px 10px",
                         borderRadius: "20px",
                         fontWeight: "700px",
@@ -424,8 +454,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   //   background: "#D9D9D9",
   // },
   rightContainer: {
-    // width: "70vw",
-    // height: "100vh",
     display: "flex",
     flexDirection: "column",
     background: "#D9D9D9",
