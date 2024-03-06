@@ -10,6 +10,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
 import Link from "next/link";
+import AddEventPanel from "../components/addEventPanel";
 
 interface Event {
   start: Date | string;
@@ -25,6 +26,7 @@ interface SelectInfo {
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
+  const [isAddingEvent, setIsAddingEvent] = useState(false);
 
   const handleSelect = (info: { startStr: string }) => {
     const eventNamePrompt = prompt("Enter event name");
@@ -147,25 +149,23 @@ export default function CalendarPage() {
           <div className="calendar-container">
             <style>{calendarStyles}</style>
 
-            <FullCalendar
-              themeSystem="bootstrap5"
-              plugins={[
-                resourceTimelinePlugin,
-                dayGridPlugin,
-                interactionPlugin,
-                timeGridPlugin,
-                bootstrap5Plugin,
-              ]}
-              windowResize={function () {
-                setResize(!resize);
-              }}
-              customButtons={{
-                AddEvent: {
-                  text: "Add Event",
-                  click: function () {
-                    alert("clicked");
-                  },
-                  hint: "none",
+          <FullCalendar
+            themeSystem="bootstrap5"
+            plugins={[
+              resourceTimelinePlugin,
+              dayGridPlugin,
+              interactionPlugin,
+              timeGridPlugin,
+              bootstrap5Plugin,
+            ]}
+            windowResize={function () {
+              setResize(!resize);
+            }}
+            customButtons={{
+              AddEvent: {
+                text: "Add Event",
+                click: function () {
+                  setIsAddingEvent((prev) => !prev);
                 },
               }}
               headerToolbar={{
@@ -197,10 +197,19 @@ export default function CalendarPage() {
 
           <EventBar />
         </div>
+        {!isAddingEvent ? (
+          <EventBar />
+        ) : (
+          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+        )}
       </div>
     </Layout>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  spaced: {},
+};
 
 const calendarStyles = `
   .fc .fc-prev-button, .fc .fc-next-button {
