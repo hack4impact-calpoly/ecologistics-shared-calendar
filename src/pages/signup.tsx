@@ -1,67 +1,29 @@
 import Layout from "../components/layout";
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function SignUp() {
-  /*
-    <Layout>
-      
-      <div style={styles.contentWrapper}>
-        <div style={styles.headerContainer}>
-          <h1 style={styles.title}>Apply For an Account</h1>
-          <p style={styles.subtitle}>Organizations & Charities Only</p>
-        </div>
-        <div style={styles.signupContainer}>
-          <div style={styles.inputContainer}>
-            <p style={styles.inputTitle}>Name of Organization:</p>
-            <input
-              placeholder="Enter Organization Name"
-              style={styles.signUpInput}
-            />
-          </div>
-          <div style={styles.inputContainer}>
-            <p style={styles.inputTitle}>Email Address:</p>
-            <input
-              type="text"
-              placeholder="Enter Your Email Address"
-              style={{...styles.signUpInput, color: "black"}}
-            />
-          </div>
-          <div style={styles.inputContainer}>
-            <p style={styles.inputTitle}>Password:</p>
-            <input 
-              placeholder="Enter Your Password" 
-              style={styles.signUpInput} 
-            />
-          </div>
-          <div style={styles.signupButtonContainer}>
-            <button style={styles.signupButton} type="submit"
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
-            >
-              <div style={styles.text}>
-                  Sign Up
-              </div>
-            </button>
-          </div>
-        </div>
-        <div style={styles.bottomContainer}>
-          <p style={styles.accountHaveText}>
-            Already Have an Account? Login Here!
-          </p>
-          <div style={styles.loginButtonContainer}>
-            <button style={styles.loginButton} type="submit"
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
-            >
-              <div style={styles.text}>
-                  Login
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </Layout>
-  */
+  const router = useRouter();
+
+  const [organization, setOrganization] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const goToLogin = () => {
+    window.location.href = "/login";
+  };
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    if (!organization || !email || !password) {
+      alert("Please fill in all fields.");
+    } else if (!email.includes("@")) {
+      alert("Please enter a valid email address.");
+    } else {
+      router.push("/confirmation-page");
+    }
+  };
   return (
     <Layout>
       <style jsx>{`
@@ -70,7 +32,7 @@ export default function SignUp() {
         }
       `}</style>
       <div style={styles.container}>
-        <form style={styles.formBox}>
+        <form style={styles.formBox} onSubmit={handleSubmit}>
           <h2 style={styles.title}>Apply For an Account</h2>
           <p style={styles.subtitle}>Organizations & Charities Only</p>
 
@@ -80,10 +42,12 @@ export default function SignUp() {
             </label>
             <div style={styles.inputContainer}>
               <input
-                type="text"
-                id="text"
+                type="organization"
+                id="organization"
                 placeholder="Enter Organization Name"
                 style={styles.input}
+                value={organization}
+                onChange={(e) => setOrganization(e.target.value)}
                 required
               />
             </div>
@@ -98,6 +62,8 @@ export default function SignUp() {
                 id="email"
                 placeholder="Enter Your Email Address "
                 style={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -112,6 +78,8 @@ export default function SignUp() {
                 id="password"
                 placeholder="Enter Your Password"
                 style={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -133,6 +101,7 @@ export default function SignUp() {
           <button
             type="submit"
             style={{ ...styles.button, ...styles.buttonSent }}
+            onClick={goToLogin}
           >
             {"Login"}
           </button>
@@ -216,5 +185,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1em",
     color: "#28a745",
   },
-  // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
 };

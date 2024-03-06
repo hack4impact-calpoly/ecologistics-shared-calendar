@@ -132,9 +132,8 @@ export default function EventBar() {
           placeholder="Search..."
           style={{
             boxSizing: "border-box",
-            width: "85%", // The search input should fill the width of the search div
+            width: "85%",
             padding: "2% 2%",
-            //margin: "0",
             fontSize: "1.3rem",
             borderRadius: "1rem",
             border: "0.1rem solid #ccc",

@@ -1,48 +1,29 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+import { useRouter } from 'next/router';
 
 //icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/LockOutlined";
-//
 
 export default function LoginPage() {
-  const [email, setEmail] = useState(""); // to update the email the user enters
-  const [password, setPassword] = useState(""); // to update the password the user enters
-  //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
-  //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
+  const router = useRouter(); 
+  const [email, setEmail] = useState(""); 
+  const [password, setPassword] = useState(""); 
+ 
+  const goToSignUp = () => {
+    window.location.href = "/signup";
+  };
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
-    // We will implement this later
-    // Activated when login button is clicked
-
     e.preventDefault();
 
-    /*
-    // Set initial error values to empty
-    setEmailError("");
-    setPasswordError("");
-
-    // Check if the user has entered both fields correctly
-    if ("" === email) {
-      setEmailError("Please enter your email");
-      return;
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address.");
+    } else {
+      router.push("/calendar");
     }
-
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError("Please enter a valid email");
-      return;
-    }
-
-    if ("" === password) {
-      setPasswordError("Please enter a password");
-      return;
-    }
-
-    <PersonIcon style={styles.icon}></PersonIcon>
-    <LockIcon style={styles.icon}></LockIcon>
-    */
 
     console.log(email);
     console.log(password);
@@ -115,6 +96,7 @@ export default function LoginPage() {
           <button
             type="submit"
             style={{ ...styles.button, ...styles.buttonSent }}
+            onClick={goToSignUp}
           >
             {"Sign Up"}
           </button>
