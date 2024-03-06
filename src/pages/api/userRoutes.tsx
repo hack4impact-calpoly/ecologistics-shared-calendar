@@ -46,7 +46,7 @@ export default async function handeler(
         res.status(500).json({
           success: false,
           message: "Failed to delete user",
-          error: error.message,
+          error: error,
         });
       }
       break;
