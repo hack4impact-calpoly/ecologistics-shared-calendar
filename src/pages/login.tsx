@@ -81,7 +81,7 @@ export default function LoginPage() {
             <div style={styles.inputContainer}>
               <LockIcon style={styles.icon}></LockIcon>
               <input
-                type="email"
+                type="password"
                 id="email"
                 placeholder="Enter Your Password"
                 style={styles.input}
