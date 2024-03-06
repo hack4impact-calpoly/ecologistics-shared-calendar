@@ -68,6 +68,7 @@ export default function LoginPage() {
                 placeholder="Enter Your Email Address"
                 style={styles.input}
                 value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -84,7 +85,8 @@ export default function LoginPage() {
                 id="email"
                 placeholder="Enter Your Password"
                 style={styles.input}
-                value={email}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
