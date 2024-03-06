@@ -13,7 +13,7 @@ export default function LoginPage() {
   //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
   //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     // We will implement this later
     // Activated when login button is clicked
 
@@ -48,7 +48,6 @@ export default function LoginPage() {
     console.log(password);
   };
 
-  
   return (
     <Layout>
       <div style={styles.container}>
@@ -60,9 +59,9 @@ export default function LoginPage() {
             <label htmlFor="email" style={styles.label}>
               Email Address
             </label>
-            
+
             <div style={styles.inputContainer}>
-            <PersonIcon style={styles.icon}></PersonIcon>
+              <PersonIcon style={styles.icon}></PersonIcon>
               <input
                 type="email"
                 id="email"
@@ -77,7 +76,7 @@ export default function LoginPage() {
             <label htmlFor="email" style={styles.label}>
               Password
             </label>
-            
+
             <div style={styles.inputContainer}>
               <LockIcon style={styles.icon}></LockIcon>
               <input
@@ -90,24 +89,17 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          
 
-          
-          <div style={{paddingTop: "1vw"}}>          
-          </div>
+          <div style={{ paddingTop: "1vw" }}></div>
 
           <button
             type="submit"
-            style={
-              { ...styles.button, ...styles.buttonSent }
-            }
+            style={{ ...styles.button, ...styles.buttonSent }}
           >
             {"Login"}
           </button>
 
-          <div style={styles.bottomText}>
-            Forgot Password?
-          </div>
+          <div style={styles.bottomText}>Forgot Password?</div>
 
           <div style={styles.bottomText}>
             Don't Have an Account? Apply for one now!
@@ -115,21 +107,16 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            style={
-              { ...styles.button, ...styles.buttonSent }
-            }
+            style={{ ...styles.button, ...styles.buttonSent }}
           >
             {"Sign Up"}
           </button>
-
         </form>
       </div>
     </Layout>
   );
-
-   
 }
-const styles : { [key: string]: React.CSSProperties } = {
+const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     flexDirection: "column",
@@ -159,11 +146,12 @@ const styles : { [key: string]: React.CSSProperties } = {
     textAlign: "center",
   },
   inputBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "1em",
     width: "50%",
+    boxSizing: "border-box",
   },
   label: {
     fontFamily: "DM Sans",
@@ -173,14 +161,19 @@ const styles : { [key: string]: React.CSSProperties } = {
   input: {
     fontFamily: "DM Sans",
     padding: "0.3em",
-    paddingLeft: "0.5em",
+    paddingLeft: "1.5em",
     fontSize: "2em",
     color: "black",
     width: "100%",
     border: "1px solid black",
     borderRadius: "4px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-
+  },
+  inputContainer: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
   },
   bottomText: {
     marginTop: "1.5625em",
@@ -207,13 +200,12 @@ const styles : { [key: string]: React.CSSProperties } = {
     fontSize: "1em",
     color: "#28a745",
   },
-  // Inline Styling
-  
-  // icons
   icon: {
-    fontSize: "45%",
-    position: "relative",
-    top: "8vh",
-    right: "20vw",
+    fontSize: "200%",
+    transform: "translateY(-50%)",
+    position: "absolute",
+    left: "10px",
+    top: "50%",
+    pointerEvents: "none",
   },
 };
