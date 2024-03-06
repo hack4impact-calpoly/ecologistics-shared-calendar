@@ -115,7 +115,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid black",
     borderRadius: "4px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-
   },
   bottomText: {
     marginTop: "1.5625em",
@@ -134,7 +133,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "12%",
     cursor: "pointer",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-
   },
   statusMessage: {
     fontFamily: "DM Sans",
@@ -144,3 +142,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#28a745",
   },
 };
+
