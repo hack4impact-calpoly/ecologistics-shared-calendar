@@ -29,7 +29,7 @@ export default function AdminRequestTable() {
     return (
       <Layout>
         {/* <h1 style={{ textAlign: "center" }}> Admin View</h1> */}
-        <AdminPage></AdminPage>
+        <AdminPage/>
         {/* <div style={styles.mainContainer}>
           <div style={styles.leftContainer}>
             Welcome to admin view. Accept or decline account requests.
