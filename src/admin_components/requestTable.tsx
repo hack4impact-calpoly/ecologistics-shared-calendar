@@ -33,7 +33,7 @@ export default function AdminPage() {
   const currentRequests = accountRequests.slice(startIndex, endIndex);
 
   // Handle page change
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: React.SetStateAction<number>) => {
     setCurrentPage(page);
   };
 
@@ -53,22 +53,22 @@ export default function AdminPage() {
     <div>
     <h1 style={{ textAlign: "center" }}>Admin View</h1>
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <table style={{ border: "1px solid black", borderCollapse: "collapse" }}>
+      <table style={{ border: "1px solid #f7f7f7", borderCollapse: "collapse", borderSpacing: 0, borderBottom: "2px solid #f7f7f7"}}>
         <thead>
-          <tr>
-            <th style={{ padding: "10px" }}>Request For</th>
-            <th style={{ padding: "10px" }}>Email</th>
-            <th style={{ padding: "10px" }}>Status</th>
-            <th style={{ padding: "10px" }}>Date & Time</th>
-            <th style={{ padding: "10px"}}>Description</th>
-            <th style={{ padding: "10px"}}>Actions</th> {/* Add this column for buttons */}
+          <tr style={{border: "1px solid #f7f7f7"}}>
+            <th style={{ padding: "10px", background: "#f7f7f7", border: "1px solid #f7f7f7"}}>Request For</th>
+            <th style={{ padding: "10px", background: "#f7f7f7", fontWeight: 500, border: "1px solid #f7f7f7" }}>Email</th>
+            <th style={{ padding: "10px", background: "#f7f7f7", fontWeight: 500, border: "1px solid #f7f7f7" }}>Status</th>
+            <th style={{ padding: "10px", background: "#f7f7f7", fontWeight: 500, border: "1px solid #f7f7f7" }}>Date & Time</th>
+            <th style={{ padding: "10px", background: "#f7f7f7", fontWeight: 500, border: "1px solid #f7f7f7"}}>Description</th>
+            <th style={{ padding: "10px", background: "#f7f7f7"}}></th> {/* Add this column for buttons */}
           </tr>
         </thead>
         <tbody>
           {accountRequests
           .slice(calculateRange().startIndex, calculateRange().endIndex)
           .map((request) => (
-            <tr key={request.id} style={{ border: "1px solid black" }}>
+            <tr key={request.id} style={{border: "1px solid #f7f7f7"}}>
               <td style={{...styles.name, padding: "5px 50px" }}>{request.name}</td>
               <td style={{...styles.email, padding: "5px 50px" }}>{request.email}</td>
               <td style={{...styles.statusContainer, padding: "5px 50px" }}>
