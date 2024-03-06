@@ -2,8 +2,9 @@ import Layout from "../components/layout";
 import React from "react";
 
 export default function SignUp() {
-  return (
+  /*
     <Layout>
+      
       <div style={styles.contentWrapper}>
         <div style={styles.headerContainer}>
           <h1 style={styles.title}>Apply For an Account</h1>
@@ -20,8 +21,9 @@ export default function SignUp() {
           <div style={styles.inputContainer}>
             <p style={styles.inputTitle}>Email Address:</p>
             <input
+              type="text"
               placeholder="Enter Your Email Address"
-              style={styles.signUpInput}
+              style={{...styles.signUpInput, color: "black"}}
             />
           </div>
           <div style={styles.inputContainer}>
@@ -36,7 +38,9 @@ export default function SignUp() {
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#e69153")}
               onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => ((e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74")}
             >
-              Sign Up
+              <div style={styles.text}>
+                  Sign Up
+              </div>
             </button>
           </div>
         </div>
@@ -49,117 +53,168 @@ export default function SignUp() {
               onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#e69153"}
               onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) => (e.target as HTMLButtonElement).style.backgroundColor = "#f7ab74"}
             >
-              Login
+              <div style={styles.text}>
+                  Login
+              </div>
             </button>
           </div>
         </div>
       </div>
     </Layout>
+  */
+  return (
+    <Layout>
+      <style jsx>{`
+        input::placeholder {
+          color: grey;
+        }
+      `}</style>
+      <div style={styles.container}>
+        <form style={styles.formBox}>
+          <h2 style={styles.title}>Apply For an Account</h2>
+          <p style={styles.subtitle}>Organizations & Charities Only</p>
+
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Name of Organization
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="text"
+                id="text"
+                placeholder="Enter Organization Name"
+                style={styles.input}
+                required
+              />
+            </div>
+          </div>
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Email Address
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter Your Email Address "
+                style={styles.input}
+                required
+              />
+            </div>
+          </div>
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Password
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter Your Password"
+                style={styles.input}
+                required
+              />
+            </div>
+          </div>
+
+          <div style={{ paddingTop: "1vw" }}></div>
+
+          <button
+            type="submit"
+            style={{ ...styles.button, ...styles.buttonSent }}
+          >
+            {"Sign Up"}
+          </button>
+
+          <div style={styles.bottomText}>
+            Already Have an Account? Login Here!
+          </div>
+
+          <button
+            type="submit"
+            style={{ ...styles.button, ...styles.buttonSent }}
+          >
+            {"Login"}
+          </button>
+        </form>
+      </div>
+    </Layout>
   );
 }
 
-const styles : { [key: string]: React.CSSProperties } = {
-  // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
-  contentWrapper: {
-    // fontSize: "xxx-large",
-    fontFamily: "DM Sans, sans-serif",
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
     display: "flex",
     flexDirection: "column",
-    width: "61vw",
-    fontWeight: "400",
-    height: "73vh",
-    alignItems: "stretch",
-    justifyContent: "start",
-    margin: "10vh auto 10vh auto",
-    padding: 0,
-    border: "1px solid black",
-    borderRadius: "9px",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "10vh",
+    width: "100%",
+    backgroundColor: "white",
+  },
+  formBox: {
+    borderRadius: "8px",
+    backgroundColor: "white",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   title: {
-    fontSize: "xxx-large",
-    fontWeight: "700",
-    margin: 0
+    fontFamily: "DM Sans",
+    fontSize: "3.75em",
+    textAlign: "center",
+    marginBottom: "-0.5em",
   },
   subtitle: {
-    fontSize: "x-large",
-    margin: 0
-  },
-  headerContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    height: "25%",
-    justifyContent: "flex-end",
-  },
-  signupContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    height: "50%",
-    justifyContent: "flex-start",
-  },
-  bottomContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    height: "23%",
-    justifyContent: "flex-end",
-  },
-  inputContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "28%",
-    width: "73%",
-  },
-  signUpInput: {
-    padding: "0 0 0 1vw",
-    border: "1px solid #000",
-    borderRadius: "9px",
-    color: "black",
-    fontSize: "x-large",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    height: "5.5vh",
-  },
-  inputTitle: {
-    fontSize: "large",
-    marginBottom: "0"
-  },
-  signupButtonContainer: {
-    height: "16%",
-    width: "15%",
-  },
-  signupButton: {
-    fontWeight: "500",
-    width: "100%",
-    height: "75%",
-    marginTop: "1vh",
-    background: "#f7ab74",
-    borderRadius: "9px",
-    border: "0px",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    cursor: "pointer",
-  },
-  loginButtonContainer: {
-    height: "20%",
-    width: "20%",
-    margin: "0 0 3vh 0",
-    display: "flex",
-    justifyContent: "center"
-  },
-  loginButton: {
-    height: "100%",
-    fontWeight: "500",
-    width: "75%",
-    textDecoration: "none",
+    fontFamily: "DM Sans",
+    fontSize: "2em",
     textAlign: "center",
-    background: "#f7ab74",
-    borderRadius: "9px",
-    border: "0px",
+  },
+  inputBox: {
+    marginTop: "1em",
+    width: "51%",
+  },
+  label: {
+    fontFamily: "DM Sans",
+    fontSize: "1.5625em",
+    marginLeft: "0.2em",
+  },
+  input: {
+    fontFamily: "DM Sans",
+    padding: "0.23em",
+    paddingLeft: "0.5em",
+    fontSize: "2em",
+    color: "black",
+    width: "100%",
+    border: "1px solid black",
+    borderRadius: "4px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+  },
+  bottomText: {
+    marginTop: "1.5625em",
+    marginBottom: "1.5625em",
+    fontSize: "1em",
+  },
+  button: {
+    fontFamily: "DM Sans",
+    fontSize: "1em",
+    color: "black",
+    paddingTop: "0.7em",
+    paddingBottom: "0.7em",
+    backgroundColor: "#F7AB74",
+    border: "None",
+    borderRadius: "10px",
+    width: "12%",
     cursor: "pointer",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
-  accountHaveText: {
-    height: "11%",
-    margin: "1vh",
+  statusMessage: {
+    fontFamily: "DM Sans",
+    textAlign: "center",
+    marginTop: "20px",
+    fontSize: "1em",
+    color: "#28a745",
   },
+  // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
 };
