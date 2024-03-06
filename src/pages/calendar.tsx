@@ -149,23 +149,24 @@ export default function CalendarPage() {
           <div className="calendar-container">
             <style>{calendarStyles}</style>
 
-          <FullCalendar
-            themeSystem="bootstrap5"
-            plugins={[
-              resourceTimelinePlugin,
-              dayGridPlugin,
-              interactionPlugin,
-              timeGridPlugin,
-              bootstrap5Plugin,
-            ]}
-            windowResize={function () {
-              setResize(!resize);
-            }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
+            <FullCalendar
+              themeSystem="bootstrap5"
+              plugins={[
+                resourceTimelinePlugin,
+                dayGridPlugin,
+                interactionPlugin,
+                timeGridPlugin,
+                bootstrap5Plugin,
+              ]}
+              windowResize={function () {
+                setResize(!resize);
+              }}
+              customButtons={{
+                AddEvent: {
+                  text: "Add Event",
+                  click: function () {
+                    setIsAddingEvent((prev) => !prev);
+                  },
                 },
               }}
               headerToolbar={{
@@ -207,9 +208,9 @@ export default function CalendarPage() {
   );
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
-  spaced: {},
-};
+// const styles: { [key: string]: React.CSSProperties } = {
+//   spaced: {},
+// };
 
 const calendarStyles = `
   .fc .fc-prev-button, .fc .fc-next-button {
@@ -307,6 +308,7 @@ const calendarStyles = `
   }
 `;
 const styles: { [key: string]: React.CSSProperties } = {
+  spaced: {},
   signoutContainer: {
     boxSizing: "border-box",
     margin: "1.5% 2.5%",
