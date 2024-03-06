@@ -1,10 +1,7 @@
 import Layout from "../components/layout";
 import React from "react";
 
-
-
 export default function SignUp() {
-
   /*
     <Layout>
       
@@ -67,97 +64,80 @@ export default function SignUp() {
   */
   return (
     <Layout>
-    <div style={styles.container}>
-      <form style={styles.formBox}>
-        <h2 style={styles.title}>Apply For an Account</h2>
-        <p style={styles.subtitle}>Organizations & Charities Only</p>
+      <div style={styles.container}>
+        <form style={styles.formBox}>
+          <h2 style={styles.title}>Apply For an Account</h2>
+          <p style={styles.subtitle}>Organizations & Charities Only</p>
 
-        <div className="inputBox" style={styles.inputBox}>
-          <label htmlFor="email" style={styles.label}>
-            Name of Organization
-          </label>
-          <div style={styles.inputContainer}>
-            
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter Organization Name"
-              style={styles.input}
-              required
-            />
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Name of Organization
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="text"
+                id="text"
+                placeholder="Enter Organization Name"
+                style={styles.input}
+                required
+              />
+            </div>
           </div>
-        </div>
-        <div className="inputBox" style={styles.inputBox}>
-          <label htmlFor="email" style={styles.label}>
-            Email Address
-          </label>
-          <div style={styles.inputContainer}>
-            
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter Your Email Address "
-              style={styles.input}
-              required
-            />
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Email Address
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter Your Email Address "
+                style={styles.input}
+                required
+              />
+            </div>
           </div>
-        </div>
-        <div className="inputBox" style={styles.inputBox}>
-          <label htmlFor="email" style={styles.label}>
-            Password
-          </label>
-          <div style={styles.inputContainer}>
-            
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter Your Password"
-              style={styles.input}
-              required
-            />
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Password
+            </label>
+            <div style={styles.inputContainer}>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter Your Password"
+                style={styles.input}
+                required
+              />
+            </div>
           </div>
-        </div>
-        
-        
 
-        
-        <div style={{paddingTop: "1vw"}}>          
-        </div>
+          <div style={{ paddingTop: "1vw" }}></div>
 
-        <button
-          type="submit"
-          style={
-            { ...styles.button, ...styles.buttonSent }
-          }
-        >
-          {"Login"}
-        </button>
+          <button
+            type="submit"
+            style={{ ...styles.button, ...styles.buttonSent }}
+          >
+            {"Sign Up"}
+          </button>
 
-        <div style={styles.bottomText}>
-          Forgot Password?
-        </div>
+          <div style={styles.bottomText}>
+            Already Have an Account? Login Here!
+          </div>
 
-        <div style={styles.bottomText}>
-          Don't Have an Account? Apply for one now!
-        </div>
-
-        <button
-          type="submit"
-          style={
-            { ...styles.button, ...styles.buttonSent }
-          }
-        >
-          {"Sign Up"}
-        </button>
-
-      </form>
-    </div>
-  </Layout>
+          <button
+            type="submit"
+            style={{ ...styles.button, ...styles.buttonSent }}
+          >
+            {"Login"}
+          </button>
+        </form>
+      </div>
+    </Layout>
   );
 }
 
-const styles : { [key: string]: React.CSSProperties } = {
-
+const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     flexDirection: "column",
@@ -205,7 +185,6 @@ const styles : { [key: string]: React.CSSProperties } = {
     border: "1px solid black",
     borderRadius: "4px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-
   },
   bottomText: {
     marginTop: "1.5625em",
@@ -224,7 +203,6 @@ const styles : { [key: string]: React.CSSProperties } = {
     width: "12%",
     cursor: "pointer",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-
   },
   statusMessage: {
     fontFamily: "DM Sans",
@@ -234,5 +212,4 @@ const styles : { [key: string]: React.CSSProperties } = {
     color: "#28a745",
   },
   // contentWrapper, headerContainer, signupContainer, bottomContainer,  inputContainer, signUpInput, inputTitle, signupButtonContainer, signupButton, loginButtonContainer, loginButton, accountHaveText
-  
 };
