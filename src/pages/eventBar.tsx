@@ -1,5 +1,7 @@
 import React from "react";
-
+import CircleIcon from "@mui/icons-material/Circle";
+import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 // eventually connect to data from backend
 const eventData = [
   {
@@ -12,8 +14,35 @@ const eventData = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
   },
   {
-    id: 1,
+    id: 2,
     title: "Event 2",
+    location: "Location",
+    websiteURL: "Website URL",
+    date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },
+  {
+    id: 3,
+    title: "Event 3",
+    location: "Location",
+    websiteURL: "Website URL",
+    date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },
+  {
+    id: 4,
+    title: "Event 4",
+    location: "Location",
+    websiteURL: "Website URL",
+    date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  },
+  {
+    id: 5,
+    title: "Event 5",
     location: "Location",
     websiteURL: "Website URL",
     date: { day: "2", month: "February", time: "1:00pm - 2:00pm" },
@@ -37,43 +66,37 @@ function Event({ title, location, websiteURL, date, description }: EventProps) {
   const { styles } = useEventBarStyles();
 
   return (
-    <div
-      style={{
-        ...styles.eventContainer,
-        display: "flex",
-        justifyContent: "space-between",
-      }}
-    >
-      <div style={{ flex: 1 }}>
-        {" "}
-        <div style={styles.headerContainer}>
-          <div style={styles.titleContainer}>
-            <h1 style={styles.title}>{title}</h1>
-            <p
-              style={styles.dateAndTime}
-            >{`${date.time} ${date.month} ${date.day}`}</p>
-            <div style={styles.tagContainer}>
-              <p style={styles.eventTag}>Event Tags</p>
-              <p style={{ marginRight: "15px", color: "#335543" }}>
-                {location}
-              </p>
-              <p style={{ marginRight: "15px", color: "#335543" }}>
-                {websiteURL}
-              </p>
-            </div>
-          </div>
+    <div style={styles.eventContainer}>
+      <div style={styles.headerContainer}>
+        <div style={styles.title}>{title}</div>
+        <div
+          style={styles.dateContainer}
+        >{`${date.time} ${date.month} ${date.day}`}</div>
+        <div style={styles.tagContainer}>
+          <CircleIcon style={{ ...styles.icon, color: "#F07F2D" }} />
+          <div style={{ ...styles.eventTag, color: "#F07F2D" }}>Event Tags</div>
+          <PlaceOutlinedIcon
+            style={{
+              ...styles.icon,
+              fontSize: "medium",
+              color: "#335543",
+            }}
+          />
+          <div style={styles.eventTag}>{location}</div>
+          <LinkOutlinedIcon
+            style={{ ...styles.icon, fontSize: "medium", color: "#335543" }}
+          />
+          <div style={styles.eventTag}>{websiteURL}</div>
         </div>
-        <div style={styles.eventText}>
-          <p>{description}</p>
-        </div>
+        <div style={styles.eventText}>{description}</div>
       </div>
       <div
         style={{
-          width: "150px",
-          height: "150px",
+          width: "10.73029rem",
+          height: "10.09621rem",
           backgroundColor: "#F07F2D",
           alignSelf: "center",
-          borderRadius: "12px",
+          borderRadius: "1rem",
         }}
       >
         {" "}
@@ -89,107 +112,113 @@ export default function EventBar() {
   const styles = useEventBarStyles();
 
   return (
-    <div style={{ marginLeft: "5%" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <div
         style={{
-          width: "50%",
-          padding: "10px 0",
-          marginBottom: "20px",
           display: "flex",
           justifyContent: "center",
+          width: "100%",
+          margin: "0 0 4% 0",
         }}
       >
-        {/* add icon here */}
         <input
           type="text"
           placeholder="Search..."
           style={{
-            width: "100%", // The search input should fill the width of the search div
-            padding: "10px 20px",
-            fontSize: "16px",
-            borderRadius: "20px",
-            border: "1px solid #ccc",
+            boxSizing: "border-box",
+            width: "85%", // The search input should fill the width of the search div
+            padding: "2% 2%",
+            //margin: "0",
+            fontSize: "1.3rem",
+            borderRadius: "1rem",
+            border: "0.1rem solid #ccc",
             outline: "none",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
           }}
+
           // Add onChange event handler if you want to capture input
           // onChange={handleSearchChange}
         />
       </div>
-      {eventData.map((event) => (
-        <Event key={event.id} {...event} />
-      ))}
+      <div style={styles.styles.mainContainer}>
+        {/* add icon here */}
+
+        {eventData.map((event) => (
+          <Event key={event.id} {...event} />
+        ))}
+      </div>
     </div>
   );
 }
 
 function useEventBarStyles() {
   const styles: { [key: string]: React.CSSProperties } = {
-    searchInput: {
-      width: "100%",
-      padding: "10px 20px",
-      fontSize: "16px",
-      borderRadius: "20px",
-      border: "1px solid #ccc",
-      outline: "none",
-      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-    },
-    allItemContainer: {
+    mainContainer: {
+      height: "100%",
+      margin: "0",
+      gap: "0rem",
       display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
       flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      overflow: "scroll",
+      boxSizing: "border-box",
     },
+
     eventContainer: {
-      borderStyle: "solid",
-      borderWidth: "1px",
-      borderColor: "#ccc",
-      borderRadius: "12px",
+      display: "flex",
+      justifyContent: "space-evenly",
+      boxSizing: "border-box",
+      border: "1.5px solid var(--Grey, #989898)",
+      borderRadius: "0.51213rem",
       whiteSpace: "normal",
       width: "85%",
+      height: "30%",
+      padding: "2%",
       backgroundColor: "white",
-      padding: "20px",
-      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-      marginBottom: "2%",
+      boxShadow: "0px 2.731px 2.731px 0px rgba(0, 0, 0, 0.25)",
+      margin: "1%",
     },
     tagContainer: {
       display: "flex",
       flexDirection: "row",
       justifyContent: "flex-start",
+      alignItems: "center",
       flexWrap: "wrap",
+      height: "10%",
     },
     eventTag: {
-      marginRight: "15px",
-      color: "#F07F2D",
-      display: "flex",
-      alignItems: "center",
-    },
-    dateContainer: {
-      borderStyle: "solid",
-      borderWidth: "1px",
-      borderRadius: "16px",
-      flexGrow: "1",
-      display: "grid",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      width: "30%",
-      height: "auto",
-    },
-    titleContainer: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start",
+      marginRight: "1.5rem",
+      fontSize: "0.78036rem",
     },
     title: {
-      fontWeight: "bold",
-      margin: "0 0 10px 0",
+      fontSize: "1.95093rem",
+      fontWeight: "700",
     },
     dateAndTime: {
-      marginBottom: "5px",
+      marginBottom: "1rem",
+      fontSize: "0.9755rem",
     },
     eventText: {
       textAlign: "left",
+      overflow: "scroll",
+      fontSize: "0.78036rem",
+    },
+    headerContainer: {
+      width: "65%",
+      display: "flex",
+      flexDirection: "column",
+      gap: "1%",
+    },
+    icon: {
+      fontSize: "45%",
+      marginRight: "3px",
     },
   };
 
