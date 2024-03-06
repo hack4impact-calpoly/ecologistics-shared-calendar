@@ -22,20 +22,39 @@ export default async function handeler(
 
     case "POST":
       try {
-        const userInfo = { email: "", password: "", accountType: "" };
-        userInfo.email = req.body.email;
-        userInfo.password = req.body.password;
-        userInfo.accountType = req.body.accountType;
-        console.log(userInfo);
-        const user = await User.create(userInfo);
+        const { email, password, accountType } = req.body;
+        const user = await User.create({ email, password, accountType });
         res.status(201).json({ success: true, data: user });
       } catch (error) {
         res.status(400).json({ success: false, message: error });
       }
       break;
 
+    case "DELETE":
+      try {
+        const { id } = req.body;
+        const result = await User.deleteOne({ _id: id });
+        if (result.deletedCount === 0) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Could not find user to delete" });
+        }
+        res
+          .status(200)
+          .json({ success: true, message: "User deleted successfully" });
+      } catch (error) {
+        res.status(500).json({
+          success: false,
+          message: "Failed to delete user",
+          error: error.message,
+        });
+      }
+      break;
+
     default:
-      res.setHeader("Allow", ["GET", "POST", "DELETE"]);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(404).json({
+        success: false,
+        message: "METHOD NOT ALLOWED ONLY (GET, POST, DELETE) ALLOWED",
+      });
   }
 }
