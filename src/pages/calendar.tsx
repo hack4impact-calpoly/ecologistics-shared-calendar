@@ -10,6 +10,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
+import Link from "next/link";
 
 interface Event {
   start: Date | string;
@@ -121,6 +122,35 @@ export default function CalendarPage() {
         }}
       >
         <div className="calendar-container">
+          <div style={styles.signoutContainer}>
+            <Link prefetch={false} href="/">
+              <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                style={{
+                  padding: "0.625rem 4.35rem",
+                  height: "100%",
+                  fontSize: "1.143rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  background: "#f7ab74",
+                  borderRadius: "0.75rem",
+                  border: "0px",
+                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                  cursor: "pointer",
+                }}
+              >
+                Logout
+              </button>
+            </Link>
+          </div>
           <style>{calendarStyles}</style>
 
           <FullCalendar

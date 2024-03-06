@@ -24,6 +24,11 @@ export default function ForgotPassword() {
 
   return (
     <Layout>
+      <style jsx>{`
+        input::placeholder {
+          color: grey;
+        }
+      `}</style>
       <div style={styles.container}>
         <form style={styles.formBox} onSubmit={handleSubmit}>
           <h2 style={styles.title}>Forgot Your Password?</h2>
@@ -114,6 +119,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "100%",
     border: "1px solid black",
     borderRadius: "4px",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
   bottomText: {
     marginTop: "1.5625em",
@@ -131,6 +137,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "10px",
     width: "12%",
     cursor: "pointer",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
   statusMessage: {
     fontFamily: "DM Sans",
