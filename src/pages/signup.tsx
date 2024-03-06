@@ -64,6 +64,11 @@ export default function SignUp() {
   */
   return (
     <Layout>
+      <style jsx>{`
+        input::placeholder {
+          color: grey;
+        }
+      `}</style>
       <div style={styles.container}>
         <form style={styles.formBox}>
           <h2 style={styles.title}>Apply For an Account</h2>

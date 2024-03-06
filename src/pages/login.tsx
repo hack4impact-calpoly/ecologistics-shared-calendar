@@ -50,6 +50,11 @@ export default function LoginPage() {
 
   return (
     <Layout>
+      <style jsx>{`
+        input::placeholder {
+          color: grey;
+        }
+      `}</style>
       <div style={styles.container}>
         <form style={styles.formBox} onSubmit={handleSubmit}>
           <h2 style={styles.title}>Login To Your Account</h2>
