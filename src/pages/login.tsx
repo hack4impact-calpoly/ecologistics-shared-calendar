@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 //icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/LockOutlined";
 
 export default function LoginPage() {
-  const router = useRouter(); 
-  const [email, setEmail] = useState(""); 
-  const [password, setPassword] = useState(""); 
- 
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const goToSignUp = () => {
     window.location.href = "/signup";
   };
@@ -87,7 +87,9 @@ export default function LoginPage() {
             {"Login"}
           </button>
 
-          <div style={styles.bottomText}>Forgot Password?</div>
+          <div style={styles.bottomText}>
+            <Link href="/forgot_password">Forgot Password?</Link>
+          </div>
 
           <div style={styles.bottomText}>
             Don&apos;t Have an Account? Apply for one now!

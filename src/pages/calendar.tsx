@@ -123,7 +123,7 @@ export default function CalendarPage() {
       >
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-            <Link prefetch={false} href="/">
+            <Link prefetch={false} href="/login">
               <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
@@ -148,6 +148,34 @@ export default function CalendarPage() {
                 }}
               >
                 Logout
+              </button>
+            </Link>
+            <Link prefetch={false} href="/admin">
+              <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                style={{
+                  padding: "0.625rem 4.35rem",
+                  height: "100%",
+                  fontSize: "1.143rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  background: "#f7ab74",
+                  borderRadius: "0.75rem",
+                  border: "0px",
+                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                  cursor: "pointer",
+                  marginLeft: "1rem",
+                }}
+              >
+                Admin
               </button>
             </Link>
           </div>

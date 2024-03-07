@@ -3,7 +3,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 // eventually connect to data from backend
 const eventData = [
@@ -73,7 +73,7 @@ function Event({ title, location, websiteURL, date, description }: EventProps) {
 
   // Function to navigate to event details
   const navigateToEventDetails = () => {
-    router.push('/eventDetails');
+    router.push("/eventDetails");
   };
 
   return (
@@ -161,6 +161,7 @@ export default function EventBar() {
             border: "0.1rem solid #ccc",
             outline: "none",
             boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
+            marginTop: "70px",
           }}
 
           // Add onChange event handler if you want to capture input
@@ -181,14 +182,15 @@ export default function EventBar() {
 function useEventBarStyles() {
   const styles: { [key: string]: React.CSSProperties } = {
     mainContainer: {
-      height: "100%",
-      margin: "0",
-      gap: "0rem",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "flex-start",
-      overflow: "scroll",
+      overflowY: "auto",
+      maxHeight: "calc(100vh - 200px)",
+      width: "100%",
+      gap: "1rem",
+      padding: "1rem 0",
       boxSizing: "border-box",
     },
 
