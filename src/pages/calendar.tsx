@@ -193,9 +193,7 @@ export default function CalendarPage() {
             ]}
             events={events}
             eventClick={function (info) {
-              alert(
-                "Event: " + info.event.title + "\nTime: " + info.event.start
-              );
+              window.location.href = "/eventDetails";
             }}
             eventColor="#c293ff"
           />

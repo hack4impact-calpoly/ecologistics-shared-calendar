@@ -2,6 +2,9 @@ import React from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
+
+import { useRouter } from 'next/router';
+
 // eventually connect to data from backend
 const eventData = [
   {
@@ -64,9 +67,28 @@ type EventProps = {
 
 function Event({ title, location, websiteURL, date, description }: EventProps) {
   const { styles } = useEventBarStyles();
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const router = useRouter(); // Create a router instance
+
+  // Function to navigate to event details
+  const navigateToEventDetails = () => {
+    router.push('/eventDetails');
+  };
 
   return (
-    <div style={styles.eventContainer}>
+    <div
+      style={{
+        ...styles.eventContainer,
+        cursor: "pointer", // Change cursor to pointer
+        border: isHovered
+          ? "2px solid var(--eco-green)"
+          : "1.5px solid var(--Grey, #989898)", // Change border on hover
+      }}
+      onClick={navigateToEventDetails}
+      onMouseEnter={() => setIsHovered(true)} // Set isHovered to true when mouse enters
+      onMouseLeave={() => setIsHovered(false)} // Set isHovered to false when mouse leaves
+    >
       <div style={styles.headerContainer}>
         <div style={styles.title}>{title}</div>
         <div
