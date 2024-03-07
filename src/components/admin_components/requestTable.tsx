@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Layout from "../components/layout";
+import Layout from "../layout";
 import { DeleteOutline } from "@mui/icons-material";
 
 const ITEMS_PER_PAGE = 11;

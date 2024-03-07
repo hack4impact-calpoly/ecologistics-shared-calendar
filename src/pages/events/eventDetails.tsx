@@ -1,5 +1,5 @@
 import React from "react";
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
 
 export default function EventPage() {
   // You can add state hooks here if you need to manage state

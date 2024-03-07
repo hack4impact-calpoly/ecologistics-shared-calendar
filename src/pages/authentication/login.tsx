@@ -1,25 +1,32 @@
 import React, { useState } from "react";
-import Layout from "../components/layout";
-//import EmailIcon from "@mui/icons-material/Email";
-import axios from "axios";
+import Layout from "../../components/layout";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function ForgotPassword() {
+//icons
+import PersonIcon from "@mui/icons-material/Person";
+import LockIcon from "@mui/icons-material/LockOutlined";
+
+export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleChange = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setEmail(event.target.value);
+  const goToSignUp = () => {
+    window.location.href = "/signup";
   };
 
-  const handleSubmit = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    setSent(true);
-    axios.post("/api/forgot_password", { email: email });
-    setStatusMessage("Instructions have been sent to your email.");
-    // Here, you'd also include the API call to actually send the email
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address.");
+    } else {
+      router.push("/calendar");
+    }
+
+    console.log(email);
+    console.log(password);
   };
 
   return (
@@ -31,47 +38,75 @@ export default function ForgotPassword() {
       `}</style>
       <div style={styles.container}>
         <form style={styles.formBox} onSubmit={handleSubmit}>
-          <h2 style={styles.title}>Forgot Your Password?</h2>
+          <h2 style={styles.title}>Login To Your Account</h2>
           <p style={styles.subtitle}>Organizations & Charities Only</p>
 
           <div className="inputBox" style={styles.inputBox}>
             <label htmlFor="email" style={styles.label}>
               Email Address
             </label>
+
             <div style={styles.inputContainer}>
+              <PersonIcon style={styles.icon}></PersonIcon>
               <input
                 type="email"
                 id="email"
                 placeholder="Enter Your Email Address"
                 style={styles.input}
                 value={email}
-                onChange={handleChange}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Password
+            </label>
+
+            <div style={styles.inputContainer}>
+              <LockIcon style={styles.icon}></LockIcon>
+              <input
+                type="password"
+                id="email"
+                placeholder="Enter Your Password"
+                style={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
           </div>
 
+          <div style={{ paddingTop: "1vw" }}></div>
+
+          <button
+            type="submit"
+            style={{ ...styles.button, ...styles.buttonSent }}
+          >
+            {"Login"}
+          </button>
+
           <div style={styles.bottomText}>
-            Enter your email to reset your password!
+            <Link href="/forgot_password">Forgot Password?</Link>
+          </div>
+
+          <div style={styles.bottomText}>
+            Don&apos;t Have an Account? Apply for one now!
           </div>
 
           <button
             type="submit"
-            style={
-              sent ? { ...styles.button, ...styles.buttonSent } : styles.button
-            }
-            disabled={sent}
+            style={{ ...styles.button, ...styles.buttonSent }}
+            onClick={goToSignUp}
           >
-            {sent ? "Sent" : "Reset Password"}
+            {"Sign Up"}
           </button>
-
-          {statusMessage && <p style={styles.statusMessage}>{statusMessage}</p>}
         </form>
       </div>
     </Layout>
   );
 }
-
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
@@ -102,8 +137,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "center",
   },
   inputBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
     marginTop: "1em",
-    width: "51%",
+    width: "50%",
+    boxSizing: "border-box",
   },
   label: {
     fontFamily: "DM Sans",
@@ -113,13 +152,19 @@ const styles: { [key: string]: React.CSSProperties } = {
   input: {
     fontFamily: "DM Sans",
     padding: "0.3em",
-    paddingLeft: "0.5em",
+    paddingLeft: "1.5em",
     fontSize: "2em",
     color: "black",
     width: "100%",
     border: "1px solid black",
     borderRadius: "4px",
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+  },
+  inputContainer: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
   },
   bottomText: {
     marginTop: "1.5625em",
@@ -145,5 +190,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: "20px",
     fontSize: "1em",
     color: "#28a745",
+  },
+  icon: {
+    fontSize: "200%",
+    transform: "translateY(-50%)",
+    position: "absolute",
+    left: "10px",
+    top: "50%",
+    pointerEvents: "none",
   },
 };

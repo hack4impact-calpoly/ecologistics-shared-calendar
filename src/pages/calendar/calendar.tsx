@@ -1,15 +1,15 @@
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import EventBar from "./eventBar";
+import EventBar from "../../components/eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
-import AddEventPanel from "../components/addEventPanel";
+import AddEventPanel from "../../components/addEventPanel";
 import Link from "next/link";
 
 interface Event {
