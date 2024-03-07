@@ -1,5 +1,6 @@
 import React from "react";
 import Layout from "../components/layout";
+import Login from "./login";
 
 export default function HomePage() {
   // const handleApiCall = async () => {
@@ -21,9 +22,7 @@ export default function HomePage() {
   // };
 
   return (
-    <Layout>
-      Welcome! Click the links above  
-    </Layout>
+    <Login/>
     // code below was in the layout tags
     // <button onClick={handleApiCall}>Test API</button>
     // <button onClick={() => createUser("David", "password")}>
