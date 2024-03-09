@@ -1,5 +1,5 @@
 import Layout from "./layout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 
@@ -8,8 +8,24 @@ interface AddEventPanelProps {
 }
 
 export default function AddEventPanel({ onClose }: AddEventPanelProps) {
-  const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    startDate: "",
+    endDate: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    isVirtual: false,
+    photo: null,
+    link: "",
+  });
+
+  // WARNING: For debugging. Delete before final commit!
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -17,16 +33,22 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
     },
     onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      setPhoto(file);
+      setFormData((prev) => ({ ...prev, photo: file }));
       setImagePreviewUrl(URL.createObjectURL(file));
     },
   });
+
+  const handleLocationChange = (e) => {};
 
   return (
     <div style={styles.container}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
-      <input type="text" style={styles.input} />
+      <input
+        type="text"
+        style={styles.input}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
           <h4 style={styles.inputTitle}>Start Date</h4>
@@ -37,6 +59,9 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
               marginRight: "10px",
               display: "inline-block",
             }}
+            onChange={(e) =>
+              setFormData({ ...formData, startDate: e.target.value })
+            }
           />
           <h4 style={styles.inputTitle}>Start Time</h4>
           <input
@@ -45,6 +70,9 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
               ...styles.input,
               display: "inline-block",
             }}
+            onChange={(e) =>
+              setFormData({ ...formData, startTime: e.target.value })
+            }
           />
         </div>
         <div style={styles.inputContainer}>
@@ -56,6 +84,9 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
               marginRight: "10px",
               display: "inline-block",
             }}
+            onChange={(e) =>
+              setFormData({ ...formData, endDate: e.target.value })
+            }
           />
           <h4 style={styles.inputTitle}>End Time</h4>
           <input
@@ -64,11 +95,19 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
               ...styles.input,
               display: "inline-block",
             }}
+            onChange={(e) =>
+              setFormData({ ...formData, endTime: e.target.value })
+            }
           />
         </div>
       </div>
       <h4 style={styles.inputTitle}>Description</h4>
-      <textarea style={styles.textarea}></textarea>
+      <textarea
+        style={styles.textarea}
+        onChange={(e) => {
+          setFormData({ ...formData, description: e.target.value });
+        }}
+      ></textarea>
       <h4 style={styles.inputTitle}>Location</h4>
       <div style={styles.radioContainer}>
         <label>
@@ -77,6 +116,9 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
             name="location"
             value="virtual"
             style={styles.radioButton}
+            onChange={(e) =>
+              e.target.checked && setFormData({ ...formData, isVirtual: true })
+            }
           />
           Virtual
         </label>
@@ -86,11 +128,21 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
             name="location"
             value="in-person"
             style={styles.radioButton}
+            onChange={(e) =>
+              e.target.checked && setFormData({ ...formData, isVirtual: false })
+            }
           />
           In Person
         </label>
       </div>
-      <input type="text" placeholder="Link" style={styles.input} />
+      <input
+        type="text"
+        placeholder="Link"
+        style={styles.input}
+        onChange={(e) => {
+          setFormData({ ...formData, link: e.target.value });
+        }}
+      />
       <div {...getRootProps()} style={styles.uploadContainer}>
         <input {...getInputProps()} />
         {imagePreviewUrl ? (
@@ -153,7 +205,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
-    overflow: "auto", // Allows scrolling within the textarea if content exceeds its height
+    overflow: "auto",
   },
   radioContainer: {
     display: "flex",
