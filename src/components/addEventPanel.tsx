@@ -2,12 +2,17 @@ import Layout from "./layout";
 import React, { useEffect, useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
+import { Event } from "../pages/calendar";
 
 interface AddEventPanelProps {
   onClose: () => void;
+  addEvent: (event: Event) => void;
 }
 
-export default function AddEventPanel({ onClose }: AddEventPanelProps) {
+export default function AddEventPanel({
+  onClose,
+  addEvent,
+}: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
@@ -27,6 +32,31 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
     console.log(formData);
   }, [formData]);
 
+  const stringToDate = (date: string, time: string): Date => {
+    const [year, month, day] = date.split("-").map(Number);
+    const [hours, minutes] = time.split(":").map(Number);
+
+    return new Date(year, month - 1, day, hours, minutes);
+  };
+
+  const isFormValid = (): boolean => {
+    // TODO
+    return true;
+  };
+
+  const onEventAdd = () => {
+    if (!isFormValid()) return;
+
+    // ID should be assigned based on return from database at some point!
+    const event: Event = {
+      start: stringToDate(formData.startDate, formData.startTime),
+      end: stringToDate(formData.endDate, formData.endTime),
+      title: formData.title,
+      id: Math.random().toString(),
+    };
+    addEvent(event);
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       "image/*": [".jpeg", ".jpg", ".png"],
@@ -37,8 +67,6 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
       setImagePreviewUrl(URL.createObjectURL(file));
     },
   });
-
-  const handleLocationChange = (e) => {};
 
   return (
     <div style={styles.container}>
@@ -167,7 +195,9 @@ export default function AddEventPanel({ onClose }: AddEventPanelProps) {
           </div>
         )}
       </div>
-      <button style={styles.button}>Add Event</button>
+      <button style={styles.button} onClick={onEventAdd}>
+        Add Event
+      </button>
     </div>
   );
 }

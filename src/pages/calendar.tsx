@@ -12,8 +12,9 @@ import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 
-interface Event {
-  start: Date | string;
+export interface Event {
+  start: Date;
+  end: Date;
   title: string;
   id: string;
 }
@@ -28,24 +29,9 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
 
-  const handleSelect = (info: { startStr: string }) => {
-    const eventNamePrompt = prompt("Enter event name");
-    const eventStart = prompt("Enter start time (hh:mm)");
-    var startTime = info.startStr.replace(
-      "00:00:00 GMT-0800 (Pacific Standard Time)",
-      ""
-    );
-    startTime = startTime + " " + eventStart;
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start: new Date(startTime),
-          title: eventNamePrompt,
-          id: Math.random().toString(),
-        },
-      ]);
-    }
+  const addEvent = (event: Event) => {
+    setEvents((prev) => [...prev, event]);
+    console.log(event);
   };
 
   function adjustButtons() {
@@ -214,7 +200,7 @@ export default function CalendarPage() {
             initialView="dayGridMonth"
             nowIndicator={true}
             editable={true}
-            select={handleSelect}
+            select={() => {}}
             selectable={true}
             initialEvents={[
               { title: "nice event", start: new Date(), resourceId: "a" },
@@ -229,7 +215,10 @@ export default function CalendarPage() {
         {!isAddingEvent ? (
           <EventBar />
         ) : (
-          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+          <AddEventPanel
+            onClose={() => setIsAddingEvent(false)}
+            addEvent={addEvent}
+          />
         )}
       </div>
     </Layout>
