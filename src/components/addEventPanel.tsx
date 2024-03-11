@@ -15,7 +15,7 @@ export default function AddEventPanel({
 }: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     title: "",
     startDate: "",
     endDate: "",
@@ -25,7 +25,9 @@ export default function AddEventPanel({
     isVirtual: false,
     photo: null,
     link: "",
-  });
+  };
+
+  const [formData, setFormData] = useState(emptyForm);
 
   // WARNING: For debugging. Delete before final commit!
   useEffect(() => {
@@ -55,6 +57,8 @@ export default function AddEventPanel({
       id: Math.random().toString(),
     };
     addEvent(event);
+    setFormData(emptyForm);
+    setImagePreviewUrl(null);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -76,6 +80,7 @@ export default function AddEventPanel({
         type="text"
         style={styles.input}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        value={formData.title}
       />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -90,6 +95,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
             }
+            value={formData.startDate}
           />
           <h4 style={styles.inputTitle}>Start Time</h4>
           <input
@@ -101,6 +107,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, startTime: e.target.value })
             }
+            value={formData.startTime}
           />
         </div>
         <div style={styles.inputContainer}>
@@ -115,6 +122,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, endDate: e.target.value })
             }
+            value={formData.endDate}
           />
           <h4 style={styles.inputTitle}>End Time</h4>
           <input
@@ -126,6 +134,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, endTime: e.target.value })
             }
+            value={formData.endTime}
           />
         </div>
       </div>
@@ -135,6 +144,7 @@ export default function AddEventPanel({
         onChange={(e) => {
           setFormData({ ...formData, description: e.target.value });
         }}
+        value={formData.description}
       ></textarea>
       <h4 style={styles.inputTitle}>Location</h4>
       <div style={styles.radioContainer}>
@@ -170,6 +180,7 @@ export default function AddEventPanel({
         onChange={(e) => {
           setFormData({ ...formData, link: e.target.value });
         }}
+        value={formData.link}
       />
       <div {...getRootProps()} style={styles.uploadContainer}>
         <input {...getInputProps()} />
