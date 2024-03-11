@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
+import EventRequestPopup from "../components/eventRequestPopup";
 
 export interface Event {
   start: Date;
@@ -28,6 +29,7 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
   const addEvent = (event: Event) => {
     setEvents((prev) => [...prev, event]);
@@ -97,6 +99,9 @@ export default function CalendarPage() {
 
   return (
     <Layout>
+      {isShowingEventPopUp && (
+        <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
+      )}
       <div
         style={{
           display: "flex",
@@ -217,6 +222,7 @@ export default function CalendarPage() {
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
+            onCreate={() => setIsShowingEventPopUp(true)}
             addEvent={addEvent}
           />
         )}

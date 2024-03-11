@@ -6,11 +6,13 @@ import { Event } from "../pages/calendar";
 
 interface AddEventPanelProps {
   onClose: () => void;
+  onCreate: () => void;
   addEvent: (event: Event) => void;
 }
 
 export default function AddEventPanel({
   onClose,
+  onCreate,
   addEvent,
 }: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -57,6 +59,7 @@ export default function AddEventPanel({
       id: Math.random().toString(),
     };
     addEvent(event);
+    onCreate();
     setFormData(emptyForm);
     setImagePreviewUrl(null);
   };
