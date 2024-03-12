@@ -48,8 +48,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "2rem",
   },
   closeButton: {
-    backgroundColor: "black",
-    color: "white",
+    backgroundColor: "#F7AB74",
+    color: "black",
     border: "none",
     padding: "10px 20px",
     textAlign: "center",

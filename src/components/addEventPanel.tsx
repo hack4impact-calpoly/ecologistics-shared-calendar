@@ -263,7 +263,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "10px 15px",
     border: "none",
     borderRadius: "20px",
-    background: "black",
+    background: "#335543",
     color: "white",
     cursor: "pointer",
     display: "block",
