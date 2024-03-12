@@ -33,7 +33,6 @@ export default function CalendarPage() {
 
   const addEvent = (event: Event) => {
     setEvents((prev) => [...prev, event]);
-    console.log(event);
   };
 
   function adjustButtons() {
@@ -53,7 +52,6 @@ export default function CalendarPage() {
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
         addButton.style.height = `${cellHeight * 0.9}px`;
-        console.log(cellHeight);
         addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
       const prevButton = document.querySelector(

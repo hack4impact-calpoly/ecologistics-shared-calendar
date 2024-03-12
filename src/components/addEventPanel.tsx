@@ -31,11 +31,6 @@ export default function AddEventPanel({
 
   const [formData, setFormData] = useState(emptyForm);
 
-  // WARNING: For debugging. Delete before final commit!
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   const stringToDate = (date: string, time: string): Date => {
     const [year, month, day] = date.split("-").map(Number);
     const [hours, minutes] = time.split(":").map(Number);
