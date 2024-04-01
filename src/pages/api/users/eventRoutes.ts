@@ -23,7 +23,15 @@ export default async function handler(
         res.status(404).json({message:"GET Failed.", data:err})
       }
     }
-  
+    else if(req.method==="POST"){
+        try{
+          const {title,description,date,location}=await req.body;
+          const event=await Event.create({title,description,date,location});
+          res.status(201).json({ message: 'Created event.' ,data:event})
+        } catch (err){
+          res.status(400).json({message:"POST Failed.", data:err})
+        }
+    }
     else{
       res.status(404).json({message:"Method Not Allowed", data:null})
     }
