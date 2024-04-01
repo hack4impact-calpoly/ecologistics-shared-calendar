@@ -32,6 +32,15 @@ export default async function handler(
           res.status(400).json({message:"POST Failed.", data:err})
         }
     }
+    else if(req.method==="DELETE"){
+        try{
+          const {id}=await req.body;
+          await Event.findByIdAndDelete({_id: id});
+          res.status(200).json({ message: 'Deleted event.', data:null})
+        } catch (err){
+          res.status(404).json({message:"DELETE Failed.", data:err})
+        }
+    }
     else{
       res.status(404).json({message:"Method Not Allowed", data:null})
     }
