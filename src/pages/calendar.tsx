@@ -20,11 +20,6 @@ export interface Event {
   id: string;
 }
 
-// If FullCalendar provides a type for the event selection info, use that instead
-interface SelectInfo {
-  startStr: string; // Add more properties as needed based on the library's documentation
-}
-
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
