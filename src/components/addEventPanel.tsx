@@ -10,33 +10,43 @@ interface AddEventPanelProps {
   addEvent: (event: Event) => void;
 }
 
+interface AddEventForm {
+  title: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  description: string;
+  isVirtual: boolean;
+  photo: File | null;
+  link: string;
+}
+const emptyForm = {
+  title: "",
+  startDate: "",
+  endDate: "",
+  startTime: "",
+  endTime: "",
+  description: "",
+  isVirtual: false,
+  photo: null,
+  link: "",
+};
+
+const stringToDate = (date: string, time: string): Date => {
+  const [year, month, day] = date.split("-").map(Number);
+  const [hours, minutes] = time.split(":").map(Number);
+
+  return new Date(year, month - 1, day, hours, minutes);
+};
+
 export default function AddEventPanel({
   onClose,
   onCreate,
   addEvent,
 }: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-
-  const emptyForm = {
-    title: "",
-    startDate: "",
-    endDate: "",
-    startTime: "",
-    endTime: "",
-    description: "",
-    isVirtual: false,
-    photo: null,
-    link: "",
-  };
-
-  const [formData, setFormData] = useState(emptyForm);
-
-  const stringToDate = (date: string, time: string): Date => {
-    const [year, month, day] = date.split("-").map(Number);
-    const [hours, minutes] = time.split(":").map(Number);
-
-    return new Date(year, month - 1, day, hours, minutes);
-  };
+  const [formData, setFormData] = useState<AddEventForm>(emptyForm);
 
   const isFormValid = (): boolean => {
     // TODO
@@ -53,6 +63,7 @@ export default function AddEventPanel({
       title: formData.title,
       id: Math.random().toString(),
     };
+
     addEvent(event);
     onCreate();
     setFormData(emptyForm);
@@ -64,9 +75,9 @@ export default function AddEventPanel({
       "image/*": [".jpeg", ".jpg", ".png"],
     },
     onDrop: (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-      setFormData((prev) => ({ ...prev, photo: file }));
-      setImagePreviewUrl(URL.createObjectURL(file));
+      const file = acceptedFiles[0] as File | null; // Will not be null, but TS doesn't know that.
+      setFormData((prev: AddEventForm) => ({ ...prev, photo: file }));
+      setImagePreviewUrl(URL.createObjectURL(file as Blob));
     },
   });
 
@@ -74,6 +85,8 @@ export default function AddEventPanel({
     <div style={styles.container}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
+
+      <h4 style={styles.inputTitle}>Title</h4>
       <input
         type="text"
         style={styles.input}
