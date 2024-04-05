@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { Event } from "../pages/calendar";
+import { set } from "mongoose";
 
 interface AddEventPanelProps {
   onClose: () => void;
@@ -21,6 +22,7 @@ interface AddEventForm {
   photo: File | null;
   link: string;
 }
+
 const emptyForm = {
   title: "",
   startDate: "",
@@ -32,6 +34,15 @@ const emptyForm = {
   photo: null,
   link: "",
 };
+
+interface FormErrors {
+  title: string;
+  dates: string;
+  times: string;
+  description: string;
+  link: string;
+  photo: string;
+}
 
 const stringToDate = (date: string, time: string): Date => {
   const [year, month, day] = date.split("-").map(Number);
@@ -47,16 +58,25 @@ export default function AddEventPanel({
 }: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(emptyForm);
+  const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
 
-  const isFormValid = (): boolean => {
-    // TODO
-    return true;
+  const getFormErrors = (): Partial<FormErrors> => {
+    setFormErrors({});
+
+    const errors = {} as Partial<FormErrors>;
+
+    let start = stringToDate(formData.startDate, formData.startTime);
+    let end = stringToDate(formData.endDate, formData.endTime);
+
+    if (start > end) {
+      errors.dates = "End date must be after start date.";
+    }
+
+    return errors;
   };
 
   const onEventAdd = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isFormValid()) return;
 
     // ID should be assigned based on return from database at some point!
     const event: Event = {
@@ -65,6 +85,12 @@ export default function AddEventPanel({
       title: formData.title,
       id: Math.random().toString(),
     };
+
+    const errors = getFormErrors();
+    if (Object.keys(errors).length !== 0) {
+      setFormErrors(errors);
+      return;
+    }
 
     addEvent(event);
     onCreate();
@@ -87,6 +113,17 @@ export default function AddEventPanel({
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
+
+      {/*Display Form Errors */}
+      {Object.keys(formErrors).length > 0 && (
+        <div style={styles.errorBox}>
+          {Object.entries(formErrors).map(([key, value]: [string, string]) => (
+            <p style={styles.error} key={key}>
+              {value}
+            </p>
+          ))}
+        </div>
+      )}
 
       <h4 style={styles.inputTitle}>Title</h4>
       <input
@@ -141,6 +178,7 @@ export default function AddEventPanel({
             value={formData.endDate}
             required
           />
+
           <h4 style={styles.inputTitle}>End Time</h4>
           <input
             type="time"
@@ -164,6 +202,7 @@ export default function AddEventPanel({
         }}
         value={formData.description}
       ></textarea>
+
       <h4 style={styles.inputTitle}>Location</h4>
       <div style={styles.radioContainer}>
         <label>
@@ -227,6 +266,7 @@ export default function AddEventPanel({
           </div>
         )}
       </div>
+
       <button style={styles.button} type="submit">
         Add Event
       </button>
@@ -271,6 +311,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   radioContainer: {
     display: "flex",
+    marginBottom: "10px",
   },
   radioButton: {
     marginRight: "10px",
@@ -322,5 +363,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: "0",
     margin: "5px",
     cursor: "pointer",
+  },
+  error: {
+    color: "red",
+    marginTop: "5px",
+  },
+  errorBox: {
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    border: "1px solid red",
+    padding: "10px",
+    marginBottom: "10px",
+    borderRadius: "5px",
+    color: "red",
   },
 };
