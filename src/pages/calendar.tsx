@@ -9,6 +9,8 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
+import AddEventPanel from "../components/addEventPanel";
+import Link from "next/link";
 
 interface Event {
   start: Date | string;
@@ -24,6 +26,7 @@ interface SelectInfo {
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
+  const [isAddingEvent, setIsAddingEvent] = useState(false);
 
   const handleSelect = (info: { startStr: string }) => {
     const eventNamePrompt = prompt("Enter event name");
@@ -119,6 +122,63 @@ export default function CalendarPage() {
         }}
       >
         <div className="calendar-container">
+          <div style={styles.signoutContainer}>
+            <Link prefetch={false} href="/login">
+              <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                style={{
+                  padding: "0.625rem 4.35rem",
+                  height: "100%",
+                  fontSize: "1.143rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  background: "#f7ab74",
+                  borderRadius: "0.75rem",
+                  border: "0px",
+                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                  cursor: "pointer",
+                }}
+              >
+                Logout
+              </button>
+            </Link>
+            <Link prefetch={false} href="/admin">
+              <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                style={{
+                  padding: "0.625rem 4.35rem",
+                  height: "100%",
+                  fontSize: "1.143rem",
+                  fontWeight: "500",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  background: "#f7ab74",
+                  borderRadius: "0.75rem",
+                  border: "0px",
+                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                  cursor: "pointer",
+                  marginLeft: "1rem",
+                }}
+              >
+                Admin
+              </button>
+            </Link>
+          </div>
           <style>{calendarStyles}</style>
 
           <FullCalendar
@@ -137,7 +197,7 @@ export default function CalendarPage() {
               AddEvent: {
                 text: "Add Event",
                 click: function () {
-                  alert("clicked");
+                  setIsAddingEvent((prev) => !prev);
                 },
                 hint: "none",
               },
@@ -161,18 +221,24 @@ export default function CalendarPage() {
             ]}
             events={events}
             eventClick={function (info) {
-              alert(
-                "Event: " + info.event.title + "\nTime: " + info.event.start
-              );
+              window.location.href = "/eventDetails";
             }}
             eventColor="#c293ff"
           />
         </div>
-        <EventBar />
+        {!isAddingEvent ? (
+          <EventBar />
+        ) : (
+          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+        )}
       </div>
     </Layout>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  spaced: {},
+};
 
 const calendarStyles = `
   .fc .fc-prev-button, .fc .fc-next-button {

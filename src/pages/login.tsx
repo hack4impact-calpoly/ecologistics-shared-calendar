@@ -1,45 +1,31 @@
 import { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 //icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import React from "react";
 //
 
 export default function LoginPage() {
-  const [email, setEmail] = useState(""); // to update the email the user enters
-  const [password, setPassword] = useState(""); // to update the password the user enters
-  //const [emailError, setEmailError] = useState(""); // to update the error if incorrect email is entered
-  //const [passwordError, setPasswordError] = useState(""); // to update the error if incorrect password is entered
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     // We will implement this later
     // Activated when login button is clicked
 
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    /*
-    // Set initial error values to empty
-    setEmailError("");
-    setPasswordError("");
-
-    // Check if the user has entered both fields correctly
-    if ("" === email) {
-      setEmailError("Please enter your email");
-      return;
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address.");
+    } else {
+      router.push("/calendar");
     }
-
-    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError("Please enter a valid email");
-      return;
-    }
-
-    if ("" === password) {
-      setPasswordError("Please enter a password");
-      return;
-    }
-    */
 
     console.log(email);
     console.log(password);
@@ -47,18 +33,33 @@ export default function LoginPage() {
 
   return (
     <Layout>
-      {/* Main Container */}
-      <div style={styles.mainContainer}>
-        {/* Title Container */}
-        <div
-          style={{
-            ...styles.subContainer,
-            height: "26%",
-            justifyContent: "flex-end",
-          }}
-        >
-          <div style={{ fontSize: "60%", fontWeight: "700" }}>
-            Login To Your Account
+      <style jsx>{`
+        input::placeholder {
+          color: grey;
+        }
+      `}</style>
+      <div style={styles.container}>
+        <form style={styles.formBox} onSubmit={handleSubmit}>
+          <h2 style={styles.title}>Login To Your Account</h2>
+          <p style={styles.subtitle}>Organizations & Charities Only</p>
+
+          <div className="inputBox" style={styles.inputBox}>
+            <label htmlFor="email" style={styles.label}>
+              Email Address
+            </label>
+
+            <div style={styles.inputContainer}>
+              <PersonIcon style={styles.icon}></PersonIcon>
+              <input
+                type="email"
+                id="email"
+                placeholder="Enter Your Email Address"
+                style={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
           </div>
           <div style={{ fontSize: "32%" }}>Organizations & Charities Only</div>
         </div>
@@ -144,16 +145,24 @@ const styles = {
     border: "6px solid black",
     borderRadius: "9px",
   },
-  subContainer: {
+  formBox: {
+    borderRadius: "8px",
+    backgroundColor: "white",
+    width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
-  inputContainer: {
-    display: "flex",
-    flexDirection: "column",
-    height: "26%",
-    width: "73%",
+  title: {
+    fontFamily: "DM Sans",
+    fontSize: "3.75em",
+    textAlign: "center",
+    marginBottom: "-0.5em",
+  },
+  subtitle: {
+    fontFamily: "DM Sans",
+    fontSize: "2em",
+    textAlign: "center",
   },
   inputBox: {
     height: "68%",
@@ -201,19 +210,65 @@ const styles = {
   },
   signupLink: {
     display: "flex",
-    height: "100%",
-    width: "100%",
-    textDecoration: "none",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    marginTop: "1em",
+    width: "50%",
+    boxSizing: "border-box",
   },
-  /*errorLabel: {
-    color: "red",
-    fontSize: "20%",
-  },*/
-  // icons
-  icon: {
-    fontSize: "45%",
+  label: {
+    fontFamily: "DM Sans",
+    fontSize: "1.5625em",
+    marginLeft: "0.2em",
+  },
+  input: {
+    fontFamily: "DM Sans",
+    padding: "0.3em",
+    paddingLeft: "1.5em",
+    fontSize: "2em",
+    color: "black",
+    width: "100%",
+    border: "1px solid black",
+    borderRadius: "4px",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+  },
+  inputContainer: {
     position: "relative",
-    top: "8vh",
-    right: "20vw",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+  },
+  bottomText: {
+    marginTop: "1.5625em",
+    marginBottom: "1.5625em",
+    fontSize: "1em",
+  },
+  button: {
+    fontFamily: "DM Sans",
+    fontSize: "1em",
+    color: "black",
+    paddingTop: "0.7em",
+    paddingBottom: "0.7em",
+    backgroundColor: "#F7AB74",
+    border: "None",
+    borderRadius: "10px",
+    width: "12%",
+    cursor: "pointer",
+    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+  },
+  statusMessage: {
+    fontFamily: "DM Sans",
+    textAlign: "center",
+    marginTop: "20px",
+    fontSize: "1em",
+    color: "#28a745",
+  },
+  icon: {
+    fontSize: "200%",
+    transform: "translateY(-50%)",
+    position: "absolute",
+    left: "10px",
+    top: "50%",
+    pointerEvents: "none",
   },
 };
