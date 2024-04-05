@@ -53,7 +53,9 @@ export default function AddEventPanel({
     return true;
   };
 
-  const onEventAdd = () => {
+  const onEventAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!isFormValid()) return;
 
     // ID should be assigned based on return from database at some point!
@@ -82,7 +84,7 @@ export default function AddEventPanel({
   });
 
   return (
-    <div style={styles.container}>
+    <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
 
@@ -92,6 +94,7 @@ export default function AddEventPanel({
         style={styles.input}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         value={formData.title}
+        required
       />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -107,6 +110,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, startDate: e.target.value })
             }
             value={formData.startDate}
+            required
           />
           <h4 style={styles.inputTitle}>Start Time</h4>
           <input
@@ -119,6 +123,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, startTime: e.target.value })
             }
             value={formData.startTime}
+            required
           />
         </div>
         <div style={styles.inputContainer}>
@@ -134,6 +139,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endDate: e.target.value })
             }
             value={formData.endDate}
+            required
           />
           <h4 style={styles.inputTitle}>End Time</h4>
           <input
@@ -146,6 +152,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endTime: e.target.value })
             }
             value={formData.endTime}
+            required
           />
         </div>
       </div>
@@ -168,6 +175,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               e.target.checked && setFormData({ ...formData, isVirtual: true })
             }
+            required
           />
           Virtual
         </label>
@@ -180,6 +188,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               e.target.checked && setFormData({ ...formData, isVirtual: false })
             }
+            required
           />
           In Person
         </label>
@@ -192,9 +201,10 @@ export default function AddEventPanel({
           setFormData({ ...formData, link: e.target.value });
         }}
         value={formData.link}
+        required
       />
       <div {...getRootProps()} style={styles.uploadContainer}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} required />
         {imagePreviewUrl ? (
           <div>
             <img
@@ -217,10 +227,10 @@ export default function AddEventPanel({
           </div>
         )}
       </div>
-      <button style={styles.button} onClick={onEventAdd}>
+      <button style={styles.button} type="submit">
         Add Event
       </button>
-    </div>
+    </form>
   );
 }
 
