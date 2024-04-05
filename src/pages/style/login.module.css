@@ -175,3 +175,73 @@
     pointer-events: none;
   }
 }
+
+/* IPad Mini - Surface Pro 7 */
+@media (min-height: 1024px) and (min-width: 750px) {
+  .container {
+    min-height: 70vh;
+  }
+
+  .formBox {
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .title {
+    font-size: 3.5em;
+    margin-bottom: -0.5em;
+  }
+
+  .subtitle {
+    font-size: 2em;
+  }
+
+  .inputBox {
+    margin-top: 1em;
+    width: 80%;
+  }
+
+  .label {
+    font-size: 1em;
+    margin-left: 0.2em;
+  }
+
+  .input {
+    padding: 1em;
+    padding-left: 2.5em;
+    font-size: 1em;
+  }
+
+  .inputContainer {
+    width: 100%;
+  }
+
+  .bottomText {
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
+  }
+
+  .button {
+    font-size: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-radius: 10px;
+    width: 20%;
+  }
+
+  .statusMessage {
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #28a745;
+  }
+
+  .icon {
+    font-size: 150%;
+    transform: translateY(-50%);
+    left: 10px;
+    top: 50%;
+  }
+}
