@@ -186,7 +186,7 @@ export default function AddEventPanel({
       </div>
       <input
         type="text"
-        placeholder="Link"
+        placeholder={formData.isVirtual ? "Link" : "Address"}
         style={styles.input}
         onChange={(e) => {
           setFormData({ ...formData, link: e.target.value });
