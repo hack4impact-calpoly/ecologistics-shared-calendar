@@ -110,11 +110,6 @@
     min-height: 70vh;
   }
 
-  .formBox {
-    border-radius: 8px;
-    width: 100%;
-  }
-
   .title {
     font-size: 1.5em;
     margin-bottom: -0.5em;
@@ -182,11 +177,6 @@
     min-height: 70vh;
   }
 
-  .formBox {
-    border-radius: 8px;
-    width: 100%;
-  }
-
   .title {
     font-size: 3.5em;
     margin-bottom: -0.5em;
@@ -240,6 +230,137 @@
 
   .icon {
     font-size: 150%;
+    transform: translateY(-50%);
+    left: 10px;
+    top: 50%;
+  }
+}
+
+/* Surface Duo */
+@media (min-height: 500px) and (max-width: 800px) {
+  .container {
+    min-height: 70vh;
+  }
+
+  .title {
+    font-size: 2.7em;
+    margin-bottom: -0.5em;
+  }
+
+  .subtitle {
+    font-size: 1.5em;
+  }
+
+  .inputBox {
+    margin-top: 1em;
+    width: 80%;
+  }
+
+  .label {
+    font-size: 1em;
+    margin-left: 0.2em;
+  }
+
+  .input {
+    padding: 1em;
+    padding-left: 2.5em;
+    font-size: 1em;
+  }
+
+  .inputContainer {
+    width: 100%;
+  }
+
+  .bottomText {
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
+  }
+
+  .button {
+    font-size: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-radius: 10px;
+    width: 20%;
+  }
+
+  .statusMessage {
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #28a745;
+  }
+
+  .icon {
+    font-size: 150%;
+    transform: translateY(-50%);
+    left: 10px;
+    top: 50%;
+  }
+}
+
+/* Galaxy Fold */
+/* @media (min-height: 250px) and (max-width: 800px) { */
+@media (max-height: 800px) and (max-width: 280px) {
+  .container {
+    min-height: 70vh;
+  }
+
+  .title {
+    font-size: 1.2em;
+    margin-bottom: -0.5em;
+  }
+
+  .subtitle {
+    font-size: 0.7em;
+  }
+
+  .inputBox {
+    margin-top: 0.5em;
+    width: 80%;
+  }
+
+  .label {
+    font-size: 0.5em;
+    margin-left: 0.2em;
+  }
+
+  .input {
+    padding: 0.5em;
+    padding-left: 2.5em;
+    font-size: 0.5em;
+  }
+
+  .inputContainer {
+    width: 100%;
+  }
+
+  .bottomText {
+    margin-top: 1.5625em;
+    margin-bottom: 0.5625em;
+    font-size: 0.5em;
+  }
+
+  .button {
+    font-size: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-radius: 10px;
+    width: 20%;
+  }
+
+  .statusMessage {
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.5em;
+    color: #28a745;
+  }
+
+  .icon {
+    font-size: 60%;
     transform: translateY(-50%);
     left: 10px;
     top: 50%;
