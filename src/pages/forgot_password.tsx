@@ -8,11 +8,13 @@ const ForgotPassword: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (event: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
     setEmail(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (event: { preventDefault: () => void }): void => {
     event.preventDefault();
     setSent(true);
     setIsError(false);

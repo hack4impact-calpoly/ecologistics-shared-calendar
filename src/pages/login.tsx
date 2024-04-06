@@ -1,29 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter, NextRouter } from "next/router";
 import styles from "./style/login.module.css";
-//icons
+// Icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/LockOutlined";
 
-export default function LoginPage() {
-  const router = useRouter();
+const LoginPage: React.FC = () => {
+  const router: NextRouter = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const goToSignUp = () => {
+  const goToSignUp = (): void => {
     router.push("/signup");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     if (!email.includes("@")) {
       alert("Please enter a valid email address.");
-      return;
+    } else {
+      router.push("/calendar");
     }
-    router.push("/calendar");
+
+    console.log(email);
+    console.log(password);
   };
 
   return (
@@ -45,7 +48,9 @@ export default function LoginPage() {
                 placeholder="Enter Your Email Address"
                 className={styles.input}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEmail(e.target.value)
+                }
                 required
               />
             </div>
@@ -63,7 +68,9 @@ export default function LoginPage() {
                 placeholder="Enter Your Password"
                 className={styles.input}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value)
+                }
                 required
               />
             </div>
@@ -81,7 +88,7 @@ export default function LoginPage() {
           </div>
 
           <div className={styles.bottomText}>
-            Don't Have an Account? Apply for one now!
+            Don&apos;t Have an Account? Apply for one now!
           </div>
 
           <button
@@ -94,4 +101,6 @@ export default function LoginPage() {
       </div>
     </Layout>
   );
-}
+};
+
+export default LoginPage;

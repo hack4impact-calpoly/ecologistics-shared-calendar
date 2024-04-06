@@ -14,7 +14,7 @@ export default function SignUp() {
     router.push("/login"); // Use Next.js router for navigation
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
     if (!organization || !email || !password) {
