@@ -87,7 +87,7 @@
 /* IPhone SE - S20 Ultra */
 @media (min-width: 360px) and (max-width: 500px), (max-height: 375px) {
   .container {
-    min-height: 70vh;
+    min-height: 60vh;
   }
 
   .title {
@@ -123,6 +123,51 @@
 
   .button {
     font-size: 0.5em;
+    margin-top: 1em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+  }
+}
+
+/* IPad Mini - Surface Pro 7 */
+@media (min-height: 1024px) and (min-width: 750px) {
+  .container {
+    min-height: 70vh;
+  }
+
+  .title {
+    font-size: 3.8em;
+    margin-bottom: -0.5em;
+  }
+
+  .subtitle {
+    font-size: 2em;
+  }
+
+  .inputBox {
+    margin-top: 0.1em;
+    width: 80%;
+  }
+
+  .label {
+    font-size: 1em;
+  }
+
+  .input {
+    padding: 0.23em;
+    padding-left: 0.5em;
+    font-size: 1em;
+    width: 100%;
+  }
+
+  .bottomText {
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
+  }
+
+  .button {
+    font-size: 1em;
     margin-top: 1em;
     padding-top: 0.7em;
     padding-bottom: 0.7em;
