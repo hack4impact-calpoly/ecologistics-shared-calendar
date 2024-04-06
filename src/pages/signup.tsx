@@ -5,31 +5,41 @@ import { useSignUp } from "@clerk/nextjs";
 
 export default function SignUp() {
     const router = useRouter();
-    const { signUp } = useSignUp();
+    const { signUp, isLoaded, setActive } = useSignUp();
 
     const [organization, setOrganization] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [pendingVerification, setPendingVerification] = useState(false);
+    const [code, setCode] = useState("");
 
     const goToLogin = () => {
         window.location.href = "/login";
     };
 
+    const handleChange = (e) => {
+        // Ensure only numeric input and maximum length of 6 digits
+        const newCode = e.target.value.replace(/\D/g, "").slice(0, 6);
+        setCode(newCode);
+    };
+
+    const handleCodeSubmit = async () => {
+        /*
+        Handles confirmation code submission.
+        */
+        //set session
+        //create user in DB
+    };
+
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
-        if (!organization || !email || !password) {
-            alert("Please fill in all fields.");
-            return;
-        } else if (!email.includes("@")) {
-            alert("Please enter a valid email address.");
+        if (!isLoaded) {
             return;
         }
 
         try {
-            console.log("Registration Info:", email, password, organization);
-            // Call signUp.create to create a new user with Clerk
-            const res = await signUp.create({
+            await signUp.create({
                 emailAddress: email,
                 password: password,
                 unsafeMetadata: {
@@ -37,18 +47,49 @@ export default function SignUp() {
                     role: "pending",
                 },
             });
-            console.log("Mid");
+
+            // send the email.
             const result = await signUp.prepareEmailAddressVerification({
-                strategy: "email_link",
-                redirectUrl:
-                    "https://ecologistics-shared-calendar-glwqmahi3.vercel.app/",
+                strategy: "email_code",
             });
 
-            // Redirect to confirmation page after successful sign-up
-            router.push("/confirmation-page");
-        } catch (error) {
-            console.error("Error signing up:", error);
-            alert("An error occurred. Please try again later.");
+            // change the UI to our pending section.
+            setPendingVerification(true);
+        } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2));
+        }
+    };
+
+    const onPressVerify = async (e) => {
+        /*
+        Verifies confirmation code
+        */
+        e.preventDefault();
+        if (!isLoaded) {
+            return;
+        }
+
+        try {
+            const completeSignUp = await signUp.attemptEmailAddressVerification(
+                {
+                    code,
+                }
+            );
+            if (completeSignUp.status !== "complete") {
+                /*  investigate the response, to see if there was an error
+        or if the user needs to complete more steps.*/
+                console.log(JSON.stringify(completeSignUp, null, 2));
+            }
+            if (completeSignUp.status === "complete") {
+                await setActive({
+                    session: completeSignUp.createdSessionId,
+                });
+                router.push("/confirmation-page");
+
+                // TODO: create user in MONGODB
+            }
+        } catch (err: any) {
+            console.error(JSON.stringify(err, null, 2));
         }
     };
     return (
@@ -59,84 +100,102 @@ export default function SignUp() {
                 }
             `}</style>
             <div style={styles.container}>
-                <form style={styles.formBox} onSubmit={handleSubmit}>
-                    <h2 style={styles.title}>Apply For an Account</h2>
-                    <p style={styles.subtitle}>
-                        Organizations & Charities Only
-                    </p>
+                {!pendingVerification && (
+                    <form style={styles.formBox} onSubmit={handleSubmit}>
+                        <h2 style={styles.title}>Apply For an Account</h2>
+                        <p style={styles.subtitle}>
+                            Organizations & Charities Only
+                        </p>
 
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
-                            Name of Organization
-                        </label>
-                        <div style={styles.inputContainer}>
-                            <input
-                                type="organization"
-                                id="organization"
-                                placeholder="Enter Organization Name"
-                                style={styles.input}
-                                value={organization}
-                                onChange={(e) =>
-                                    setOrganization(e.target.value)
-                                }
-                                required
-                            />
+                        <div className="inputBox" style={styles.inputBox}>
+                            <label htmlFor="email" style={styles.label}>
+                                Name of Organization
+                            </label>
+                            <div style={styles.inputContainer}>
+                                <input
+                                    type="organization"
+                                    id="organization"
+                                    placeholder="Enter Organization Name"
+                                    style={styles.input}
+                                    value={organization}
+                                    onChange={(e) =>
+                                        setOrganization(e.target.value)
+                                    }
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
-                            Email Address
-                        </label>
-                        <div style={styles.inputContainer}>
-                            <input
-                                type="email"
-                                id="email"
-                                placeholder="Enter Your Email Address "
-                                style={styles.input}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+                        <div className="inputBox" style={styles.inputBox}>
+                            <label htmlFor="email" style={styles.label}>
+                                Email Address
+                            </label>
+                            <div style={styles.inputContainer}>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    placeholder="Enter Your Email Address "
+                                    style={styles.input}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
-                            Password
-                        </label>
-                        <div style={styles.inputContainer}>
-                            <input
-                                type="password"
-                                id="password"
-                                placeholder="Enter Your Password"
-                                style={styles.input}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
+                        <div className="inputBox" style={styles.inputBox}>
+                            <label htmlFor="email" style={styles.label}>
+                                Password
+                            </label>
+                            <div style={styles.inputContainer}>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    placeholder="Enter Your Password"
+                                    style={styles.input}
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    required
+                                />
+                            </div>
                         </div>
+
+                        <div style={{ paddingTop: "1vw" }}></div>
+
+                        <button
+                            type="submit"
+                            style={{ ...styles.button, ...styles.buttonSent }}
+                        >
+                            {"Sign Up"}
+                        </button>
+
+                        <div style={styles.bottomText}>
+                            Already Have an Account? Login Here!
+                        </div>
+
+                        <button
+                            type="submit"
+                            style={{ ...styles.button, ...styles.buttonSent }}
+                            onClick={goToLogin}
+                        >
+                            {"Login"}
+                        </button>
+                    </form>
+                )}
+                {pendingVerification && (
+                    <div>
+                        <form>
+                            <input
+                                value={code}
+                                placeholder="Code..."
+                                onChange={(e) => setCode(e.target.value)}
+                            />
+                            <button onClick={onPressVerify}>
+                                Verify Email
+                            </button>
+                        </form>
                     </div>
-
-                    <div style={{ paddingTop: "1vw" }}></div>
-
-                    <button
-                        type="submit"
-                        style={{ ...styles.button, ...styles.buttonSent }}
-                    >
-                        {"Sign Up"}
-                    </button>
-
-                    <div style={styles.bottomText}>
-                        Already Have an Account? Login Here!
-                    </div>
-
-                    <button
-                        type="submit"
-                        style={{ ...styles.button, ...styles.buttonSent }}
-                        onClick={goToLogin}
-                    >
-                        {"Login"}
-                    </button>
-                </form>
+                )}
             </div>
         </Layout>
     );
