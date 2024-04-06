@@ -89,14 +89,22 @@ export default function SignUp() {
             </div>
           </div>
 
-          <button type="submit" className={`${styles.button} ${styles.buttonSent}`}>
+          <button
+            type="submit"
+            className={`${styles.button} ${styles.buttonSent}`}
+          >
             Sign Up
           </button>
 
           <div className={styles.bottomText}>
-            Already Have an Account? <span onClick={goToLogin} style={{cursor: 'pointer', color: 'blue'}}>Login Here!</span>
+            Already Have an Account?{" "}
+            <span
+              onClick={goToLogin}
+              style={{ cursor: "pointer", color: "blue" }}
+            >
+              Login Here!
+            </span>
           </div>
-
         </form>
       </div>
     </Layout>
