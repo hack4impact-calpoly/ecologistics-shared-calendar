@@ -153,14 +153,6 @@
     width: 20%;
   }
 
-  .statusMessage {
-    font-family: "DM Sans", sans-serif;
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1em;
-    color: #28a745;
-  }
-
   .icon {
     font-size: 90%;
     transform: translateY(-50%);
@@ -220,14 +212,6 @@
     width: 20%;
   }
 
-  .statusMessage {
-    font-family: "DM Sans", sans-serif;
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1em;
-    color: #28a745;
-  }
-
   .icon {
     font-size: 150%;
     transform: translateY(-50%);
@@ -285,14 +269,6 @@
     width: 20%;
   }
 
-  .statusMessage {
-    font-family: "DM Sans", sans-serif;
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1em;
-    color: #28a745;
-  }
-
   .icon {
     font-size: 150%;
     transform: translateY(-50%);
@@ -302,7 +278,6 @@
 }
 
 /* Galaxy Fold */
-/* @media (min-height: 250px) and (max-width: 800px) { */
 @media (max-height: 800px) and (max-width: 280px) {
   .container {
     min-height: 70vh;
