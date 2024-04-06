@@ -1,12 +1,11 @@
 import Layout from "../components/layout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { useSignUp, useUser, SignUp } from "@clerk/nextjs";
+import { useSignUp } from "@clerk/nextjs";
 
-export default function Register() {
+export default function SignUp() {
     const router = useRouter();
     const { signUp } = useSignUp();
-    const user = useUser();
 
     const [organization, setOrganization] = useState("");
     const [email, setEmail] = useState("");
@@ -44,10 +43,9 @@ export default function Register() {
                 redirectUrl:
                     "https://ecologistics-shared-calendar-glwqmahi3.vercel.app/",
             });
-            console.log("user:", user);
 
             // Redirect to confirmation page after successful sign-up
-            //router.push("/confirmation-page");
+            router.push("/confirmation-page");
         } catch (error) {
             console.error("Error signing up:", error);
             alert("An error occurred. Please try again later.");

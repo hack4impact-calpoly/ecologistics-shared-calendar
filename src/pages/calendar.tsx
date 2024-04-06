@@ -11,233 +11,264 @@ import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
+import { useClerk } from "@clerk/clerk-react";
+import { useRouter } from "next/navigation";
 
 interface Event {
-  start: Date | string;
-  title: string;
-  id: string;
+    start: Date | string;
+    title: string;
+    id: string;
 }
 
 // If FullCalendar provides a type for the event selection info, use that instead
 interface SelectInfo {
-  startStr: string; // Add more properties as needed based on the library's documentation
+    startStr: string; // Add more properties as needed based on the library's documentation
 }
 
 export default function CalendarPage() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [resize, setResize] = useState(false);
-  const [isAddingEvent, setIsAddingEvent] = useState(false);
+    const [events, setEvents] = useState<Event[]>([]);
+    const [resize, setResize] = useState(false);
+    const [isAddingEvent, setIsAddingEvent] = useState(false);
+    const { signOut } = useClerk();
+    const router = useRouter();
 
-  const handleSelect = (info: { startStr: string }) => {
-    const eventNamePrompt = prompt("Enter event name");
-    const eventStart = prompt("Enter start time (hh:mm)");
-    var startTime = info.startStr.replace(
-      "00:00:00 GMT-0800 (Pacific Standard Time)",
-      ""
-    );
-    startTime = startTime + " " + eventStart;
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start: new Date(startTime),
-          title: eventNamePrompt,
-          id: Math.random().toString(),
-        },
-      ]);
-    }
-  };
-
-  function adjustButtons() {
-    const gridCell = document.querySelector(".fc-daygrid-day");
-    const headerCell = document.querySelector(".fc-col-header-cell");
-
-    if (gridCell) {
-      const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement;
-      const headerCell = document.querySelector(
-        ".fc-col-header-cell"
-      ) as HTMLElement;
-      const cellWidth = gridCell.offsetWidth * 0.95;
-      const cellHeight = headerCell.offsetHeight * 1.5;
-      const addButton = document.querySelector(
-        ".fc-AddEvent-button"
-      ) as HTMLElement;
-      if (addButton) {
-        addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 0.9}px`;
-        console.log(cellHeight);
-        addButton.style.fontSize = `${cellHeight * 0.4}px`;
-      }
-      const prevButton = document.querySelector(
-        ".fc-prev-button"
-      ) as HTMLElement;
-      const nextButton = document.querySelector(
-        ".fc-next-button"
-      ) as HTMLElement;
-      if (prevButton && nextButton) {
-        prevButton.style.width = `${cellHeight * 0.9}px`;
-        nextButton.style.width = `${cellHeight * 0.9}px`;
-        prevButton.style.height = `${cellHeight * 0.9}px`;
-        nextButton.style.height = `${cellHeight * 0.9}px`;
-      }
-    }
-  }
-
-  function setTitleFontSize() {
-    const gridCells = document.querySelectorAll(".fc-daygrid-day");
-    const titleElement = document.querySelector(
-      ".fc-toolbar-title"
-    ) as HTMLElement;
-
-    if (gridCells.length > 0 && titleElement) {
-      const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
-      const totalWidth = cellWidth * 2.9;
-
-      titleElement.style.fontSize = `${totalWidth / 9.5}px`;
-      titleElement.style.width = `${totalWidth}px`;
-    }
-  }
-
-  useEffect(() => {
-    adjustButtons();
-    setTitleFontSize();
-    window.addEventListener("resize", adjustButtons);
-    window.addEventListener("resize", setTitleFontSize);
-    return () => {
-      window.removeEventListener("resize", adjustButtons);
-      window.removeEventListener("resize", setTitleFontSize);
+    const handleLogout = async () => {
+        try {
+            // Call signOut function to log out the current user
+            await signOut();
+            // Redirect to a different page after logout if needed
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
     };
-  }, [resize]);
 
-  return (
-    <Layout>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          padding: "0px",
-          margin: "0px",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <div className="calendar-container">
-          <div style={styles.signoutContainer}>
-            <Link prefetch={false} href="/login">
-              <button
-                onMouseOver={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#e69153")
-                }
-                onMouseOut={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#f7ab74")
-                }
-                style={{
-                  padding: "0.625rem 4.35rem",
-                  height: "100%",
-                  fontSize: "1.143rem",
-                  fontWeight: "500",
-                  textDecoration: "none",
-                  textAlign: "center",
-                  background: "#f7ab74",
-                  borderRadius: "0.75rem",
-                  border: "0px",
-                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                  cursor: "pointer",
-                }}
-              >
-                Logout
-              </button>
-            </Link>
-            <Link prefetch={false} href="/admin">
-              <button
-                onMouseOver={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#e69153")
-                }
-                onMouseOut={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#f7ab74")
-                }
-                style={{
-                  padding: "0.625rem 4.35rem",
-                  height: "100%",
-                  fontSize: "1.143rem",
-                  fontWeight: "500",
-                  textDecoration: "none",
-                  textAlign: "center",
-                  background: "#f7ab74",
-                  borderRadius: "0.75rem",
-                  border: "0px",
-                  boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                  cursor: "pointer",
-                  marginLeft: "1rem",
-                }}
-              >
-                Admin
-              </button>
-            </Link>
-          </div>
-          <style>{calendarStyles}</style>
-
-          <FullCalendar
-            themeSystem="bootstrap5"
-            plugins={[
-              resourceTimelinePlugin,
-              dayGridPlugin,
-              interactionPlugin,
-              timeGridPlugin,
-              bootstrap5Plugin,
-            ]}
-            windowResize={function () {
-              setResize(!resize);
-            }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
+    const handleSelect = (info: { startStr: string }) => {
+        const eventNamePrompt = prompt("Enter event name");
+        const eventStart = prompt("Enter start time (hh:mm)");
+        var startTime = info.startStr.replace(
+            "00:00:00 GMT-0800 (Pacific Standard Time)",
+            ""
+        );
+        startTime = startTime + " " + eventStart;
+        if (eventNamePrompt) {
+            setEvents([
+                ...events,
+                {
+                    start: new Date(startTime),
+                    title: eventNamePrompt,
+                    id: Math.random().toString(),
                 },
-                hint: "none",
-              },
-            }}
-            headerToolbar={{
-              left: "",
-              center: "prev title next",
-              right: "AddEvent",
-            }}
-            buttonIcons={{
-              prev: "arrow-left",
-              next: "arrow-right",
-            }}
-            initialView="dayGridMonth"
-            nowIndicator={true}
-            editable={true}
-            select={handleSelect}
-            selectable={true}
-            initialEvents={[
-              { title: "nice event", start: new Date(), resourceId: "a" },
-            ]}
-            events={events}
-            eventClick={function (info) {
-              window.location.href = "/eventDetails";
-            }}
-            eventColor="#c293ff"
-          />
-        </div>
-        {!isAddingEvent ? (
-          <EventBar />
-        ) : (
-          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
-        )}
-      </div>
-    </Layout>
-  );
+            ]);
+        }
+    };
+
+    function adjustButtons() {
+        const gridCell = document.querySelector(".fc-daygrid-day");
+        const headerCell = document.querySelector(".fc-col-header-cell");
+
+        if (gridCell) {
+            const gridCell = document.querySelector(
+                ".fc-daygrid-day"
+            ) as HTMLElement;
+            const headerCell = document.querySelector(
+                ".fc-col-header-cell"
+            ) as HTMLElement;
+            const cellWidth = gridCell.offsetWidth * 0.95;
+            const cellHeight = headerCell.offsetHeight * 1.5;
+            const addButton = document.querySelector(
+                ".fc-AddEvent-button"
+            ) as HTMLElement;
+            if (addButton) {
+                addButton.style.width = `${cellWidth}px`;
+                addButton.style.height = `${cellHeight * 0.9}px`;
+                console.log(cellHeight);
+                addButton.style.fontSize = `${cellHeight * 0.4}px`;
+            }
+            const prevButton = document.querySelector(
+                ".fc-prev-button"
+            ) as HTMLElement;
+            const nextButton = document.querySelector(
+                ".fc-next-button"
+            ) as HTMLElement;
+            if (prevButton && nextButton) {
+                prevButton.style.width = `${cellHeight * 0.9}px`;
+                nextButton.style.width = `${cellHeight * 0.9}px`;
+                prevButton.style.height = `${cellHeight * 0.9}px`;
+                nextButton.style.height = `${cellHeight * 0.9}px`;
+            }
+        }
+    }
+
+    function setTitleFontSize() {
+        const gridCells = document.querySelectorAll(".fc-daygrid-day");
+        const titleElement = document.querySelector(
+            ".fc-toolbar-title"
+        ) as HTMLElement;
+
+        if (gridCells.length > 0 && titleElement) {
+            const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
+            const totalWidth = cellWidth * 2.9;
+
+            titleElement.style.fontSize = `${totalWidth / 9.5}px`;
+            titleElement.style.width = `${totalWidth}px`;
+        }
+    }
+
+    useEffect(() => {
+        adjustButtons();
+        setTitleFontSize();
+        window.addEventListener("resize", adjustButtons);
+        window.addEventListener("resize", setTitleFontSize);
+        return () => {
+            window.removeEventListener("resize", adjustButtons);
+            window.removeEventListener("resize", setTitleFontSize);
+        };
+    }, [resize]);
+
+    return (
+        <Layout>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "start",
+                    padding: "0px",
+                    margin: "0px",
+                    whiteSpace: "nowrap",
+                }}
+            >
+                <div className="calendar-container">
+                    <div style={styles.signoutContainer}>
+                        <Link
+                            prefetch={false}
+                            href="/login"
+                            onClick={() => signOut(() => router.push("/"))}
+                        >
+                            <button
+                                onMouseOver={(e) =>
+                                    ((
+                                        e.target as HTMLButtonElement
+                                    ).style.backgroundColor = "#e69153")
+                                }
+                                onMouseOut={(e) =>
+                                    ((
+                                        e.target as HTMLButtonElement
+                                    ).style.backgroundColor = "#f7ab74")
+                                }
+                                style={{
+                                    padding: "0.625rem 4.35rem",
+                                    height: "100%",
+                                    fontSize: "1.143rem",
+                                    fontWeight: "500",
+                                    textDecoration: "none",
+                                    textAlign: "center",
+                                    background: "#f7ab74",
+                                    borderRadius: "0.75rem",
+                                    border: "0px",
+                                    boxShadow:
+                                        "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Logout
+                            </button>
+                        </Link>
+                        <Link prefetch={false} href="/admin">
+                            <button
+                                onMouseOver={(e) =>
+                                    ((
+                                        e.target as HTMLButtonElement
+                                    ).style.backgroundColor = "#e69153")
+                                }
+                                onMouseOut={(e) =>
+                                    ((
+                                        e.target as HTMLButtonElement
+                                    ).style.backgroundColor = "#f7ab74")
+                                }
+                                style={{
+                                    padding: "0.625rem 4.35rem",
+                                    height: "100%",
+                                    fontSize: "1.143rem",
+                                    fontWeight: "500",
+                                    textDecoration: "none",
+                                    textAlign: "center",
+                                    background: "#f7ab74",
+                                    borderRadius: "0.75rem",
+                                    border: "0px",
+                                    boxShadow:
+                                        "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
+                                    cursor: "pointer",
+                                    marginLeft: "1rem",
+                                }}
+                            >
+                                Admin
+                            </button>
+                        </Link>
+                    </div>
+                    <style>{calendarStyles}</style>
+
+                    <FullCalendar
+                        themeSystem="bootstrap5"
+                        plugins={[
+                            resourceTimelinePlugin,
+                            dayGridPlugin,
+                            interactionPlugin,
+                            timeGridPlugin,
+                            bootstrap5Plugin,
+                        ]}
+                        windowResize={function () {
+                            setResize(!resize);
+                        }}
+                        customButtons={{
+                            AddEvent: {
+                                text: "Add Event",
+                                click: function () {
+                                    setIsAddingEvent((prev) => !prev);
+                                },
+                                hint: "none",
+                            },
+                        }}
+                        headerToolbar={{
+                            left: "",
+                            center: "prev title next",
+                            right: "AddEvent",
+                        }}
+                        buttonIcons={{
+                            prev: "arrow-left",
+                            next: "arrow-right",
+                        }}
+                        initialView="dayGridMonth"
+                        nowIndicator={true}
+                        editable={true}
+                        select={handleSelect}
+                        selectable={true}
+                        initialEvents={[
+                            {
+                                title: "nice event",
+                                start: new Date(),
+                                resourceId: "a",
+                            },
+                        ]}
+                        events={events}
+                        eventClick={function (info) {
+                            window.location.href = "/eventDetails";
+                        }}
+                        eventColor="#c293ff"
+                    />
+                </div>
+                {!isAddingEvent ? (
+                    <EventBar />
+                ) : (
+                    <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+                )}
+            </div>
+        </Layout>
+    );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  spaced: {},
+    spaced: {},
 };
 
 const calendarStyles = `
