@@ -40,11 +40,14 @@ export default function LoginPage() {
 
             //create session
             if (result.status === "complete") {
-                await setActive({ session: result.createdSessionId });
-                console.log("sesssion created");
-
-                router.push("/calendar");
-                //failed to login
+                await setActive({
+                    session: result.createdSessionId,
+                });
+                //redirect based on role
+                const role = session.user.unsafeMetadata.role;
+                if (role === "pending") router.push("/confirmation-page");
+                else if (role === "admin" || role === "user")
+                    router.push("/calendar");
             } else {
                 console.log(result);
             }
