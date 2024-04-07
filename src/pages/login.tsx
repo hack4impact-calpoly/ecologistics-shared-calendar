@@ -52,7 +52,7 @@ export default function LoginPage() {
                 console.log(result);
             }
         } catch (err: any) {
-            console.error("error", err.errors[0].longMessage);
+            console.error(err);
         }
     };
 

@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import Layout from "../components/layout";
 //import EmailIcon from "@mui/icons-material/Email";
 import axios from "axios";
+import { useRouter } from "next/router";
+import { useSignIn, useAuth } from "@clerk/nextjs";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [sent, setSent] = useState(false);
-    const [statusMessage, setStatusMessage] = useState("");
 
     const handleChange = (event: {
         target: { value: React.SetStateAction<string> };
@@ -14,13 +15,72 @@ export default function ForgotPassword() {
         setEmail(event.target.value);
     };
 
-    const handleSubmit = (event: { preventDefault: () => void }) => {
-        event.preventDefault();
-        setSent(true);
-        axios.post("/api/forgot-password", { email: email });
-        setStatusMessage("Instructions have been sent to your email.");
-        // Here, you'd also include the API call to actually send the email
-    };
+    const [password, setPassword] = useState("");
+    const [code, setCode] = useState("");
+    const [successfulCreation, setSuccessfulCreation] = useState(false);
+    const [secondFactor, setSecondFactor] = useState(false);
+    const [error, setError] = useState("");
+    const router = useRouter();
+    const { isSignedIn } = useAuth();
+    const { isLoaded, signIn, setActive } = useSignIn();
+
+    if (!isLoaded) {
+        return null;
+    }
+
+    // If the user is already signed in,
+    // redirect them to the home page
+    if (isSignedIn) {
+        router.push("/");
+    }
+
+    // Send the password reset code to the user's email
+    async function create(e: React.FormEvent) {
+        e.preventDefault();
+        await signIn
+            ?.create({
+                strategy: "reset_password_email_code",
+                identifier: email,
+            })
+            .then((_) => {
+                setSuccessfulCreation(true);
+                setError("");
+            })
+            .catch((err) => {
+                console.error("error", err.errors[0].longMessage);
+                setError(err.errors[0].longMessage);
+            });
+    }
+    // Reset the user's password.
+    // Upon successful reset, the user will be
+    // signed in and redirected to the home page
+    async function reset(e: React.FormEvent) {
+        e.preventDefault();
+        await signIn
+            ?.attemptFirstFactor({
+                strategy: "reset_password_email_code",
+                code,
+                password,
+            })
+            .then((result) => {
+                // Check if 2FA is required
+                if (result.status === "needs_second_factor") {
+                    setSecondFactor(true);
+                    setError("");
+                } else if (result.status === "complete") {
+                    // Set the active session to
+                    // the newly created session (user is now signed in)
+                    setActive({ session: result.createdSessionId });
+                    setError("");
+                } else {
+                    console.log(result);
+                }
+            })
+            .catch((err) => {
+                console.error("error", err.errors[0].longMessage);
+                setError(err.errors[0].longMessage);
+            });
+    }
 
     return (
         <Layout>
@@ -29,48 +89,82 @@ export default function ForgotPassword() {
                     color: grey;
                 }
             `}</style>
+
             <div style={styles.container}>
-                <form style={styles.formBox} onSubmit={handleSubmit}>
-                    <h2 style={styles.title}>Forgot Your Password?</h2>
-                    <p style={styles.subtitle}>
-                        Organizations & Charities Only
-                    </p>
+                <h2 style={styles.title}>Forgot Your Password?</h2>
+                <p style={styles.subtitle}>Organizations & Charities Only</p>
 
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
-                            Email Address
-                        </label>
-                        <div style={styles.inputContainer}>
-                            <input
-                                type="email"
-                                id="email"
-                                placeholder="Enter Your Email Address"
-                                style={styles.input}
-                                value={email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
+                <form
+                    style={styles.formBox}
+                    onSubmit={!successfulCreation ? create : reset}
+                >
+                    {!successfulCreation && (
+                        <>
+                            <div className="inputBox" style={styles.inputBox}>
+                                <label htmlFor="email" style={styles.label}>
+                                    Email Address
+                                </label>
+                                <div style={styles.inputContainer}>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        placeholder="Enter Your Email Address"
+                                        style={styles.input}
+                                        value={email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                    <div style={styles.bottomText}>
-                        Enter your email to reset your password!
-                    </div>
+                            <div style={styles.bottomText}>
+                                Enter your email to reset your password!
+                            </div>
 
-                    <button
-                        type="submit"
-                        style={
-                            sent
-                                ? { ...styles.button, ...styles.buttonSent }
-                                : styles.button
-                        }
-                        disabled={sent}
-                    >
-                        {sent ? "Sent" : "Reset Password"}
-                    </button>
-
-                    {statusMessage && (
-                        <p style={styles.statusMessage}>{statusMessage}</p>
+                            <button
+                                type="submit"
+                                style={
+                                    sent
+                                        ? {
+                                              ...styles.button,
+                                              ...styles.buttonSent,
+                                          }
+                                        : styles.button
+                                }
+                                disabled={sent}
+                            >
+                                {sent ? "Sent" : "Reset Password"}
+                            </button>
+                        </>
+                    )}
+                    {successfulCreation && (
+                        <>
+                            <div className="inputBox" style={styles.inputBox}>
+                                <label htmlFor="password" style={styles.label}>
+                                    Enter your new password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    style={styles.input}
+                                />
+                                <label htmlFor="code" style={styles.label}>
+                                    Enter the password reset code that was sent
+                                    to your email
+                                </label>
+                                <input
+                                    type="text"
+                                    value={code}
+                                    onChange={(e) => setCode(e.target.value)}
+                                    style={styles.input}
+                                />
+                            </div>
+                            <button style={styles.button}>Reset</button>
+                            {error && <p>{error}</p>}
+                        </>
                     )}
                 </form>
             </div>
