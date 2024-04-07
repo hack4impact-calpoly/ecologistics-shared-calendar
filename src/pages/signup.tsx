@@ -2,6 +2,7 @@ import Layout from "../components/layout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useSignUp } from "@clerk/nextjs";
+import axios from "axios";
 
 export default function SignUp() {
     const router = useRouter();
@@ -21,14 +22,6 @@ export default function SignUp() {
         // Ensure only numeric input and maximum length of 6 digits
         const newCode = e.target.value.replace(/\D/g, "").slice(0, 6);
         setCode(newCode);
-    };
-
-    const handleCodeSubmit = async () => {
-        /*
-        Handles confirmation code submission.
-        */
-        //set session
-        //create user in DB
     };
 
     const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -84,7 +77,15 @@ export default function SignUp() {
                 await setActive({
                     session: completeSignUp.createdSessionId,
                 });
-                router.push("/confirmation-page");
+                console.log("session made");
+                //create user in DB
+                await axios.post("/api/userRoutes", {
+                    email: email,
+                    role: "pending",
+                    organization: organization,
+                });
+
+                await router.push("/confirmation-page");
 
                 // TODO: create user in MONGODB
             }
