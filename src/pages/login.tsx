@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSignIn, useSession, useUser } from "@clerk/nextjs";
+import { useSignIn, useSession } from "@clerk/nextjs";
 
 //icons
 import PersonIcon from "@mui/icons-material/Person";
@@ -13,7 +13,7 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { signIn, setActive } = useSignIn();
-    const { user } = useUser();
+    const { session } = useSession();
 
     const goToSignUp = () => {
         window.location.href = "/signup";
@@ -27,6 +27,11 @@ export default function LoginPage() {
             return;
         }
         try {
+            //delete previous session if user was alread logged in
+            if (session) {
+                await session.end();
+            }
+
             //sign in to clerk
             const result = await signIn.create({
                 identifier: email,

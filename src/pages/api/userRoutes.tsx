@@ -30,28 +30,10 @@ export default async function handler(
 
         case "POST":
             try {
-                const { userId, sessionClaims } = getAuth(req);
-                console.log("fields", userId, sessionClaims);
-
-                const email = sessionClaims.email;
-                const metadata = sessionClaims.unsafe_metadata as UserMetadata;
-                if (
-                    !metadata ||
-                    !("role" in metadata) ||
-                    !("organization" in metadata)
-                ) {
-                    return res.status(400).json({
-                        success: false,
-                        message: "Missing or invalid session metadata",
-                    });
-                }
-                const { role, organization } = metadata;
+                const { userId } = getAuth(req);
 
                 const user = await User.create({
                     clerkId: userId,
-                    email,
-                    role,
-                    organization,
                 });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {

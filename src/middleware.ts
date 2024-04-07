@@ -1,47 +1,47 @@
 import { authMiddleware } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+interface UserMetadata {
+    role: string;
+    organization: string;
+}
 
 export default authMiddleware({
-    publicRoutes: [
-        "/signup",
-        "/login",
-        "/confirmation_page",
-        "/forgot_password",
-    ],
-    afterAuth(auth, req, evt) {
-        const userRole = auth.user?.unsafeMetadata?.role;
-        console.log(userRole);
-        const protectedRoutes = {
-            admin: ["/admin"],
-            user: ["/calendar", "/eventDetails", "/eventBar"],
+    async afterAuth(auth, req: NextRequest) {
+        // Define public routes
+        const publicRoutes = ["/", "/login", "/signup", "/forgot-password"];
+
+        // Define route-specific permissions
+        const routePermissions: { [key: string]: string[] } = {
+            "/admin": ["admin"],
+            "/eventDetails": ["admin", "user"],
+            "/eventBar": ["admin", "user"],
+            "/calendar": ["admin", "user"],
+            "/confirmation-page": ["pending"],
         };
 
-        if (!auth.userId && !auth.isPublicRoute) {
-            // Redirect unauthenticated users to the login page
-            const loginUrl = new URL("/login", req.url);
-            return NextResponse.redirect(loginUrl.href);
+        // Check if the current route is public
+        const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
+
+        // Check if the user is authenticated
+        if (!auth.userId && !isPublicRoute) {
+            // Redirect unauthenticated users to sign-in page
+            const url = new URL("/login", req.url);
+            return NextResponse.redirect(url);
         }
 
-        // Allow access to public routes for unauthenticated users
-        if (auth.isPublicRoute) {
-            return NextResponse.next();
+        // Check if the user has access to the current route
+        const requiredRoles = routePermissions[req.nextUrl.pathname];
+        const metadata = auth?.sessionClaims?.unsafe_metadata as UserMetadata;
+        const role = metadata?.role;
+        if (requiredRoles && !requiredRoles.includes(role)) {
+            // Redirect users without the required role to a forbidden page or homepage
+            const url = new URL("/login", req.url);
+            return NextResponse.redirect(url);
         }
 
-        if (userRole === "admin" && !protectedRoutes.admin.includes(req.url)) {
-            // Redirect admin users to admin routes only
-            const adminUrl = new URL("/admin", req.url);
-            return NextResponse.redirect(adminUrl.href);
-        } else if (
-            userRole === "user" &&
-            !protectedRoutes.user.includes(req.url)
-        ) {
-            // Redirect user to specific routes for users only
-            const calendarUrl = new URL("/calendar", req.url);
-            return NextResponse.redirect(calendarUrl.href);
-        } else {
-            // Allow access to routes based on role
-            return NextResponse.next();
-        }
+        // Allow access to the requested route
+        return NextResponse.next();
     },
 });
 

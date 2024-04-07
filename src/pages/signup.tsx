@@ -1,12 +1,13 @@
 import Layout from "../components/layout";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { useSignUp } from "@clerk/nextjs";
+import { useSignUp, useSession } from "@clerk/nextjs";
 import axios from "axios";
 
 export default function SignUp() {
     const router = useRouter();
     const { signUp, isLoaded, setActive } = useSignUp();
+    const { session } = useSession();
 
     const [organization, setOrganization] = useState("");
     const [email, setEmail] = useState("");
@@ -32,6 +33,11 @@ export default function SignUp() {
         }
 
         try {
+            //delete previous session if user was alread logged in
+            if (session) {
+                await session.end();
+            }
+
             await signUp.create({
                 emailAddress: email,
                 password: password,
@@ -195,6 +201,9 @@ export default function SignUp() {
                                 Verify Email
                             </button>
                         </form>
+                        <p>
+                            Enter 6 digit code sent to email address: {email}.
+                        </p>
                     </div>
                 )}
             </div>
