@@ -19,12 +19,6 @@ export default function SignUp() {
         window.location.href = "/login";
     };
 
-    const handleChange = (e) => {
-        // Ensure only numeric input and maximum length of 6 digits
-        const newCode = e.target.value.replace(/\D/g, "").slice(0, 6);
-        setCode(newCode);
-    };
-
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
@@ -59,7 +53,7 @@ export default function SignUp() {
         }
     };
 
-    const onPressVerify = async (e) => {
+    const onPressVerify = async (e: any) => {
         /*
         Verifies confirmation code
         */

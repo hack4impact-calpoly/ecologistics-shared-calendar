@@ -23,7 +23,7 @@ export default async function handler(
             } catch (error) {
                 res.status(400).json({
                     success: false,
-                    message: error.message,
+                    message: error,
                 });
             }
             break;
@@ -39,7 +39,7 @@ export default async function handler(
             } catch (error) {
                 res.status(400).json({
                     success: false,
-                    message: error.message,
+                    message: error,
                 });
             }
             break;
@@ -62,7 +62,7 @@ export default async function handler(
                 res.status(500).json({
                     success: false,
                     message: "Failed to delete user",
-                    error: error.message,
+                    error: error,
                 });
             }
             break;

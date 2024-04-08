@@ -12,8 +12,12 @@ export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { signIn, setActive } = useSignIn();
+    const { isLoaded, signIn, setActive } = useSignIn();
     const { session } = useSession();
+
+    if (!isLoaded) {
+        return null;
+    }
 
     const goToSignUp = () => {
         window.location.href = "/signup";
@@ -44,7 +48,7 @@ export default function LoginPage() {
                     session: result.createdSessionId,
                 });
                 //redirect based on role
-                const role = session.user.unsafeMetadata.role;
+                const role = session?.user?.unsafeMetadata?.role;
                 if (role === "pending") router.push("/confirmation-page");
                 else if (role === "admin" || role === "user")
                     router.push("/calendar");
