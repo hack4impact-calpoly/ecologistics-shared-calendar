@@ -66,21 +66,27 @@ export default function AddEventPanel({
 
     const fieldsToCheck = [
       { field: "title", error: "Title is required." },
-      { field: "startDate", error: "Start date is required." },
-      { field: "startTime", error: "Start time is required." },
-      { field: "endDate", error: "End date is required." },
-      { field: "endTime", error: "End time is required." },
+      { field: "dates", error: "Start date is required." },
+      { field: "dates", error: "Start time is required." },
+      { field: "dates", error: "End date is required." },
+      { field: "dates", error: "End time is required." },
       { field: "description", error: "Description is required." },
       { field: "location", error: "Link or address is required." },
       { field: "photo", error: "Photo is required.", isFile: true },
     ];
 
+    const fieldKeyToErrorKey = (field: string) => {
+      if (field.includes("Date") || field.includes("Time")) return "dates";
+      return field;
+    };
+
     fieldsToCheck.forEach(({ field, error, isFile }) => {
+      const key = field as keyof typeof formData;
       if (
-        (isFile && formData[field] === null) ||
-        (!isFile && formData[field] === "")
+        (isFile && formData[key] === null) ||
+        (!isFile && formData[key] === "")
       ) {
-        errors[field] = error;
+        errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
       }
     });
 
@@ -117,7 +123,6 @@ export default function AddEventPanel({
       endRecur: stringToDate(formData.endDate, formData.endTime),
       title: formData.title,
       id: Math.random().toString(),
-      display: "block",
     };
     const errors = getFormErrors();
     if (Object.keys(errors).length !== 0) {
