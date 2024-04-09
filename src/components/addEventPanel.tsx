@@ -4,6 +4,7 @@ import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { Event } from "../pages/calendar";
 import { set } from "mongoose";
+import { get } from "http";
 
 interface AddEventPanelProps {
   onClose: () => void;
@@ -20,7 +21,7 @@ interface AddEventForm {
   description: string;
   isVirtual: boolean;
   photo: File | null;
-  link: string;
+  location: string;
 }
 
 const emptyForm = {
@@ -32,7 +33,7 @@ const emptyForm = {
   description: "",
   isVirtual: false,
   photo: null,
-  link: "",
+  location: "",
 };
 
 interface FormErrors {
@@ -40,7 +41,7 @@ interface FormErrors {
   dates: string;
   times: string;
   description: string;
-  link: string;
+  location: string;
   photo: string;
 }
 
@@ -60,16 +61,48 @@ export default function AddEventPanel({
   const [formData, setFormData] = useState<AddEventForm>(emptyForm);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
 
+  const getErrorsForEmptyFields = (): Partial<FormErrors> => {
+    const errors = {} as Partial<FormErrors>;
+
+    const fieldsToCheck = [
+      { field: "title", error: "Title is required." },
+      { field: "startDate", error: "Start date is required." },
+      { field: "startTime", error: "Start time is required." },
+      { field: "endDate", error: "End date is required." },
+      { field: "endTime", error: "End time is required." },
+      { field: "description", error: "Description is required." },
+      { field: "location", error: "Link or address is required." },
+      { field: "photo", error: "Photo is required.", isFile: true },
+    ];
+
+    fieldsToCheck.forEach(({ field, error, isFile }) => {
+      if (
+        (isFile && formData[field] === null) ||
+        (!isFile && formData[field] === "")
+      ) {
+        errors[field] = error;
+      }
+    });
+
+    return errors;
+  };
+
   const getFormErrors = (): Partial<FormErrors> => {
     setFormErrors({});
 
-    const errors = {} as Partial<FormErrors>;
+    const errors = getErrorsForEmptyFields();
+
+    if (Object.keys(errors).length !== 0) {
+      return errors;
+    }
 
     let start = stringToDate(formData.startDate, formData.startTime);
     let end = stringToDate(formData.endDate, formData.endTime);
 
     if (start > end) {
       errors.dates = "End date must be after start date.";
+    } else if (start.getTime() === end.getTime()) {
+      errors.dates = "Start and end dates cannot be the same.";
     }
 
     return errors;
@@ -113,18 +146,6 @@ export default function AddEventPanel({
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
-
-      {/*Display Form Errors */}
-      {Object.keys(formErrors).length > 0 && (
-        <div style={styles.errorBox}>
-          {Object.entries(formErrors).map(([key, value]: [string, string]) => (
-            <p style={styles.error} key={key}>
-              {value}
-            </p>
-          ))}
-        </div>
-      )}
-
       <h4 style={styles.inputTitle}>Title</h4>
       <input
         type="text"
@@ -194,6 +215,13 @@ export default function AddEventPanel({
           />
         </div>
       </div>
+
+      {formErrors.dates && (
+        <div style={styles.errorBox}>
+          <p style={styles.error}>{formErrors.dates}</p>
+        </div>
+      )}
+
       <h4 style={styles.inputTitle}>Description</h4>
       <textarea
         style={styles.textarea}
@@ -201,7 +229,14 @@ export default function AddEventPanel({
           setFormData({ ...formData, description: e.target.value });
         }}
         value={formData.description}
+        required
       ></textarea>
+
+      {formErrors.description && (
+        <div style={styles.errorBox}>
+          <p style={styles.error}>{formErrors.description}</p>
+        </div>
+      )}
 
       <h4 style={styles.inputTitle}>Location</h4>
       <div style={styles.radioContainer}>
@@ -232,18 +267,26 @@ export default function AddEventPanel({
           In Person
         </label>
       </div>
+
       <input
         type="text"
         placeholder={formData.isVirtual ? "Link" : "Address"}
         style={styles.input}
         onChange={(e) => {
-          setFormData({ ...formData, link: e.target.value });
+          setFormData({ ...formData, location: e.target.value });
         }}
-        value={formData.link}
+        value={formData.location}
         required
       />
+
+      {formErrors.location && (
+        <div style={styles.errorBox}>
+          <p style={styles.error}>{formErrors.location}</p>
+        </div>
+      )}
+
       <div {...getRootProps()} style={styles.uploadContainer}>
-        <input {...getInputProps()} required />
+        <input {...getInputProps()} />
         {imagePreviewUrl ? (
           <div>
             <img
@@ -266,6 +309,12 @@ export default function AddEventPanel({
           </div>
         )}
       </div>
+
+      {formErrors.photo && (
+        <div style={styles.errorBox}>
+          <p style={styles.error}>{formErrors.photo}</p>
+        </div>
+      )}
 
       <button style={styles.button} type="submit">
         Add Event
@@ -370,12 +419,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   errorBox: {
     display: "flex",
-    justifyContent: "center",
     alignContent: "center",
-    border: "1px solid red",
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "5px",
-    color: "red",
+    justifyContent: "center",
   },
 };
