@@ -113,12 +113,12 @@ export default function AddEventPanel({
 
     // ID should be assigned based on return from database at some point!
     const event: Event = {
-      start: stringToDate(formData.startDate, formData.startTime),
-      end: stringToDate(formData.endDate, formData.endTime),
+      startRecur: stringToDate(formData.startDate, formData.startTime),
+      endRecur: stringToDate(formData.endDate, formData.endTime),
       title: formData.title,
       id: Math.random().toString(),
+      display: "block",
     };
-
     const errors = getFormErrors();
     if (Object.keys(errors).length !== 0) {
       setFormErrors(errors);

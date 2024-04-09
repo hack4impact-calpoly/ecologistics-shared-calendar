@@ -14,8 +14,8 @@ import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 
 export interface Event {
-  start: Date;
-  end: Date;
+  startRecur: Date;
+  endRecur: Date;
   title: string;
   id: string;
 }
