@@ -121,7 +121,7 @@ export default function LoginPage() {
                     </button>
 
                     <div style={styles.bottomText}>
-                        <Link href="/forgot_password">Forgot Password?</Link>
+                        <Link href="/forgot-password">Forgot Password?</Link>
                     </div>
 
                     <div style={styles.bottomText}>
