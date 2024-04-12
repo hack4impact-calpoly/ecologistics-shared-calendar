@@ -5,12 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Event } from "../pages/calendar";
 import { set } from "mongoose";
 import { get } from "http";
-
-interface AddEventPanelProps {
-  onClose: () => void;
-  onCreate: () => void;
-  addEvent: (event: Event) => void;
-}
+import { request } from "https";
 
 interface AddEventForm {
   title: string;
@@ -22,6 +17,15 @@ interface AddEventForm {
   isVirtual: boolean;
   photo: File | null;
   location: string;
+}
+
+interface FormErrors {
+  title: string;
+  dates: string;
+  times: string;
+  description: string;
+  location: string;
+  photo: string;
 }
 
 const emptyForm = {
@@ -36,21 +40,18 @@ const emptyForm = {
   location: "",
 };
 
-interface FormErrors {
-  title: string;
-  dates: string;
-  times: string;
-  description: string;
-  location: string;
-  photo: string;
-}
-
 const stringToDate = (date: string, time: string): Date => {
   const [year, month, day] = date.split("-").map(Number);
   const [hours, minutes] = time.split(":").map(Number);
 
   return new Date(year, month - 1, day, hours, minutes);
 };
+
+interface AddEventPanelProps {
+  onClose: () => void;
+  onCreate: () => void;
+  addEvent: (event: Event) => void;
+}
 
 export default function AddEventPanel({
   onClose,
@@ -93,15 +94,23 @@ export default function AddEventPanel({
     return errors;
   };
 
-  const getFormErrors = (): Partial<FormErrors> => {
-    setFormErrors({});
+  const addLocationErrors = async (errors: Partial<FormErrors>) => {
+    if (formData.isVirtual) return;
 
-    const errors = getErrorsForEmptyFields();
+    const response = await fetch(
+      new Request(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${formData.location}`
+      )
+    );
 
-    if (Object.keys(errors).length !== 0) {
-      return errors;
+    const data = await response.json();
+
+    if (data.length === 0) {
+      errors.location = "Location not found. Please enter a valid address.";
     }
+  };
 
+  const addDateErrors = (errors: Partial<FormErrors>) => {
     let start = stringToDate(formData.startDate, formData.startTime);
     let end = stringToDate(formData.endDate, formData.endTime);
 
@@ -110,11 +119,25 @@ export default function AddEventPanel({
     } else if (start.getTime() === end.getTime()) {
       errors.dates = "Start and end dates cannot be the same.";
     }
+  };
+
+  const getFormErrors = async (): Promise<Partial<FormErrors>> => {
+    setFormErrors({});
+
+    const errors = getErrorsForEmptyFields();
+
+    if (Object.keys(errors).length !== 0) {
+      return errors;
+    }
+
+    addDateErrors(errors);
+
+    await addLocationErrors(errors);
 
     return errors;
   };
 
-  const onEventAdd = (e: React.FormEvent) => {
+  const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // ID should be assigned based on return from database at some point!
@@ -124,7 +147,7 @@ export default function AddEventPanel({
       title: formData.title,
       id: Math.random().toString(),
     };
-    const errors = getFormErrors();
+    const errors = await getFormErrors();
     if (Object.keys(errors).length !== 0) {
       setFormErrors(errors);
       return;
