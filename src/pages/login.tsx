@@ -12,6 +12,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
     const { isLoaded, signIn, setActive } = useSignIn();
     const { session } = useSession();
 
@@ -100,7 +101,7 @@ export default function LoginPage() {
                         <div style={styles.inputContainer}>
                             <LockIcon style={styles.icon}></LockIcon>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"} // Toggle password visibility
                                 id="email"
                                 placeholder="Enter Your Password"
                                 style={styles.input}
@@ -108,6 +109,13 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)} // Toggle the state on button click
+                                style={styles.togglePasswordButton}
+                            >
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
                         </div>
                     </div>
 
@@ -231,5 +239,17 @@ const styles: { [key: string]: React.CSSProperties } = {
         left: "10px",
         top: "50%",
         pointerEvents: "none",
+    },
+    togglePasswordButton: {
+        position: "absolute",
+        right: "10px", // Adjust as needed
+        top: "50%",
+        transform: "translateY(-50%)",
+        backgroundColor: "transparent",
+        border: "none",
+        outline: "none",
+        cursor: "pointer",
+        fontSize: "1em",
+        color: "#666",
     },
 };
