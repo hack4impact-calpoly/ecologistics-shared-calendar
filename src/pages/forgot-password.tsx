@@ -4,6 +4,7 @@ import Layout from "../components/layout";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useSignIn, useAuth } from "@clerk/nextjs";
+import { useSession } from "@clerk/nextjs";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
@@ -23,6 +24,7 @@ export default function ForgotPassword() {
     const router = useRouter();
     const { isSignedIn } = useAuth();
     const { isLoaded, signIn, setActive } = useSignIn();
+    const { session } = useSession();
 
     if (!isLoaded) {
         return null;
@@ -31,12 +33,16 @@ export default function ForgotPassword() {
     // If the user is already signed in,
     // redirect them to the home page
     if (isSignedIn) {
-        router.push("/");
+        //router.push("/");
     }
 
     // Send the password reset code to the user's email
     async function create(e: React.FormEvent) {
         e.preventDefault();
+
+        //end existing session if any
+        if (session) await session.end();
+
         await signIn
             ?.create({
                 strategy: "reset_password_email_code",
@@ -72,6 +78,7 @@ export default function ForgotPassword() {
                     // the newly created session (user is now signed in)
                     setActive({ session: result.createdSessionId });
                     setError("");
+                    router.push("/login");
                 } else {
                     console.log(result);
                 }

@@ -250,6 +250,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         outline: "none",
         cursor: "pointer",
         fontSize: "1em",
-        color: "#666",
+        color: "gray",
     },
 };

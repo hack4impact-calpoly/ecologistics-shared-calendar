@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
-import { getAuth } from "@clerk/nextjs/server";
+import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 
 interface UserMetadata {
     role: string;
@@ -31,9 +31,13 @@ export default async function handler(
         case "POST":
             try {
                 const { userId } = getAuth(req);
+                const { role, organization, email } = req.body;
 
                 const user = await User.create({
                     clerkId: userId,
+                    role: "pending",
+                    organization: organization,
+                    email: email,
                 });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
