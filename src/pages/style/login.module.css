@@ -107,16 +107,16 @@
 /* IPhone SE - S20 Ultra */
 @media only screen and (min-width: 320px) and (max-width: 1440px) and (min-height: 568px) and (max-height: 3200px) {
   .container {
-    min-height: 60vh;
+    min-height: 90vh;
   }
 
   .title {
-    font-size: 1.5em;
+    font-size: 1.9em;
     margin-bottom: -0.5em;
   }
 
   .subtitle {
-    font-size: 0.9em;
+    font-size: 1.4em;
   }
 
   .inputBox {
@@ -125,14 +125,14 @@
   }
 
   .label {
-    font-size: 0.5em;
+    font-size: 1em;
     margin-left: 0.2em;
   }
 
   .input {
     padding: 0.3em;
-    padding-left: 2.5em;
-    font-size: 0.7em;
+    padding-left: 1.5em;
+    font-size: 1.3em;
   }
 
   .inputContainer {
@@ -140,11 +140,11 @@
   }
 
   .bottomText {
-    font-size: 0.4em;
+    font-size: 1em;
   }
 
   .button {
-    font-size: 0.5em;
+    font-size: 1em;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     border-radius: 10px;
