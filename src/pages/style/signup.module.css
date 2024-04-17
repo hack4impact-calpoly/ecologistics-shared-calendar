@@ -167,7 +167,7 @@
   }
 }
 
-/* IPad Air - Surface Pro 7 */
+/* IPad Air - IPad Pro  */
 @media (min-height: 1180px) and (min-width: 820px) {
   .container {
     min-height: 90vh;
@@ -210,6 +210,7 @@
   }
 }
 
+/* Surface pro 7 */
 @media (min-height: 1368px) and (max-height: 1368px) and (max-width: 912px) and (min-width: 912px) {
   .container {
     min-height: 90vh;
