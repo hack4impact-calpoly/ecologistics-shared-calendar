@@ -196,7 +196,7 @@ function useEventBarStyles() {
 
     eventContainer: {
       display: "flex",
-      flexDirection: "column", //change
+      flexDirection: "row", //change
       justifyContent: "space-evenly",
       alignItems: "center",
       boxSizing: "border-box",
