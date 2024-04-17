@@ -11,9 +11,9 @@ interface UserDocument extends Document {
 // Schema for the User
 const UserSchema: Schema<UserDocument> = new Schema({
     clerkId: { type: String, required: true, unique: true },
-    role: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    organization: { type: String, required: true },
+    role: { type: String },
+    email: { type: String, unique: true },
+    organization: { type: String },
 });
 
 // Export the User model based on the schema
