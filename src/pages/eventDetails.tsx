@@ -1,15 +1,18 @@
 import React from "react";
 import Layout from "../components/layout";
+import StaticMap from "../components/map";
 
 export default function EventPage() {
-  // You can add state hooks here if you need to manage state
-
+  const street = "1 Grand Ave";
+  const city = "San Luis Obispo";
+  const state = "CA";
+  const postalCode = "93407";
   return (
     <Layout>
       <div style={styles.container}>
         <div style={styles.box}>
           <h1 style={styles.title}>Event Title</h1>
-          <p style={styles.date}>Event Date  @ Event Time</p>
+          <p style={styles.date}>Event Date @ Event Time</p>
           <div style={styles.imagePlaceholder}></div>
           <div style={styles.descriptionBox}>
             <p style={styles.descriptionText}>Event Description...</p>
@@ -18,11 +21,13 @@ export default function EventPage() {
             <div style={styles.locationTypeContainer}>
               <h2 style={styles.locationType}>Location</h2>
               <address style={styles.address}>
-                <p>Street Address</p>
-                <p>City, State, Zip Code</p>
+                <p>1 Grand Ave</p>
+                <p>San Luis Obispo, CA 93407</p>
               </address>
             </div>
-            <div style={styles.mapPlaceholder}></div>
+            <div style={styles.mapPlaceholder}>
+              <StaticMap street={street} state={state} city={city} postalCode={postalCode} />
+            </div>
           </div>
         </div>
       </div>
