@@ -35,7 +35,6 @@ export default async function handler(
 
                 const user = await User.create({
                     clerkId: userId,
-                    role: "pending",
                     organization: organization,
                     email: email,
                 });

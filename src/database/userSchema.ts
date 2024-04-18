@@ -4,14 +4,12 @@ import mongoose, { Schema, Document } from "mongoose";
 interface UserDocument extends Document {
     clerkId: string;
     email: string;
-    role: string;
     organization: string;
 }
 
 // Schema for the User
 const UserSchema: Schema<UserDocument> = new Schema({
     clerkId: { type: String, required: true, unique: true },
-    role: { type: String },
     email: { type: String, unique: true },
     organization: { type: String },
 });
