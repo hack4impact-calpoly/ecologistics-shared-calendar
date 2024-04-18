@@ -9,6 +9,7 @@ import { useSession } from "@clerk/nextjs";
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [sent, setSent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
     const handleChange = (event: {
         target: { value: React.SetStateAction<string> };
@@ -150,24 +151,41 @@ export default function ForgotPassword() {
                                 <label htmlFor="password" style={styles.label}>
                                     Enter your new password
                                 </label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                    style={styles.input}
-                                />
+                                <div style={styles.inputContainer}>
+                                    <input
+                                        type="text"
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
+                                        style={styles.input}
+                                    />
+                                </div>
                                 <label htmlFor="code" style={styles.label}>
                                     Enter the password reset code that was sent
                                     to your email
                                 </label>
-                                <input
-                                    type="text"
-                                    value={code}
-                                    onChange={(e) => setCode(e.target.value)}
-                                    style={styles.input}
-                                />
+                                <div style={styles.inputContainer}>
+                                    <input
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        } // Toggle password visibility
+                                        value={code}
+                                        onChange={(e) =>
+                                            setCode(e.target.value)
+                                        }
+                                        style={styles.input}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        } // Toggle the state on button click
+                                        style={styles.togglePasswordButton}
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
+                                </div>
                             </div>
                             <button style={styles.button}>Reset</button>
                             {error && <p>{error}</p>}
@@ -252,5 +270,23 @@ const styles: { [key: string]: React.CSSProperties } = {
         marginTop: "20px",
         fontSize: "1em",
         color: "#28a745",
+    },
+    togglePasswordButton: {
+        position: "absolute",
+        right: "10px", // Adjust as needed
+        top: "50%",
+        transform: "translateY(-50%)",
+        backgroundColor: "transparent",
+        border: "none",
+        outline: "none",
+        cursor: "pointer",
+        fontSize: "1em",
+        color: "gray",
+    },
+    inputContainer: {
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
     },
 };
