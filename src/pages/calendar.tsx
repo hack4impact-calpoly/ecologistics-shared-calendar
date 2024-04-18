@@ -11,23 +11,23 @@ import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
+import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 
-interface Event {
-  start: Date | string;
+
+export interface Event {
+  startRecur: Date;
+  endRecur: Date;
   title: string;
   id: string;
-}
-
-// If FullCalendar provides a type for the event selection info, use that instead
-interface SelectInfo {
-  startStr: string; // Add more properties as needed based on the library's documentation
 }
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+
   const [windowWidth, setWindowWidth] = useState(0);
 
   useEffect(() => {
@@ -45,24 +45,8 @@ export default function CalendarPage() {
     };
   }, []);
 
-  const handleSelect = (info: { startStr: string }) => {
-    const eventNamePrompt = prompt("Enter event name");
-    const eventStart = prompt("Enter start time (hh:mm)");
-    var startTime = info.startStr.replace(
-      "00:00:00 GMT-0800 (Pacific Standard Time)",
-      ""
-    );
-    startTime = startTime + " " + eventStart;
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start: new Date(startTime),
-          title: eventNamePrompt,
-          id: Math.random().toString(),
-        },
-      ]);
-    }
+  const addEvent = (event: Event) => {
+    setEvents((prev) => [...prev, event]);
   };
 
   function adjustButtons() {
@@ -82,7 +66,6 @@ export default function CalendarPage() {
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
         addButton.style.height = `${cellHeight * 0.9}px`;
-        console.log(cellHeight);
         addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
       const prevButton = document.querySelector(
@@ -128,6 +111,9 @@ export default function CalendarPage() {
 
   return (
     <Layout>
+      {isShowingEventPopUp && (
+        <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
+      )}
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
@@ -197,7 +183,7 @@ export default function CalendarPage() {
             initialView="dayGridMonth"
             nowIndicator={true}
             editable={true}
-            select={handleSelect}
+            select={() => {}}
             selectable={true}
             initialEvents={[
               { title: "nice event", start: new Date(), resourceId: "a" },
@@ -222,7 +208,11 @@ export default function CalendarPage() {
         {!isAddingEvent ? (
           <EventBar />
         ) : (
-          <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+          <AddEventPanel
+            onClose={() => setIsAddingEvent(false)}
+            onCreate={() => setIsShowingEventPopUp(true)}
+            addEvent={addEvent}
+          />
         )}
       </div>
     </Layout>
