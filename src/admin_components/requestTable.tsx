@@ -133,6 +133,11 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
       const updatedRequests = accountRequests.filter(
         (request) => request.id.toString() !== requestId
       );
+      if (
+        requestId === accountRequests[accountRequests.length - 1].id.toString()
+      ) {
+        setCurrentPage(currentPage - 1);
+      }
       // Update the state with the filtered requests array
       setAccountRequests(updatedRequests);
     } else {
@@ -162,7 +167,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "left" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "left",
+        }}
+      >
         <table
           style={{
             border: "1px solid #f7f7f7",

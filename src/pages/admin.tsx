@@ -403,36 +403,47 @@ export default function AdminRequestTable() {
     <Layout>
       {/* Requested Events */}
       <div style={styles.container}>
-        <h1 style={{ textAlign: "left" }}>Inbox</h1>
-        <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
-        <h3>Requested Events</h3>
-        <AdminPage ITEMS_PER_PAGE={4} events={pending} />
-
+        <div>
+          <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
+          <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
+          <h3>Requested Events</h3>
+          <AdminPage ITEMS_PER_PAGE={4} events={pending} />
+        </div>
         {/* Approved Events */}
-        <h1 style={{ textAlign: "left" }}>Active events</h1>
-        <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
-        <h3>Approved Events</h3>
-        <AdminPage ITEMS_PER_PAGE={1} events={approved} />
+        <div>
+          <h1 style={{ alignSelf: "flex-start" }}>Active events</h1>
+          <div
+            style={{
+              height: "0.35714rem",
+              background: "#F07F2D",
+            }}
+          ></div>
+          <h3>Approved Events</h3>
+          <AdminPage ITEMS_PER_PAGE={1} events={approved} />
+        </div>
 
         {/* Postponed Events */}
-        <h3>Postponed Events</h3>
-        <AdminPage ITEMS_PER_PAGE={1} events={postponed} />
-
+        <div>
+          <h3>Postponed Events</h3>
+          <AdminPage ITEMS_PER_PAGE={1} events={postponed} />
+        </div>
         {/* Declined Events */}
-        <h3>Declined Events</h3>
-        <AdminPage ITEMS_PER_PAGE={1} events={declined} />
-
+        <div>
+          <h3>Declined Events</h3>
+          <AdminPage ITEMS_PER_PAGE={1} events={declined} />
+        </div>
         {/* Past Events */}
-        <h1 style={{ textAlign: "left" }}>Past events</h1>
-        <div
-          style={{
-            width: "80rem",
-            height: "0.35714rem",
-            background: "#335543",
-          }}
-        ></div>
-        <h3>Archived</h3>
-        <AdminPage ITEMS_PER_PAGE={3} events={archived} />
+        <div>
+          <h1 style={{ textAlign: "left" }}>Past events</h1>
+          <div
+            style={{
+              height: "0.35714rem",
+              background: "#335543",
+            }}
+          ></div>
+          <h3>Archived</h3>
+          <AdminPage ITEMS_PER_PAGE={3} events={archived} />
+        </div>
       </div>
     </Layout>
   );
@@ -440,8 +451,8 @@ export default function AdminRequestTable() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    width: "72%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
 };
