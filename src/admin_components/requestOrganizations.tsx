@@ -21,7 +21,7 @@ interface PopupProps {
   requestID: string;
 }
 
-const DeletePopup: React.FC<PopupProps> = ({
+const PopupContent: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
@@ -93,113 +93,15 @@ const DeletePopup: React.FC<PopupProps> = ({
   );
 };
 
-const DenyPopup: React.FC<PopupProps> = ({
-  isOpen,
-  onClose,
-  handleAction,
-  requestID,
-}) => {
-  const [message, setMessage] = useState("");
-  if (!isOpen) return null;
-  return (
-    <>
-      <div style={styles.transparentBackground} />
-      <div style={{ ...styles.popupContainer, height: "400px" }}>
-        <h2 style={{ textAlign: "center", margin: "0" }}>
-          Are you sure you want to deny this event?
-        </h2>
-        <form style={{ textAlign: "center" }}>
-          <label style={{ textAlign: "center" }}>
-            <textarea
-              name="postContent"
-              rows={8}
-              cols={63}
-              style={{
-                borderRadius: "12px",
-                fontStyle: "italic",
-                padding: "10px",
-                margin: "10px",
-              }}
-              placeholder="State reason for denying event (optional)"
-              onChange={(e) => {
-                setMessage(e.target.value);
-              }}
-            />
-          </label>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <button
-              style={{
-                ...styles.buttons,
-                width: "122px",
-                height: "37.6px",
-                padding: "7.526px 10.752p",
-                fontSize: "17px",
-                margin: "0 4px 0 0",
-              }}
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#e69153")
-              }
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#f7ab74")
-              }
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              style={{
-                ...styles.buttons,
-                width: "122px",
-                height: "37.6px",
-                //padding: "10px 39px",
-                fontSize: "17px",
-                margin: "0 0 0 4px",
-              }}
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#e69153")
-              }
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#f7ab74")
-              }
-              onClick={() => {
-                console.log(message);
-                handleAction(requestID, "deny");
-                onClose();
-              }}
-            >
-              Confirm
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
-  );
-};
-
 export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
 
-  // Delete popup
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const openDeletePopup = () => setIsDeletePopupOpen(true);
-  const closeDeletePopup = () => setIsDeletePopupOpen(false);
+  // popup
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
-  // Deny popup
-  const [isDenyPopupOpen, setIsDenyPopupOpen] = useState(false);
-  const openDenyPopup = () => setIsDenyPopupOpen(true);
-  const closeDenyPopup = () => setIsDenyPopupOpen(false);
-  const [message, setMessage] = useState("");
   const [accountRequests, setAccountRequests] = useState(events);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -425,12 +327,14 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           Approve
                         </button>
                         <button
-                          onClick={openDenyPopup}
                           style={{
                             ...styles.buttons,
                             padding: "8px 25px",
                             background: "#d9d9d9",
                           }}
+                          onClick={() =>
+                            handleAction(request.id.toString(), "declined")
+                          }
                           onMouseOver={(
                             e: React.MouseEvent<HTMLButtonElement>
                           ) =>
@@ -448,18 +352,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         >
                           Deny
                         </button>
-                        <DenyPopup
-                          isOpen={isDenyPopupOpen}
-                          onClose={closeDenyPopup}
-                          handleAction={handleAction}
-                          requestID={request.id.toString()}
-                        />
                       </>
                     ) : (
                       // Change Approve/Deny to trash can icon when status is "Accept"
                       <>
                         <button
-                          onClick={openDeletePopup}
+                          onClick={openPopup}
                           onMouseOver={(e) => {
                             e.currentTarget.style.backgroundColor = "#FECACC";
                           }}
@@ -484,9 +382,10 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                             }}
                           />
                         </button>
-                        <DeletePopup
-                          isOpen={isDeletePopupOpen}
-                          onClose={closeDeletePopup}
+
+                        <PopupContent
+                          isOpen={isPopupOpen}
+                          onClose={closePopup}
                           handleAction={handleAction}
                           requestID={request.id.toString()}
                         />
