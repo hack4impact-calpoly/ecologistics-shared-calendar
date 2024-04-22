@@ -128,6 +128,7 @@ export default function CalendarPage() {
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
+
             <button
               onClick={handleLogout}
               onMouseOver={(e) =>
@@ -142,8 +143,8 @@ export default function CalendarPage() {
             >
               Logout
             </button>
-            <Link prefetch={false} href="/admin">
-              <button
+            <Link prefetch={false} href="/adminEvents">
+             <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")
