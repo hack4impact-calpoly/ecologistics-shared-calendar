@@ -1,4 +1,4 @@
-import AdminPage from "../admin_components/requestTable";
+import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
 import React, { useState } from "react";
 
@@ -407,7 +407,7 @@ export default function AdminRequestTable() {
           <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
           <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
           <h3>Requested Events</h3>
-          <AdminPage ITEMS_PER_PAGE={4} events={pending} />
+          <EventsTable ITEMS_PER_PAGE={4} events={pending} />
         </div>
         {/* Approved Events */}
         <div>
@@ -419,18 +419,18 @@ export default function AdminRequestTable() {
             }}
           ></div>
           <h3>Approved Events</h3>
-          <AdminPage ITEMS_PER_PAGE={1} events={approved} />
+          <EventsTable ITEMS_PER_PAGE={1} events={approved} />
         </div>
 
         {/* Postponed Events */}
         <div>
           <h3>Postponed Events</h3>
-          <AdminPage ITEMS_PER_PAGE={1} events={postponed} />
+          <EventsTable ITEMS_PER_PAGE={1} events={postponed} />
         </div>
         {/* Declined Events */}
         <div>
           <h3>Declined Events</h3>
-          <AdminPage ITEMS_PER_PAGE={1} events={declined} />
+          <EventsTable ITEMS_PER_PAGE={1} events={declined} />
         </div>
         {/* Past Events */}
         <div>
@@ -442,7 +442,7 @@ export default function AdminRequestTable() {
             }}
           ></div>
           <h3>Archived</h3>
-          <AdminPage ITEMS_PER_PAGE={3} events={archived} />
+          <EventsTable ITEMS_PER_PAGE={3} events={archived} />
         </div>
       </div>
     </Layout>

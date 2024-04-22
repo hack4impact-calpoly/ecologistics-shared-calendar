@@ -269,6 +269,8 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
         style={{
           display: "flex",
           justifyContent: "left",
+          boxSizing: "border-box",
+          width: "90rem",
         }}
       >
         <table
@@ -403,7 +405,11 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                     {request.status === "Pending" ? ( // Render buttons based on status
                       <>
                         <button
-                          style={{ ...styles.buttons, padding: "8px 15px" }}
+                          style={{
+                            ...styles.buttons,
+
+                            padding: "8px 15px",
+                          }}
                           onClick={() =>
                             handleAction(request.id.toString(), "accepted")
                           }
@@ -428,6 +434,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           onClick={openDenyPopup}
                           style={{
                             ...styles.buttons,
+
                             padding: "8px 25px",
                             background: "#d9d9d9",
                           }}

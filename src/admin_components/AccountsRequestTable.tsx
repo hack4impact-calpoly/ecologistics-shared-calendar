@@ -21,7 +21,7 @@ interface PopupProps {
   requestID: string;
 }
 
-const PopupContent: React.FC<PopupProps> = ({
+const DeletePopup: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
@@ -33,7 +33,7 @@ const PopupContent: React.FC<PopupProps> = ({
       <div style={styles.transparentBackground} />
       <div style={styles.popupContainer}>
         <h2 style={{ textAlign: "center" }}>
-          Are you sure you want to delete this event?
+          Are you sure you want to delete this account?
         </h2>
         <div
           style={{
@@ -66,7 +66,7 @@ const PopupContent: React.FC<PopupProps> = ({
           <button
             style={{
               ...styles.buttons,
-              width: "324px",
+              width: "330px",
               height: "37.6px",
               padding: "10px 39px",
               fontSize: "17px",
@@ -85,9 +85,102 @@ const PopupContent: React.FC<PopupProps> = ({
               onClose();
             }}
           >
-            Yes, I want to delete this event
+            Yes, I want to delete this account
           </button>
         </div>
+      </div>
+    </>
+  );
+};
+
+const DenyPopup: React.FC<PopupProps> = ({
+  isOpen,
+  onClose,
+  handleAction,
+  requestID,
+}) => {
+  const [message, setMessage] = useState("");
+  if (!isOpen) return null;
+  return (
+    <>
+      <div style={styles.transparentBackground} />
+      <div style={{ ...styles.popupContainer, height: "400px" }}>
+        <h2 style={{ textAlign: "center", margin: "0" }}>
+          Are you sure you want to deny this account?
+        </h2>
+        <form style={{ textAlign: "center" }}>
+          <label style={{ textAlign: "center" }}>
+            <textarea
+              name="postContent"
+              rows={8}
+              cols={63}
+              style={{
+                borderRadius: "12px",
+                fontStyle: "italic",
+                padding: "10px",
+                margin: "10px",
+              }}
+              placeholder="State reason for denying account (optional)"
+              onChange={(e) => {
+                setMessage(e.target.value);
+              }}
+            />
+          </label>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <button
+              style={{
+                ...styles.buttons,
+                width: "122px",
+                height: "37.6px",
+                padding: "7.526px 10.752p",
+                fontSize: "17px",
+                margin: "0 4px 0 0",
+              }}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              style={{
+                ...styles.buttons,
+                width: "122px",
+                height: "37.6px",
+                //padding: "10px 39px",
+                fontSize: "17px",
+                margin: "0 0 0 4px",
+              }}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              onClick={() => {
+                console.log(message);
+                handleAction(requestID, "deny");
+                onClose();
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </form>
       </div>
     </>
   );
@@ -97,11 +190,16 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
 
-  // popup
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const openPopup = () => setIsPopupOpen(true);
-  const closePopup = () => setIsPopupOpen(false);
+  // Delete popup
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const openDeletePopup = () => setIsDeletePopupOpen(true);
+  const closeDeletePopup = () => setIsDeletePopupOpen(false);
 
+  // Deny popup
+  const [isDenyPopupOpen, setIsDenyPopupOpen] = useState(false);
+  const openDenyPopup = () => setIsDenyPopupOpen(true);
+  const closeDenyPopup = () => setIsDenyPopupOpen(false);
+  const [message, setMessage] = useState("");
   const [accountRequests, setAccountRequests] = useState(events);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -171,6 +269,8 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
         style={{
           display: "flex",
           justifyContent: "left",
+          boxSizing: "border-box",
+          width: "90rem",
         }}
       >
         <table
@@ -327,14 +427,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           Approve
                         </button>
                         <button
+                          onClick={openDenyPopup}
                           style={{
                             ...styles.buttons,
                             padding: "8px 25px",
                             background: "#d9d9d9",
                           }}
-                          onClick={() =>
-                            handleAction(request.id.toString(), "declined")
-                          }
                           onMouseOver={(
                             e: React.MouseEvent<HTMLButtonElement>
                           ) =>
@@ -352,12 +450,18 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         >
                           Deny
                         </button>
+                        <DenyPopup
+                          isOpen={isDenyPopupOpen}
+                          onClose={closeDenyPopup}
+                          handleAction={handleAction}
+                          requestID={request.id.toString()}
+                        />
                       </>
                     ) : (
                       // Change Approve/Deny to trash can icon when status is "Accept"
                       <>
                         <button
-                          onClick={openPopup}
+                          onClick={openDeletePopup}
                           onMouseOver={(e) => {
                             e.currentTarget.style.backgroundColor = "#FECACC";
                           }}
@@ -382,10 +486,9 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                             }}
                           />
                         </button>
-
-                        <PopupContent
-                          isOpen={isPopupOpen}
-                          onClose={closePopup}
+                        <DeletePopup
+                          isOpen={isDeletePopupOpen}
+                          onClose={closeDeletePopup}
                           handleAction={handleAction}
                           requestID={request.id.toString()}
                         />
