@@ -13,6 +13,7 @@ import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
+import { useClerk } from "@clerk/clerk-react";
 
 export interface Event {
     startRecur: Date;
@@ -28,6 +29,7 @@ export default function CalendarPage() {
     const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
     const [windowWidth, setWindowWidth] = useState(0);
+    const { signOut } = useClerk();
 
     useEffect(() => {
         setWindowWidth(window.innerWidth);
@@ -35,6 +37,16 @@ export default function CalendarPage() {
 
     const handleResize = () => {
         setWindowWidth(window.innerWidth);
+    };
+    const handleLogout = async () => {
+        try {
+            // Call signOut function to log out the current user
+            await signOut();
+            // Redirect to a different page after logout if needed
+            window.location.href = "/login";
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
     };
 
     useEffect(() => {
@@ -120,23 +132,22 @@ export default function CalendarPage() {
             <div className={style1.calendarPageContainer}>
                 <div className="calendar-container">
                     <div style={styles.signoutContainer}>
-                        <Link prefetch={false} href="/login">
-                            <button
-                                onMouseOver={(e) =>
-                                    ((
-                                        e.target as HTMLButtonElement
-                                    ).style.backgroundColor = "#e69153")
-                                }
-                                onMouseOut={(e) =>
-                                    ((
-                                        e.target as HTMLButtonElement
-                                    ).style.backgroundColor = "#f7ab74")
-                                }
-                                className={style1.logoutButton}
-                            >
-                                Logout
-                            </button>
-                        </Link>
+                        <button
+                            onClick={handleLogout}
+                            onMouseOver={(e) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#e69153")
+                            }
+                            onMouseOut={(e) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#f7ab74")
+                            }
+                            className={style1.logoutButton}
+                        >
+                            Logout
+                        </button>
                         <Link prefetch={false} href="/admin">
                             <button
                                 onMouseOver={(e) =>
