@@ -13,7 +13,7 @@ import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
-
+import { useClerk } from "@clerk/clerk-react";
 
 export interface Event {
   startRecur: Date;
@@ -29,6 +29,7 @@ export default function CalendarPage() {
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(0);
+  const { signOut } = useClerk();
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -37,11 +38,21 @@ export default function CalendarPage() {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
+  const handleLogout = async () => {
+    try {
+      // Call signOut function to log out the current user
+      await signOut();
+      // Redirect to a different page after logout if needed
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -117,23 +128,23 @@ export default function CalendarPage() {
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-            <Link prefetch={false} href="/login">
-              <button
-                onMouseOver={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#e69153")
-                }
-                onMouseOut={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#f7ab74")
-                }
-                className={style1.logoutButton}
-              >
-                Logout
-              </button>
-            </Link>
+
+            <button
+              onClick={handleLogout}
+              onMouseOver={(e) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              className={style1.logoutButton}
+            >
+              Logout
+            </button>
             <Link prefetch={false} href="/adminEvents">
-              <button
+             <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")
@@ -186,7 +197,11 @@ export default function CalendarPage() {
             select={() => {}}
             selectable={true}
             initialEvents={[
-              { title: "nice event", start: new Date(), resourceId: "a" },
+              {
+                title: "nice event",
+                start: new Date(),
+                resourceId: "a",
+              },
             ]}
             events={events}
             eventClick={function (info) {
@@ -225,7 +240,24 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 // calendarStyles is the same for all views
 
+// calendarStyles is the same for all views
+
 const calendarStyles = `
+   .fc .fc-prev-button, .fc .fc-next-button {
+     background-color: #335543;
+     border: none;
+     color: #FFF;
+     font-size: 2em;
+     font-size: 1.5em;
+     border-radius: 50%; 
+     line-height: 1;
+   }
+
+   .fc .fc-prev-button:hover,
+   .fc .fc-next-button:hover,
+   .fc .fc-AddEvent-button:hover {
+     background-color: #eaeaea; 
+   }
    .fc .fc-prev-button, .fc .fc-next-button {
      background-color: #335543;
      border: none;
@@ -245,7 +277,13 @@ const calendarStyles = `
    .fc-prev-button {
      margin-left: 3%;
    }
+   .fc-prev-button {
+     margin-left: 3%;
+   }
 
+   .fc-next-button {
+     margin-right: 3%;
+   }
    .fc-next-button {
      margin-right: 3%;
    }
@@ -268,11 +306,35 @@ const calendarStyles = `
      align-items: center;
      justify-content: center;
    }
+   .fc-header-toolbar {
+     margin-top: 5%;
+     display: flex;
+     justify-content: space-between;
+     text-transform: uppercase;
+     padding-bottom: 1%;
+   }
+
+   .fc .fc-toolbar-title {
+     text-align: center;
+     margin-right: 2.5%;
+   }
+
+   .fc-toolbar-chunk {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
 
    .fc-toolbar-chunk:nth-child(2) {
      justify-content: center;
    }
+   .fc-toolbar-chunk:nth-child(2) {
+     justify-content: center;
+   }
 
+   .fc-toolbar-chunk:last-child {
+     justify-content: end;
+   }
    .fc-toolbar-chunk:last-child {
      justify-content: end;
    }
@@ -290,7 +352,23 @@ const calendarStyles = `
      font-size: 1.1em;
      border: none;
    }
+   .fc-col-header-cell {
+     background: #335543;
+     color: #FFF;
+   }
 
+   .fc .fc-AddEvent-button {
+     background-color: #F7AB74;
+     color: black;
+     border-radius: 0.9em;
+     border-color: #F7AB74;
+     font-size: 1.1em;
+     border: none;
+   }
+
+   .fc .fc-daygrid-event-harness {
+     max-width: 100%;
+   }
    .fc .fc-daygrid-event-harness {
      max-width: 100%;
    }
@@ -308,7 +386,23 @@ const calendarStyles = `
      align-items: center;
      box-sizing: border-box;
    }
+   .fc .fc-event {
+     background-color: #F7AB74;
+     border-color: #F7AB74;
+     color: black;
+     border-radius: 1em;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+     padding: 5%;
+     padding-right: 25%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     box-sizing: border-box;
+   }
 
+   .fc-daygrid-event-dot {
+     display: none;
+   }
    .fc-daygrid-event-dot {
      display: none;
    }
@@ -320,4 +414,3 @@ const calendarStyles = `
      border-right: 1px solid #ddd;
    }
  `;
-
