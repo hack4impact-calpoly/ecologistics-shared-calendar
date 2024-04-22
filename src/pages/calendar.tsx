@@ -132,7 +132,7 @@ export default function CalendarPage() {
                 Logout
               </button>
             </Link>
-            <Link prefetch={false} href="/admin">
+            <Link prefetch={false} href="/adminEvents">
               <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
