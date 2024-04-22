@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/router";
