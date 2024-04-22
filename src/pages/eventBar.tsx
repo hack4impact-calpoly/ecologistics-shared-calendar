@@ -196,7 +196,9 @@ function useEventBarStyles() {
 
     eventContainer: {
       display: "flex",
+      flexDirection: "row", //change
       justifyContent: "space-evenly",
+      alignItems: "center",
       boxSizing: "border-box",
       border: "1.5px solid var(--Grey, #989898)",
       borderRadius: "0.51213rem",
@@ -212,7 +214,7 @@ function useEventBarStyles() {
       display: "flex",
       flexDirection: "row",
       justifyContent: "flex-start",
-      alignItems: "center",
+      alignItems: "center", //change
       flexWrap: "wrap",
       height: "10%",
     },
@@ -229,7 +231,7 @@ function useEventBarStyles() {
       fontSize: "0.9755rem",
     },
     eventText: {
-      textAlign: "left",
+      textAlign: "center", //change
       overflow: "scroll",
       fontSize: "0.78036rem",
     },
@@ -237,6 +239,8 @@ function useEventBarStyles() {
       width: "65%",
       display: "flex",
       flexDirection: "column",
+      textAlign: "center",
+      alignItems: "center",
       gap: "1%",
     },
     icon: {

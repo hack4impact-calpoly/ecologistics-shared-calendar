@@ -5,11 +5,13 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useSignIn, useAuth } from "@clerk/nextjs";
 import { useSession } from "@clerk/nextjs";
+import styles from "./style/forgot-password.module.css"; // Make sure the path is correct
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [sent, setSent] = useState(false);
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+    const [passwordValidation, setPasswordValidation] = useState("");
 
     const handleChange = (event: {
         target: { value: React.SetStateAction<string> };
@@ -63,6 +65,18 @@ export default function ForgotPassword() {
     // signed in and redirected to the home page
     async function reset(e: React.FormEvent) {
         e.preventDefault();
+
+        // Reset password validation message
+        setPasswordValidation("");
+
+        // Password length validation
+        if (password.length < 8) {
+            setPasswordValidation(
+                "Password must be at least 8 characters long."
+            );
+            return;
+        }
+
         await signIn
             ?.attemptFirstFactor({
                 strategy: "reset_password_email_code",
@@ -98,26 +112,28 @@ export default function ForgotPassword() {
                 }
             `}</style>
 
-            <div style={styles.container}>
-                <h2 style={styles.title}>Forgot Your Password?</h2>
-                <p style={styles.subtitle}>Organizations & Charities Only</p>
+            <div className={styles.container}>
+                <h2 className={styles.title}>Forgot Your Password?</h2>
+                <p className={styles.subtitle}>
+                    Organizations & Charities Only
+                </p>
 
                 <form
-                    style={styles.formBox}
+                    className={styles.formBox}
                     onSubmit={!successfulCreation ? create : reset}
                 >
                     {!successfulCreation && (
                         <>
-                            <div className="inputBox" style={styles.inputBox}>
-                                <label htmlFor="email" style={styles.label}>
+                            <div className={styles.inputBox}>
+                                <label htmlFor="email" className={styles.label}>
                                     Email Address
                                 </label>
-                                <div style={styles.inputContainer}>
+                                <div className={styles.inputContainer}>
                                     <input
                                         type="email"
                                         id="email"
                                         placeholder="Enter Your Email Address"
-                                        style={styles.input}
+                                        className={styles.input}
                                         value={email}
                                         onChange={handleChange}
                                         required
@@ -125,18 +141,17 @@ export default function ForgotPassword() {
                                 </div>
                             </div>
 
-                            <div style={styles.bottomText}>
+                            <div className={styles.bottomText}>
                                 Enter your email to reset your password!
                             </div>
 
                             <button
                                 type="submit"
-                                style={
+                                className={
                                     sent
-                                        ? {
-                                              ...styles.button,
-                                              ...styles.buttonSent,
-                                          }
+                                        ? `${styles.button}
+                                              ${styles.buttonSent}
+                                          `
                                         : styles.button
                                 }
                                 disabled={sent}
@@ -147,47 +162,55 @@ export default function ForgotPassword() {
                     )}
                     {successfulCreation && (
                         <>
-                            <div className="inputBox" style={styles.inputBox}>
-                                <label htmlFor="password" style={styles.label}>
+                            <div className={styles.inputBox}>
+                                <label
+                                    htmlFor="password"
+                                    className={styles.label}
+                                >
                                     Enter your new password
                                 </label>
-                                <div style={styles.inputContainer}>
-                                    <input
-                                        type="text"
-                                        value={password}
-                                        onChange={(e) =>
-                                            setPassword(e.target.value)
-                                        }
-                                        style={styles.input}
-                                    />
-                                </div>
-                                <label htmlFor="code" style={styles.label}>
-                                    Enter the password reset code that was sent
-                                    to your email
-                                </label>
-                                <div style={styles.inputContainer}>
+                                <div className={styles.inputContainer}>
                                     <input
                                         type={
                                             showPassword ? "text" : "password"
                                         } // Toggle password visibility
-                                        value={code}
+                                        value={password}
                                         onChange={(e) =>
-                                            setCode(e.target.value)
+                                            setPassword(e.target.value)
                                         }
-                                        style={styles.input}
+                                        className={styles.input}
                                     />
                                     <button
                                         type="button"
                                         onClick={() =>
                                             setShowPassword(!showPassword)
                                         } // Toggle the state on button click
-                                        style={styles.togglePasswordButton}
+                                        className={styles.togglePasswordButton}
                                     >
                                         {showPassword ? "Hide" : "Show"}
                                     </button>
                                 </div>
+                                {passwordValidation && (
+                                    <p className={styles.passwordValidation}>
+                                        {passwordValidation}
+                                    </p>
+                                )}
+                                <label htmlFor="code" className={styles.label}>
+                                    Enter the password reset code that was sent
+                                    to your email
+                                </label>
+                                <div className={styles.inputContainer}>
+                                    <input
+                                        type="text"
+                                        value={code}
+                                        onChange={(e) =>
+                                            setCode(e.target.value)
+                                        }
+                                        className={styles.input}
+                                    />
+                                </div>
                             </div>
-                            <button style={styles.button}>Reset</button>
+                            <button className={styles.button}>Reset</button>
                             {error && <p>{error}</p>}
                         </>
                     )}
@@ -196,97 +219,3 @@ export default function ForgotPassword() {
         </Layout>
     );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "10vh",
-        width: "100%",
-        backgroundColor: "white",
-    },
-    formBox: {
-        borderRadius: "8px",
-        backgroundColor: "white",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-    },
-    title: {
-        fontFamily: "DM Sans",
-        fontSize: "3.75em",
-        textAlign: "center",
-        marginBottom: "-0.5em",
-    },
-    subtitle: {
-        fontFamily: "DM Sans",
-        fontSize: "2em",
-        textAlign: "center",
-    },
-    inputBox: {
-        marginTop: "1em",
-        width: "51%",
-    },
-    label: {
-        fontFamily: "DM Sans",
-        fontSize: "1.5625em",
-        marginLeft: "0.2em",
-    },
-    input: {
-        fontFamily: "DM Sans",
-        padding: "0.3em",
-        paddingLeft: "0.5em",
-        fontSize: "2em",
-        color: "black",
-        width: "100%",
-        border: "1px solid black",
-        borderRadius: "4px",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    },
-    bottomText: {
-        marginTop: "1.5625em",
-        marginBottom: "1.5625em",
-        fontSize: "1em",
-    },
-    button: {
-        fontFamily: "DM Sans",
-        fontSize: "1em",
-        color: "black",
-        paddingTop: "0.7em",
-        paddingBottom: "0.7em",
-        backgroundColor: "#F7AB74",
-        border: "None",
-        borderRadius: "10px",
-        width: "12%",
-        cursor: "pointer",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    },
-    statusMessage: {
-        fontFamily: "DM Sans",
-        textAlign: "center",
-        marginTop: "20px",
-        fontSize: "1em",
-        color: "#28a745",
-    },
-    togglePasswordButton: {
-        position: "absolute",
-        right: "10px", // Adjust as needed
-        top: "50%",
-        transform: "translateY(-50%)",
-        backgroundColor: "transparent",
-        border: "none",
-        outline: "none",
-        cursor: "pointer",
-        fontSize: "1em",
-        color: "gray",
-    },
-    inputContainer: {
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-    },
-};

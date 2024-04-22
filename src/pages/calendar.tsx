@@ -11,56 +11,41 @@ import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
-import { useClerk } from "@clerk/clerk-react";
-import { useRouter } from "next/navigation";
+import EventRequestPopup from "../components/eventRequestPopup";
+import style1 from "../styles/calendar.module.css";
 
-interface Event {
-    start: Date | string;
+export interface Event {
+    startRecur: Date;
+    endRecur: Date;
     title: string;
     id: string;
-}
-
-// If FullCalendar provides a type for the event selection info, use that instead
-interface SelectInfo {
-    startStr: string; // Add more properties as needed based on the library's documentation
 }
 
 export default function CalendarPage() {
     const [events, setEvents] = useState<Event[]>([]);
     const [resize, setResize] = useState(false);
     const [isAddingEvent, setIsAddingEvent] = useState(false);
-    const { signOut } = useClerk();
-    const router = useRouter();
+    const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
-    const handleLogout = async () => {
-        try {
-            // Call signOut function to log out the current user
-            await signOut();
-            // Redirect to a different page after logout if needed
-            window.location.href = "/login";
-        } catch (error) {
-            console.error("Error logging out:", error);
-        }
+    const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        setWindowWidth(window.innerWidth);
+    }, []);
+
+    const handleResize = () => {
+        setWindowWidth(window.innerWidth);
     };
 
-    const handleSelect = (info: { startStr: string }) => {
-        const eventNamePrompt = prompt("Enter event name");
-        const eventStart = prompt("Enter start time (hh:mm)");
-        var startTime = info.startStr.replace(
-            "00:00:00 GMT-0800 (Pacific Standard Time)",
-            ""
-        );
-        startTime = startTime + " " + eventStart;
-        if (eventNamePrompt) {
-            setEvents([
-                ...events,
-                {
-                    start: new Date(startTime),
-                    title: eventNamePrompt,
-                    id: Math.random().toString(),
-                },
-            ]);
-        }
+    useEffect(() => {
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    const addEvent = (event: Event) => {
+        setEvents((prev) => [...prev, event]);
     };
 
     function adjustButtons() {
@@ -82,7 +67,6 @@ export default function CalendarPage() {
             if (addButton) {
                 addButton.style.width = `${cellWidth}px`;
                 addButton.style.height = `${cellHeight * 0.9}px`;
-                console.log(cellHeight);
                 addButton.style.fontSize = `${cellHeight * 0.4}px`;
             }
             const prevButton = document.querySelector(
@@ -128,23 +112,15 @@ export default function CalendarPage() {
 
     return (
         <Layout>
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "start",
-                    padding: "0px",
-                    margin: "0px",
-                    whiteSpace: "nowrap",
-                }}
-            >
+            {isShowingEventPopUp && (
+                <EventRequestPopup
+                    onClose={() => setIsShowingEventPopUp(false)}
+                />
+            )}
+            <div className={style1.calendarPageContainer}>
                 <div className="calendar-container">
                     <div style={styles.signoutContainer}>
-                        <Link
-                            prefetch={false}
-                            href="/login"
-                            onClick={() => signOut(() => router.push("/"))}
-                        >
+                        <Link prefetch={false} href="/login">
                             <button
                                 onMouseOver={(e) =>
                                     ((
@@ -156,20 +132,7 @@ export default function CalendarPage() {
                                         e.target as HTMLButtonElement
                                     ).style.backgroundColor = "#f7ab74")
                                 }
-                                style={{
-                                    padding: "0.625rem 4.35rem",
-                                    height: "100%",
-                                    fontSize: "1.143rem",
-                                    fontWeight: "500",
-                                    textDecoration: "none",
-                                    textAlign: "center",
-                                    background: "#f7ab74",
-                                    borderRadius: "0.75rem",
-                                    border: "0px",
-                                    boxShadow:
-                                        "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                                    cursor: "pointer",
-                                }}
+                                className={style1.logoutButton}
                             >
                                 Logout
                             </button>
@@ -186,21 +149,7 @@ export default function CalendarPage() {
                                         e.target as HTMLButtonElement
                                     ).style.backgroundColor = "#f7ab74")
                                 }
-                                style={{
-                                    padding: "0.625rem 4.35rem",
-                                    height: "100%",
-                                    fontSize: "1.143rem",
-                                    fontWeight: "500",
-                                    textDecoration: "none",
-                                    textAlign: "center",
-                                    background: "#f7ab74",
-                                    borderRadius: "0.75rem",
-                                    border: "0px",
-                                    boxShadow:
-                                        "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-                                    cursor: "pointer",
-                                    marginLeft: "1rem",
-                                }}
+                                className={style1.adminButton}
                             >
                                 Admin
                             </button>
@@ -232,7 +181,7 @@ export default function CalendarPage() {
                         headerToolbar={{
                             left: "",
                             center: "prev title next",
-                            right: "AddEvent",
+                            right: windowWidth >= 786 ? "AddEvent" : "",
                         }}
                         buttonIcons={{
                             prev: "arrow-left",
@@ -241,7 +190,7 @@ export default function CalendarPage() {
                         initialView="dayGridMonth"
                         nowIndicator={true}
                         editable={true}
-                        select={handleSelect}
+                        select={() => {}}
                         selectable={true}
                         initialEvents={[
                             {
@@ -257,10 +206,24 @@ export default function CalendarPage() {
                         eventColor="#c293ff"
                     />
                 </div>
+                {/* Conditionally render the Add Event button below the calendar for smaller screens */}
+                {windowWidth < 786 && (
+                    <button
+                        className={style1.addButton} // Ensure you have an 'addButton' style in your CSS module
+                        style={{ display: "block", margin: "20px auto 0" }}
+                        onClick={() => setIsAddingEvent((prev) => !prev)}
+                    >
+                        Add Event
+                    </button>
+                )}
                 {!isAddingEvent ? (
                     <EventBar />
                 ) : (
-                    <AddEventPanel onClose={() => setIsAddingEvent(false)} />
+                    <AddEventPanel
+                        onClose={() => setIsAddingEvent(false)}
+                        onCreate={() => setIsShowingEventPopUp(true)}
+                        addEvent={addEvent}
+                    />
                 )}
             </div>
         </Layout>
@@ -271,98 +234,100 @@ const styles: { [key: string]: React.CSSProperties } = {
     spaced: {},
 };
 
+// calendarStyles is the same for all views
+
 const calendarStyles = `
-  .fc .fc-prev-button, .fc .fc-next-button {
-    background-color: #335543;
-    border: none;
-    color: #FFF;
-    font-size: 2em;
-    font-size: 1.5em;
-    border-radius: 50%; 
-    line-height: 1;
-  }
-  
-  .fc .fc-prev-button:hover,
-  .fc .fc-next-button:hover,
-  .fc .fc-AddEvent-button:hover {
-    background-color: #eaeaea; 
-  }
+   .fc .fc-prev-button, .fc .fc-next-button {
+     background-color: #335543;
+     border: none;
+     color: #FFF;
+     font-size: 2em;
+     font-size: 1.5em;
+     border-radius: 50%; 
+     line-height: 1;
+   }
 
-  .fc-prev-button {
-    margin-left: 3%;
-  }
+   .fc .fc-prev-button:hover,
+   .fc .fc-next-button:hover,
+   .fc .fc-AddEvent-button:hover {
+     background-color: #eaeaea; 
+   }
 
-  .fc-next-button {
-    margin-right: 3%;
-  }
+   .fc-prev-button {
+     margin-left: 3%;
+   }
 
-  .fc-header-toolbar {
-    margin-top: 5%;
-    display: flex;
-    justify-content: space-between;
-    text-transform: uppercase;
-    padding-bottom: 1%;
-  }
-  
-  .fc .fc-toolbar-title {
-    text-align: center;
-    margin-right: 2.5%;
-  }
-  
-  .fc-toolbar-chunk {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+   .fc-next-button {
+     margin-right: 3%;
+   }
 
-  .fc-toolbar-chunk:nth-child(2) {
-    justify-content: center;
-  }
+   .fc-header-toolbar {
+     margin-top: 5%;
+     display: flex;
+     justify-content: space-between;
+     text-transform: uppercase;
+     padding-bottom: 1%;
+   }
 
-  .fc-toolbar-chunk:last-child {
-    justify-content: end;
-  }
+   .fc .fc-toolbar-title {
+     text-align: center;
+     margin-right: 2.5%;
+   }
 
-  .fc-col-header-cell {
-    background: #335543;
-    color: #FFF;
-  }
-  
-  .fc .fc-AddEvent-button {
-    background-color: #F7AB74;
-    color: black;
-    border-radius: 0.9em;
-    border-color: #F7AB74;
-    font-size: 1.1em;
-    border: none;
-  }
+   .fc-toolbar-chunk {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
 
-  .fc .fc-daygrid-event-harness {
-    max-width: 100%;
-  }
+   .fc-toolbar-chunk:nth-child(2) {
+     justify-content: center;
+   }
 
-  .fc .fc-event {
-    background-color: #F7AB74;
-    border-color: #F7AB74;
-    color: black;
-    border-radius: 1em;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 5%;
-    padding-right: 25%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-  }
+   .fc-toolbar-chunk:last-child {
+     justify-content: end;
+   }
 
-  .fc-daygrid-event-dot {
-    display: none;
-  }
+   .fc-col-header-cell {
+     background: #335543;
+     color: #FFF;
+   }
 
-  .fc .fc-col-header-cell,
-  .fc .fc-daygrid-day,
-  .fc .fc-daygrid {
-    border: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-  }
-`;
+   .fc .fc-AddEvent-button {
+     background-color: #F7AB74;
+     color: black;
+     border-radius: 0.9em;
+     border-color: #F7AB74;
+     font-size: 1.1em;
+     border: none;
+   }
+
+   .fc .fc-daygrid-event-harness {
+     max-width: 100%;
+   }
+
+   .fc .fc-event {
+     background-color: #F7AB74;
+     border-color: #F7AB74;
+     color: black;
+     border-radius: 1em;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+     padding: 5%;
+     padding-right: 25%;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     box-sizing: border-box;
+   }
+
+   .fc-daygrid-event-dot {
+     display: none;
+   }
+
+   .fc .fc-col-header-cell,
+   .fc .fc-daygrid-day,
+   .fc .fc-daygrid {
+     border: 1px solid #ddd;
+     border-right: 1px solid #ddd;
+   }
+ `;

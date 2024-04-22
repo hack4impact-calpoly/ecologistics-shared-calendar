@@ -3,8 +3,9 @@ import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSignIn, useSession } from "@clerk/nextjs";
+import styles from "./style/login.module.css"; // Make sure the path is correct
 
-//icons
+// Icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/LockOutlined";
 
@@ -68,43 +69,43 @@ export default function LoginPage() {
                     color: grey;
                 }
             `}</style>
-            <div style={styles.container}>
-                <form style={styles.formBox} onSubmit={handleSubmit}>
-                    <h2 style={styles.title}>Login To Your Account</h2>
-                    <p style={styles.subtitle}>
+            <div className={styles.container}>
+                <form className={styles.formBox} onSubmit={handleSubmit}>
+                    <h2 className={styles.title}>Login To Your Account</h2>
+                    <p className={styles.subtitle}>
                         Organizations & Charities Only
                     </p>
 
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
+                    <div className={styles.inputBox}>
+                        <label htmlFor="email" className={styles.label}>
                             Email Address
                         </label>
 
-                        <div style={styles.inputContainer}>
-                            <PersonIcon style={styles.icon}></PersonIcon>
+                        <div className={styles.inputContainer}>
+                            <PersonIcon className={styles.icon}></PersonIcon>
                             <input
                                 type="email"
                                 id="email"
                                 placeholder="Enter Your Email Address"
-                                style={styles.input}
+                                className={styles.input}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                             />
                         </div>
                     </div>
-                    <div className="inputBox" style={styles.inputBox}>
-                        <label htmlFor="email" style={styles.label}>
+                    <div className={styles.inputBox}>
+                        <label htmlFor="email" className={styles.label}>
                             Password
                         </label>
 
-                        <div style={styles.inputContainer}>
-                            <LockIcon style={styles.icon}></LockIcon>
+                        <div className={styles.inputContainer}>
+                            <LockIcon className={styles.icon}></LockIcon>
                             <input
                                 type={showPassword ? "text" : "password"} // Toggle password visibility
                                 id="email"
                                 placeholder="Enter Your Password"
-                                style={styles.input}
+                                className={styles.input}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -112,7 +113,7 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)} // Toggle the state on button click
-                                style={styles.togglePasswordButton}
+                                className={styles.togglePasswordButton}
                             >
                                 {showPassword ? "Hide" : "Show"}
                             </button>
@@ -123,22 +124,22 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        style={{ ...styles.button, ...styles.buttonSent }}
+                        className={`${styles.button} ${styles.buttonSent}`}
                     >
                         {"Login"}
                     </button>
 
-                    <div style={styles.bottomText}>
+                    <div className={styles.bottomText}>
                         <Link href="/forgot-password">Forgot Password?</Link>
                     </div>
 
-                    <div style={styles.bottomText}>
+                    <div className={styles.bottomText}>
                         Don&apos;t Have an Account? Apply for one now!
                     </div>
 
                     <button
                         type="submit"
-                        style={{ ...styles.button, ...styles.buttonSent }}
+                        className={`${styles.button} ${styles.buttonSent}`}
                         onClick={goToSignUp}
                     >
                         {"Sign Up"}
@@ -148,108 +149,3 @@ export default function LoginPage() {
         </Layout>
     );
 }
-const styles: { [key: string]: React.CSSProperties } = {
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "10vh",
-        width: "100%",
-        backgroundColor: "white",
-    },
-    formBox: {
-        borderRadius: "8px",
-        backgroundColor: "white",
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-    },
-    title: {
-        fontFamily: "DM Sans",
-        fontSize: "3.75em",
-        textAlign: "center",
-        marginBottom: "-0.5em",
-    },
-    subtitle: {
-        fontFamily: "DM Sans",
-        fontSize: "2em",
-        textAlign: "center",
-    },
-    inputBox: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        marginTop: "1em",
-        width: "50%",
-        boxSizing: "border-box",
-    },
-    label: {
-        fontFamily: "DM Sans",
-        fontSize: "1.5625em",
-        marginLeft: "0.2em",
-    },
-    input: {
-        fontFamily: "DM Sans",
-        padding: "0.3em",
-        paddingLeft: "1.5em",
-        fontSize: "2em",
-        color: "black",
-        width: "100%",
-        border: "1px solid black",
-        borderRadius: "4px",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    },
-    inputContainer: {
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-    },
-    bottomText: {
-        marginTop: "1.5625em",
-        marginBottom: "1.5625em",
-        fontSize: "1em",
-    },
-    button: {
-        fontFamily: "DM Sans",
-        fontSize: "1em",
-        color: "black",
-        paddingTop: "0.7em",
-        paddingBottom: "0.7em",
-        backgroundColor: "#F7AB74",
-        border: "None",
-        borderRadius: "10px",
-        width: "12%",
-        cursor: "pointer",
-        boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    },
-    statusMessage: {
-        fontFamily: "DM Sans",
-        textAlign: "center",
-        marginTop: "20px",
-        fontSize: "1em",
-        color: "#28a745",
-    },
-    icon: {
-        fontSize: "200%",
-        transform: "translateY(-50%)",
-        position: "absolute",
-        left: "10px",
-        top: "50%",
-        pointerEvents: "none",
-    },
-    togglePasswordButton: {
-        position: "absolute",
-        right: "10px", // Adjust as needed
-        top: "50%",
-        transform: "translateY(-50%)",
-        backgroundColor: "transparent",
-        border: "none",
-        outline: "none",
-        cursor: "pointer",
-        fontSize: "1em",
-        color: "gray",
-    },
-};
