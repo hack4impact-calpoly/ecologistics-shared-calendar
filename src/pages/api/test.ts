@@ -12,24 +12,25 @@ import User from "../../database/userSchema";
 // }
 
 export default async function handler(req, res) {
-  await connectDB();
+    await connectDB();
 
-  if (req.method == "GET") {
-    const random = await User.find({});
-    console.log("Get called");
-    console.log(random);
-  }
-
-  if (req.method == "POST") {
-    try {
-      const { email, password } = req.body;
-      const newUser = new User({ email, password });
-      await newUser.save();
-
-      res.status(201).json({ message: "User created successfully!" });
-    } catch (error) {
-      console.log(error);
+    if (req.method == "GET") {
+        const random = await User.find({});
+        console.log("Get called");
+        console.log(random);
     }
-  }
-  res.status(200).json({ message: "Hello from the API!" });
+
+    if (req.method == "POST") {
+        try {
+            const { email, password } = req.body;
+            const newUser = new User({ email, password });
+            await newUser.save();
+
+            res.status(201).json({ message: "User created successfully!" });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    res.status(200).json({ message: "Hello from the API!" });
 }
