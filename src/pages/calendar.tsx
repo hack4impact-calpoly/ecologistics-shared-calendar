@@ -14,6 +14,7 @@ import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
+import Navbar from "../components/navbar";
 
 export interface Event {
   startRecur: Date;
@@ -128,7 +129,7 @@ export default function CalendarPage() {
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-
+            <Navbar />
             <button
               onClick={handleLogout}
               onMouseOver={(e) =>

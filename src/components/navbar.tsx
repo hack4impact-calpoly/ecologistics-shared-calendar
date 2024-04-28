@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import './navbar.component.css';
+import styles from '../styles/navbar.module.css'; // Changed to import as a module
 import Dropdown from './Dropdown';
 
 const Navbar: React.FC = () => {
@@ -12,10 +12,19 @@ const Navbar: React.FC = () => {
     ];
 
     return (
-        <nav className="navbar">
-            <Link href="/" className="link">Home</Link>
-            <div className="dropdown" onClick={() => setIsActive(!isActive)}>
-                <button>Menu</button>
+        <nav className={styles.navbar}>
+            <Link href="/">
+                <a className={styles.link}>Ecologistics</a>
+            </Link>
+            <div className={styles.dropdown}>
+                <button
+                    className={styles.menuButton}
+                    aria-haspopup="true"
+                    aria-expanded={isActive}
+                    onClick={() => setIsActive(!isActive)}
+                >
+                    Menu
+                </button>
                 <Dropdown items={menuItems} isActive={isActive} />
             </div>
         </nav>
