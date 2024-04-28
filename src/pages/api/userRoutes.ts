@@ -19,8 +19,18 @@ export default async function handler(
         case "GET":
             try {
                 const users = await User.find({});
+                
+                const {clerkId}=req.query;
+                if(clerkId){
+                    const user=await User.findOne({clerkId});
+                    if (!user) {
+                        return res.status(404).json({ data: 'User not found' });
+                    }
+                    res.status(200).json({ success: true, data: user});
+                }
                 res.status(200).json({ success: true, data: users });
             } catch (error) {
+                console.log(error);
                 res.status(400).json({
                     success: false,
                     message: error,
