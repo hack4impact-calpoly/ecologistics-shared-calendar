@@ -13,8 +13,8 @@ const Dropdown: React.FC<DropdownProps> = ({ items, isActive }) => {
   return (
     <div className={styles.dropdown}> 
       {items.map((item, index) => (
-        <Link key={index} href={item.path}>
-          <a className={styles.dropdownItem}>{item.label}</a>       
+        <Link className={styles.dropdownItem} key={index} href={item.path}>
+          {item.label}     
         </Link>
       ))}
     </div>

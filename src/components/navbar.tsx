@@ -13,8 +13,8 @@ const Navbar: React.FC = () => {
 
     return (
         <nav className={styles.navbar}>
-            <Link href="/">
-                <a className={styles.link}>Ecologistics</a>
+            <Link className={styles.link} href="/">
+                Ecologistics
             </Link>
             <div className={styles.dropdown}>
                 <button

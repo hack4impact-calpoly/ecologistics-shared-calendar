@@ -9,14 +9,14 @@ interface UserMetadata {
 export default authMiddleware({
     async afterAuth(auth, req: NextRequest) {
         // Define public routes
-        const publicRoutes = ["/", "/login", "/signup", "/forgot-password"];
+        const publicRoutes = ["/", "/login", "/signup", "/forgot-password","/calendar"];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
             "/eventDetails": ["admin", "user"],
             "/eventBar": ["admin", "user"],
-            "/calendar": ["admin", "user"],
+            // "/calendar": ["admin", "user"],
             "/confirmation-page": ["pending"],
         };
 
