@@ -158,6 +158,21 @@ export default function CalendarPage() {
                 Admin
               </button>
             </Link>
+            <Link prefetch={false} href="/profile">
+             <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                className={style1.adminButton}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
           <style>{calendarStyles}</style>
 
