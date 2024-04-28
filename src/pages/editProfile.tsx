@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { useUser } from '@clerk/clerk-react';
 import axios from 'axios';
-import { em } from "@fullcalendar/core/internal-common";
 
 export default function EditProfilePage(){
 
