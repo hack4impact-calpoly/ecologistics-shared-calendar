@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { useUser } from '@clerk/clerk-react';
 import axios from 'axios';
+import { useRouter } from "next/router";
 
 export default function EditProfilePage(){
 
@@ -16,7 +17,7 @@ export default function EditProfilePage(){
     const [position, setPosition]=useState("");
     const [fname, setFName]=useState("");
     const [lname, setLName]=useState("");
-
+    const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,6 +31,8 @@ export default function EditProfilePage(){
           .catch(error => {
             console.error('Error:', error);
           });
+
+          router.push("/profile");
       };
 
       useEffect(() => {
