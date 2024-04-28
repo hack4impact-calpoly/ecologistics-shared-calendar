@@ -7,6 +7,7 @@ import { Paper, Typography } from '@mui/material';
 import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useUser } from '@clerk/clerk-react';
+import { useEffect } from 'react';
 
 export default function ProfilePage(){
     const router = useRouter();
@@ -17,22 +18,41 @@ export default function ProfilePage(){
     const { styles } = useProfileStyles();
     const { user } = useUser();
 
-    var email="XIXIXI@gmail.com";
-    var phone="+1 123 456 78";
-    var position="XXXXXXXXXIXIXIX";
-    var fname="XXXXX";
-    var lname="XXXXX";
-    var userOrAdmin="admin";
-    var orgName="Organization Name";
-    try{
-        email=user.primaryEmailAddress.emailAddress;
-        //phone=user.primaryPhoneNumber.phoneNumber;
-        fname=user.firstName;
+    const [orgName, setOrg] = useState("");
+    const [uid, setUID]=useState("");
+    const [email, setEmail]=useState("");
+    const [phone, setPhone]=useState("");
+    const [position, setPosition]=useState("");
+    const [fname, setFName]=useState("");
+    const [lname, setLName]=useState("");
+    const [userOrAdmin,setUserOrAdmin]=useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+
+            const response = await fetch('/api/userRoutes?clerkId='+uid);
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            const responseData = await response.json();
+            console.log(responseData);
+            setOrg(responseData.data.organization);
+            setEmail(responseData.data.email);
+          } catch (error) {
         
+          }
+        };
+        if(user){
+            setUID(user.id);
+            fetchData();
+        }
         
-    } catch{
-        console.log("sdfasdfsd", fname);
-    }
+
+      }, [user,uid]);
+
+    
+    
     
 
 
