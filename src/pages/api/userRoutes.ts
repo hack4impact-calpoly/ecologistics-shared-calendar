@@ -56,6 +56,26 @@ export default async function handler(
                 });
             }
             break;
+        
+        case "PUT":
+            try {
+                const { userId } = getAuth(req);
+                const { role, organization, email } = req.body;
+                
+                const {clerkId}=req.query;
+                const user = await User.findOneAndUpdate({clerkId:clerkId}, {
+                    clerkId: userId,
+                    organization: organization,
+                    email: email,
+                });
+                res.status(201).json({ success: true, data: user });
+            } catch (error) {
+                res.status(400).json({
+                    success: false,
+                    message: error,
+                });
+            }
+            break;
 
         case "DELETE":
             try {
