@@ -1,12 +1,7 @@
-import Layout from "./layout";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import { Event } from "../pages/calendar";
-import { set } from "mongoose";
-import { get } from "http";
-import { request } from "https";
-import { aD } from "@fullcalendar/core/internal-common";
 
 interface AddEventForm {
   title: string;
@@ -355,7 +350,7 @@ export default function AddEventPanel({
             type="text"
             style={styles.input}
             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            value={formData.url}
+            value={formData.url ? formData.url : ""}
             required
           />
         </>
