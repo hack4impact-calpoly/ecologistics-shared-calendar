@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useRouter } from "next/router";
-import styles from "../styles/navbar.module.css";
 import CircleIcon from "@mui/icons-material/Circle";
+import styles from "../styles/navbar.module.css";
+
 interface DropdownItem {
   label: string;
   path?: string;
@@ -18,11 +19,12 @@ interface PositionedMenuProps {
 
 const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const buttonRef = useRef(null); // Reference to the button
   const router = useRouter();
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(buttonRef.current); // Use the button reference
   };
 
   const handleClose = () => {
@@ -39,10 +41,13 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
     handleClose();
   };
 
+  // Get the button width using the button reference
+  const buttonWidth = buttonRef.current ? buttonRef.current.offsetWidth : undefined;
+
   return (
     <div>
       <Button
-        className={styles.dropdownButton}
+        ref={buttonRef} // Set the reference to the button
         aria-controls={open ? "customized-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
@@ -50,21 +55,21 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
         onClick={handleClick}
         color="inherit"
         sx={{
-          borderRadius: "5%",
-          border: "2px solid black",
+          width: "100%", // Use 100% if the button should take the full width of its container
+          borderRadius: "5%", // Rounded corners
+          border: "2px solid black", // Border styling
           margin: "18px 10px",
+          textTransform: 'none', // Prevent uppercase transformation
         }}
       >
-        <div>
-          <CircleIcon
-            sx={{
-              color: "darkgreen", // Color of the icon
-              bgcolor: "transparent", // Background color of the icon
-              borderRadius: "50%",
-              fontSize: 28, // Size of the icon
-            }}
-          />
-        </div>
+        <CircleIcon
+          sx={{
+            color: "darkgreen",
+            bgcolor: "transparent",
+            borderRadius: "50%",
+            fontSize: 28,
+          }}
+        />
         Username
       </Button>
       <Menu
@@ -74,31 +79,40 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "left",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right",
+          horizontal: "left",
+        }}
+        PaperProps={{
+          sx: {
+            width: buttonWidth, // Menu width matches the button's width
+            marginTop: '8px', // Optional: adds space between the button and menu
+          }
         }}
         MenuListProps={{
-          "aria-labelledby": "customized-menu",
           sx: {
-            "& .MuiMenuItem-root": {
-              // Styles for all MenuItems
-              bgcolor: "orange", // Background color
-              color: "black", // Text color
-              "&:hover": {
-                bgcolor: "darkorange", // Background color on hover
+            '& .MuiMenuItem-root': {
+              bgcolor: "#F7AB74",
+              margin: "5px", // Margin between MenuItems
+              borderRadius: "5%", // Rounded corners for MenuItems
+              color: "black",
+              '&:hover': {
+                bgcolor: "orange",
               },
+              padding: '10px 16px', // Padding inside each MenuItem
             },
           },
         }}
       >
         {items.map((item, index) => (
           <MenuItem
-            className={styles.menuItem}
             key={index}
             onClick={() => handleMenuItemClick(item)}
+            sx={{
+              justifyContent: 'center' // Center the MenuItem text if desired
+            }}
           >
             {item.label}
           </MenuItem>

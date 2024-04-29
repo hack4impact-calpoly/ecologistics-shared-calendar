@@ -9,6 +9,8 @@ const Navbar: React.FC = () => {
 
   const menuItems = [
     { path: "/login", label: "Login" },
+    // { path: "/login", label: "Login" },
+
     // Add more menu items here as needed
   ];
 

@@ -129,7 +129,7 @@ export default function CalendarPage() {
       <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
-          <div style={styles.signoutContainer}>
+          {/* <div style={styles.signoutContainer}>
             
             <button
               onClick={handleLogout}
@@ -160,7 +160,7 @@ export default function CalendarPage() {
                 Admin
               </button>
             </Link>
-          </div>
+          </div> */}
           <style>{calendarStyles}</style>
 
           <FullCalendar
