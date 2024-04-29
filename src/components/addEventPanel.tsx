@@ -6,6 +6,7 @@ import { Event } from "../pages/calendar";
 import { set } from "mongoose";
 import { get } from "http";
 import { request } from "https";
+import { aD } from "@fullcalendar/core/internal-common";
 
 interface AddEventForm {
   title: string;
@@ -15,8 +16,12 @@ interface AddEventForm {
   endTime: string;
   description: string;
   isVirtual: boolean;
+  url: string | null;
   photo: File | null;
-  location: string;
+  city: string;
+  street: string;
+  state: string;
+  postalCode: string;
 }
 
 interface FormErrors {
@@ -28,7 +33,7 @@ interface FormErrors {
   photo: string;
 }
 
-const emptyForm = {
+const EMPTY_FORM = {
   title: "",
   startDate: "",
   endDate: "",
@@ -36,8 +41,12 @@ const emptyForm = {
   endTime: "",
   description: "",
   isVirtual: false,
+  url: null,
   photo: null,
-  location: "",
+  city: "",
+  street: "",
+  state: "",
+  postalCode: "",
 };
 
 const stringToDate = (date: string, time: string): Date => {
@@ -59,7 +68,7 @@ export default function AddEventPanel({
   addEvent,
 }: AddEventPanelProps) {
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [formData, setFormData] = useState<AddEventForm>(emptyForm);
+  const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
@@ -97,9 +106,11 @@ export default function AddEventPanel({
   const addLocationErrors = async (errors: Partial<FormErrors>) => {
     if (formData.isVirtual) return;
 
+    const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
+
     const response = await fetch(
       new Request(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${formData.location}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`
       )
     );
 
@@ -155,7 +166,7 @@ export default function AddEventPanel({
 
     addEvent(event);
     onCreate();
-    setFormData(emptyForm);
+    setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
   };
 
@@ -296,16 +307,59 @@ export default function AddEventPanel({
         </label>
       </div>
 
-      <input
-        type="text"
-        placeholder={formData.isVirtual ? "Link" : "Address"}
-        style={styles.input}
-        onChange={(e) => {
-          setFormData({ ...formData, location: e.target.value });
-        }}
-        value={formData.location}
-        required
-      />
+      {!formData.isVirtual ? (
+        <>
+          <h4 style={styles.inputTitle}>Street</h4>
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) =>
+              setFormData({ ...formData, street: e.target.value })
+            }
+            value={formData.street}
+            required
+          />
+          <h4 style={styles.inputTitle}>City</h4>
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            value={formData.city}
+            required
+          />
+          <h4 style={styles.inputTitle}>State</h4>
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) =>
+              setFormData({ ...formData, state: e.target.value })
+            }
+            value={formData.state}
+            required
+          />
+          <h4 style={styles.inputTitle}>Postal Code</h4>
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) =>
+              setFormData({ ...formData, postalCode: e.target.value })
+            }
+            value={formData.postalCode}
+            required
+          />
+        </>
+      ) : (
+        <>
+          <h4 style={styles.inputTitle}>Link</h4>
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+            value={formData.url}
+            required
+          />
+        </>
+      )}
 
       {formErrors.location && (
         <div style={styles.errorBox}>
@@ -407,6 +461,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignSelf: "center",
   },
   uploadContainer: {
+    marginTop: "10px",
     textAlign: "center",
     padding: "40px",
     border: "1px dashed #000",
