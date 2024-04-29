@@ -19,7 +19,7 @@ export default function EditProfilePage(){
     const [lname, setLName]=useState("");
     const router = useRouter();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         axios.put('/api/userRoutes?clerkId='+uid, {
             email: email,
