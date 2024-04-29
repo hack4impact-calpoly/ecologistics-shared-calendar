@@ -25,7 +25,7 @@ export default function ProfilePage(){
     const [position, setPosition]=useState("");
     const [fname, setFName]=useState("");
     const [lname, setLName]=useState("");
-    const [userOrAdmin,setUserOrAdmin]=useState("");
+    const [userOrAdmin,setUserOrAdmin]=useState("admin");
 
     useEffect(() => {
         const fetchData = async () => {
