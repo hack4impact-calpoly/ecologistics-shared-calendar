@@ -17,20 +17,23 @@ interface Location {
   postalCode: string;
 }
 
-const EventSchema = new Schema({
-  title: { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  description: { type: String, required: false },
-  isVirtual: { type: Boolean, required: true },
-  location: {
-    type: {address: String, required: true},
+const EventSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    description: { type: String, required: false },
+    isVirtual: { type: Boolean, required: true },
+    location: {
+      type: { address: {street: String, city: String, state: String, postalCode: String, link: String}, required: true },
+    },
+    status: { type: Number, required: true, default: 0 }, //Idea: 0 pending, 1 approved, -1 or 2 denied
+    imageLink: { type: String, required: false },
   },
-  status: { type: Number, required: true, default: 0 }, //Idea: 0 pending, 1 approved, -1 or 2 denied
-  imageLink: { type: String, required: false }
-}, {
-  timestamps: true 
-});
+  {
+    timestamps: true,
+  }
+);
 
 // Export the Event model based on the schema
 const EventModel =
