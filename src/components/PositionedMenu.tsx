@@ -1,88 +1,3 @@
-// import React from "react";
-// import Button from "@mui/material/Button";
-// import Menu from "@mui/material/Menu";
-// import MenuItem from "@mui/material/MenuItem";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-// import { useRouter } from "next/router"; // Import useRouter
-
-// interface MenuItemProps {
-//   label: string;
-//   path?: string; // Optional path for navigation
-//   onClick?: () => void; // Optional custom click handler
-// }
-
-// interface PositionedMenuProps {
-//   buttonLabel: string;
-//   items: MenuItemProps[];
-// }
-
-// const PositionedMenu: React.FC<PositionedMenuProps> = ({
-//   buttonLabel,
-//   items,
-// }) => {
-//   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-//   const open = Boolean(anchorEl);
-//   const router = useRouter(); // Instantiate the router object
-
-//   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-//     setAnchorEl(event.currentTarget);
-//   };
-
-//   const handleClose = () => {
-//     setAnchorEl(null);
-//   };
-
-//   // Handle item click which could navigate or call a custom function
-//   const handleMenuItemClick = (item: MenuItemProps) => {
-//     if (item.path) {
-//       router.push(item.path); // Navigate if path is provided
-//     }
-//     if (item.onClick) {
-//       item.onClick(); // Call custom function if provided
-//     }
-//     handleClose(); // Always close the menu after the action
-//   };
-
-//   return (
-//     <div>
-//       <Button
-//         id="demo-positioned-button"
-//         aria-controls={open ? "demo-positioned-menu" : undefined}
-//         aria-haspopup="true"
-//         aria-expanded={open ? "true" : undefined}
-//         onClick={handleClick}
-//         variant="contained"
-//         disableElevation
-//         endIcon={<KeyboardArrowDownIcon />}
-//       >
-//         {buttonLabel}
-//       </Button>
-//       <Menu
-//         id="demo-positioned-menu"
-//         aria-labelledby="demo-positioned-button"
-//         anchorEl={anchorEl}
-//         open={open}
-//         onClose={handleClose}
-//         anchorOrigin={{
-//           vertical: "top",
-//           horizontal: "left",
-//         }}
-//         transformOrigin={{
-//           vertical: "top",
-//           horizontal: "left",
-//         }}
-//       >
-//         {items.map((item, index) => (
-//           <MenuItem key={index} onClick={() => handleMenuItemClick(item)}>
-//             {item.label}
-//           </MenuItem>
-//         ))}
-//       </Menu>
-//     </div>
-//   );
-// };
-
-// export default PositionedMenu;
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -90,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useRouter } from "next/router";
 import styles from "../styles/navbar.module.css";
-
+import CircleIcon from "@mui/icons-material/Circle";
 interface DropdownItem {
   label: string;
   path?: string;
@@ -133,8 +48,24 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
         aria-expanded={open ? "true" : undefined}
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
+        color="inherit"
+        sx={{
+          borderRadius: "5%",
+          border: "2px solid black",
+          margin: "18px 10px",
+        }}
       >
-        Menu
+        <div>
+          <CircleIcon
+            sx={{
+              color: "darkgreen", // Color of the icon
+              bgcolor: "transparent", // Background color of the icon
+              borderRadius: "50%",
+              fontSize: 28, // Size of the icon
+            }}
+          />
+        </div>
+        Username
       </Button>
       <Menu
         id="customized-menu"
@@ -149,9 +80,26 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
           vertical: "top",
           horizontal: "right",
         }}
+        MenuListProps={{
+          "aria-labelledby": "customized-menu",
+          sx: {
+            "& .MuiMenuItem-root": {
+              // Styles for all MenuItems
+              bgcolor: "orange", // Background color
+              color: "black", // Text color
+              "&:hover": {
+                bgcolor: "darkorange", // Background color on hover
+              },
+            },
+          },
+        }}
       >
         {items.map((item, index) => (
-          <MenuItem key={index} onClick={() => handleMenuItemClick(item)}>
+          <MenuItem
+            className={styles.menuItem}
+            key={index}
+            onClick={() => handleMenuItemClick(item)}
+          >
             {item.label}
           </MenuItem>
         ))}

@@ -25,7 +25,7 @@
     "@fullcalendar/resource": "^6.1.10",
     "@fullcalendar/resource-timeline": "^6.1.10",
     "@fullcalendar/timegrid": "^6.1.10",
-    "@mui/icons-material": "^5.15.11",
+    "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@next/font": "13.2.3",
     "axios": "^1.6.7",

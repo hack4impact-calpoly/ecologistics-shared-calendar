@@ -1,0 +1,9 @@
+.menuItem {
+    background-color: orange; /* Orange background for menu items */
+    color: white; /* White text color for contrast */
+}
+  
+  /* Additional hover effect for menu items */
+.menuItem:hover {
+    background-color: darkorange; /* Darker orange on hover */
+}

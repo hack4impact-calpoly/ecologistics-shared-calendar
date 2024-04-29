@@ -1,38 +1,5 @@
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem;
-}
-
-.link {
-    text-decoration: none;
-    color: black;
-}
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown-content {
-    position: absolute;
-    right: 0;
-    background-color: white;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    display: none; /* initially hidden */
-}
-.dropdownButton {
-    background-color: white;
-    color: black;
-}
-
-.dropdown-content.active {
-    display: block; /* show on click, manage via state */
-}
-
-.dropdown-item {
-    display: block;
-    padding: 12px 16px;
-    text-decoration: none;
-    color: black;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
 }
