@@ -126,10 +126,11 @@ export default function CalendarPage() {
       {isShowingEventPopUp && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
+      <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-            <Navbar />
+            
             <button
               onClick={handleLogout}
               onMouseOver={(e) =>

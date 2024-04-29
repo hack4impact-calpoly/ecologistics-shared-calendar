@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     padding: 1rem;
-    background-color: lightblue;
 }
 
 .link {
@@ -21,6 +20,10 @@
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
     display: none; /* initially hidden */
+}
+.dropdownButton {
+    background-color: white;
+    color: black;
 }
 
 .dropdown-content.active {
