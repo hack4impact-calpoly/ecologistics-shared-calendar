@@ -3,27 +3,35 @@ import Link from "next/link";
 import styles from "../styles/navbar.module.css"; // Changed to import as a module
 import PositionedMenu from "./PositionedMenu";
 import Image from "next/image";
-import { useUser } from "@clerk/clerk-react";
+import { useSignIn, useSession } from "@clerk/nextjs";
 import { I } from "@fullcalendar/resource/internal-common";
 
 const Navbar: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
-  
-
+//   const handleLogout = async () => {
+//     try {
+//       // Call signOut function to log out the current user
+//       await signOut();
+//       // Redirect to a different page after logout if needed
+//       window.location.href = "/login";
+//     } catch (error) {
+//       console.error("Error logging out:", error);
+//     }
+//   };
   const menuItems = [];
 
-  const { isSignedIn, user, isLoaded } = useUser();
-  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const { isLoaded, isSignedIn, session } = useSession();
+  const role = session?.user?.unsafeMetadata?.role;
   if (!isLoaded) {
     return null;
   }
   if (!isSignedIn) {
     menuItems.push({ path: "/login", label: "Login" });
-  } else{
+  } else {
     menuItems.push({ path: "/login", label: "Account Settings" });
     menuItems.push({ path: "/login", label: "My Events" });
-    if (isAdmin){
-        menuItems.push({ path: "/login", label: "My Organizations" });
+    if (role === "admin") {
+      menuItems.push({ path: "/login", label: "My Organizations" });
     }
     menuItems.push({ path: "/login", label: "Logout" });
   }

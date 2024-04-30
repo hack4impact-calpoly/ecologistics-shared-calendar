@@ -6,6 +6,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useRouter } from "next/router";
 import CircleIcon from "@mui/icons-material/Circle";
 import Box from "@mui/material/Box"; // Import Box
+import { useClerk } from "@clerk/clerk-react";
+
 
 
 interface DropdownItem {
@@ -23,6 +25,8 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
   const buttonRef = useRef(null); // Reference to the button
   const router = useRouter();
   const open = Boolean(anchorEl);
+  const { signOut } = useClerk();
+
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(buttonRef.current); // Use the button reference
@@ -32,12 +36,19 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (item: DropdownItem) => {
+  const handleMenuItemClick = async (item: DropdownItem) => {
     if (item.path) {
       router.push(item.path);
     }
-    if (item.action) {
-      item.action();
+    if (item.label === "Logout") {
+        try {
+            // Call signOut function to log out the current user
+            await signOut();
+            // Redirect to a different page after logout if needed
+            window.location.href = "/login";
+          } catch (error) {
+            console.error("Error logging out:", error);
+          }
     }
     handleClose();
   };
@@ -106,7 +117,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
                     borderRadius: "5%", // Rounded corners for MenuItems
                     color: "black",
                     "&:hover": {
-                        bgcolor: "orange",
+                        filter: "brightness(120%)",
                     },
                     padding: "10px 16px", // Padding inside each MenuItem
                     },
