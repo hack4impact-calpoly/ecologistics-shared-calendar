@@ -117,7 +117,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
                     borderRadius: "5%", // Rounded corners for MenuItems
                     color: "black",
                     "&:hover": {
-                        filter: "brightness(120%)",
+                        bgcolor: "#e69153", // Hover color for MenuItem
                     },
                     padding: "10px 16px", // Padding inside each MenuItem
                     },

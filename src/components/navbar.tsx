@@ -8,16 +8,7 @@ import { I } from "@fullcalendar/resource/internal-common";
 
 const Navbar: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
-//   const handleLogout = async () => {
-//     try {
-//       // Call signOut function to log out the current user
-//       await signOut();
-//       // Redirect to a different page after logout if needed
-//       window.location.href = "/login";
-//     } catch (error) {
-//       console.error("Error logging out:", error);
-//     }
-//   };
+
   const menuItems = [];
 
   const { isLoaded, isSignedIn, session } = useSession();
@@ -28,8 +19,8 @@ const Navbar: React.FC = () => {
   if (!isSignedIn) {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
-    menuItems.push({ path: "/login", label: "Account Settings" });
-    menuItems.push({ path: "/login", label: "My Events" });
+    menuItems.push({ path: "/profile", label: "Account Settings" });
+    menuItems.push({ path: "/adminEvents", label: "My Events" });
     if (role === "admin") {
       menuItems.push({ path: "/login", label: "My Organizations" });
     }

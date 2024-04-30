@@ -128,9 +128,9 @@ export default function CalendarPage() {
       <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
-          {/* <div style={styles.signoutContainer}>
-            
-            <button
+          <div style={styles.signoutContainer}>
+
+            {/* <button
               onClick={handleLogout}
               onMouseOver={(e) =>
                 ((e.target as HTMLButtonElement).style.backgroundColor =
@@ -143,8 +143,8 @@ export default function CalendarPage() {
               className={style1.logoutButton}
             >
               Logout
-            </button>
-            <Link prefetch={false} href="/adminEvents">
+            </button> */}
+            {/* <Link prefetch={false} href="/adminEvents">
              <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
@@ -173,7 +173,7 @@ export default function CalendarPage() {
               >
                 Profile
               </button>
-            </Link>
+            </Link> */}
           </div>
           <style>{calendarStyles}</style>
 
@@ -244,7 +244,6 @@ export default function CalendarPage() {
             addEvent={addEvent}
           />
         )}
-      </div>
       </div>
     </Layout>
   );
