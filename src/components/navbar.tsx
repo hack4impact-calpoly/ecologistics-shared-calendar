@@ -20,9 +20,9 @@ const Navbar: React.FC = () => {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
     menuItems.push({ path: "/profile", label: "Account Settings" });
-    menuItems.push({ path: "/adminEvents", label: "My Events" });
+    menuItems.push({ path: "/login", label: "My Events" });
     if (role === "admin") {
-      menuItems.push({ path: "/login", label: "My Organizations" });
+      menuItems.push({ path: "/adminEvents", label: "My Organizations" });
     }
     menuItems.push({ path: "/login", label: "Logout" });
   }
