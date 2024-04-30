@@ -2,7 +2,6 @@ import Layout from "../components/layout";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
@@ -158,13 +157,27 @@ export default function CalendarPage() {
                 Admin
               </button>
             </Link>
+            <Link prefetch={false} href="/profile">
+             <button
+                onMouseOver={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#e69153")
+                }
+                onMouseOut={(e) =>
+                  ((e.target as HTMLButtonElement).style.backgroundColor =
+                    "#f7ab74")
+                }
+                className={style1.adminButton}
+              >
+                Profile
+              </button>
+            </Link>
           </div>
           <style>{calendarStyles}</style>
 
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
-              resourceTimelinePlugin,
               dayGridPlugin,
               interactionPlugin,
               timeGridPlugin,
