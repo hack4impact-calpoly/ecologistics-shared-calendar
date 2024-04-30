@@ -17,6 +17,10 @@ export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
     const [pendingVerification, setPendingVerification] = useState(false);
     const [code, setCode] = useState("");
+    const [fName, setFName] = useState("");
+    const [lName, setLName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [position, setPosition] = useState("");
 
     const goToLogin = () => {
         router.push("/login"); // Use Next.js router for navigation
@@ -136,6 +140,70 @@ export default function SignUp() {
                             </div>
                         </div>
                         <div className={styles.inputBox}>
+                            <label htmlFor="fName" className={styles.label}>
+                                First Name of Organization Representative
+                            </label>
+                            <div className={styles.inputContainer}>
+                                <input
+                                    type="name"
+                                    id="fName"
+                                    placeholder="Enter First Name "
+                                    className={styles.input}
+                                    value={email}
+                                    onChange={(e) => setFName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.inputBox}>
+                            <label htmlFor="lName" className={styles.label}>
+                                Last Name of Organization Representative
+                            </label>
+                            <div className={styles.inputContainer}>
+                                <input
+                                    type="name"
+                                    id="lName"
+                                    placeholder="Enter Last Name "
+                                    className={styles.input}
+                                    value={email}
+                                    onChange={(e) => setLName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.inputBox}>
+                            <label htmlFor="position" className={styles.label}>
+                                Position of Organization Representative
+                            </label>
+                            <div className={styles.inputContainer}>
+                                <input
+                                    type="name"
+                                    id="lName"
+                                    placeholder="Enter Position "
+                                    className={styles.input}
+                                    value={email}
+                                    onChange={(e) => setPosition(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.inputBox}>
+                            <label htmlFor="phone" className={styles.label}>
+                                Organization Phone Number
+                            </label>
+                            <div className={styles.inputContainer}>
+                                <input
+                                    type="name"
+                                    id="phone"
+                                    placeholder="Enter Phone Number "
+                                    className={styles.input}
+                                    value={email}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.inputBox}>
                             <label htmlFor="email" className={styles.label}>
                                 Email Address
                             </label>
@@ -143,7 +211,7 @@ export default function SignUp() {
                                 <input
                                     type="email"
                                     id="email"
-                                    placeholder="Enter Your Email Address "
+                                    placeholder="Enter Email Address "
                                     className={styles.input}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -151,6 +219,7 @@ export default function SignUp() {
                                 />
                             </div>
                         </div>
+                        
                         <div className={styles.inputBox}>
                             <label htmlFor="email" className={styles.label}>
                                 Password
@@ -159,7 +228,7 @@ export default function SignUp() {
                                 <input
                                     type={showPassword ? "text" : "password"} // Toggle input type between "text" and "password"
                                     id="password"
-                                    placeholder="Enter Your Password"
+                                    placeholder="Enter Password"
                                     className={styles.input}
                                     value={password}
                                     onChange={(e) =>
@@ -183,6 +252,7 @@ export default function SignUp() {
                                 </p>
                             )}
                         </div>
+                        
 
                         <div style={{ paddingTop: "1vw" }}></div>
 
