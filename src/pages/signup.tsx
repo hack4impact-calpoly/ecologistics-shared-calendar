@@ -48,10 +48,6 @@ export default function SignUp() {
             await signUp.create({
                 emailAddress: email,
                 password: password,
-                unsafeMetadata: {
-                    organization,
-                    role: "pending",
-                },
             });
 
             // send the email.

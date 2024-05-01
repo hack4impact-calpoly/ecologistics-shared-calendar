@@ -50,7 +50,7 @@ export default function LoginPage() {
                     session: result.createdSessionId,
                 });
                 //redirect based on role
-                const role = session?.user?.unsafeMetadata?.role;
+                const role = session?.user?.publicMetadata?.role;
                 if (role === "pending") router.push("/confirmation-page");
                 else if (role === "admin" || role === "user")
                     router.push("/calendar");

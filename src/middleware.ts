@@ -32,7 +32,7 @@ export default authMiddleware({
 
         // Check if the user has access to the current route
         const requiredRoles = routePermissions[req.nextUrl.pathname];
-        const metadata = auth?.sessionClaims?.unsafe_metadata as UserMetadata;
+        const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
         const role = metadata?.role;
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage
