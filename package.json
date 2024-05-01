@@ -10,6 +10,7 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.565.0",
     "@clerk/nextjs": "^4.29.11",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
@@ -28,11 +29,16 @@
     "@mui/icons-material": "^5.15.11",
     "@mui/material": "^5.15.7",
     "@next/font": "13.2.3",
+    "aws-sdk": "^2.1610.0",
     "axios": "^1.6.7",
     "bootstrap-icons": "^1.11.3",
+    "formidable": "^3.5.1",
+    "fs": "^0.0.1-security",
     "leaflet": "^1.9.4",
     "mongoose": "^7.6.3",
+    "multer": "^1.4.5-lts.1",
     "next": "14.0.0",
+    "next-connect": "^1.0.0-next.4",
     "ol": "^9.1.0",
     "react": "^18",
     "react-dom": "^18",
@@ -42,6 +48,7 @@
     "resend": "^3.1.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

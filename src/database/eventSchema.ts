@@ -25,7 +25,7 @@ const EventSchema = new Schema(
     description: { type: String, required: false },
     isVirtual: { type: Boolean, required: true },
     location: {
-      type: { address: {street: String, city: String, state: String, postalCode: String, link: String}, required: true },
+      type: { address: String, required: true },
     },
     status: { type: Number, required: true, default: 0 }, //Idea: 0 pending, 1 approved, -1 or 2 denied
     imageLink: { type: String, required: false },

@@ -44,6 +44,14 @@ const EMPTY_FORM = {
   postalCode: "",
 };
 
+interface Event {
+  startRecur: Date;
+  endRecur: Date;
+  title: string;
+  id: string;
+  imageUrl?: string;
+}
+
 const stringToDate = (date: string, time: string): Date => {
   const [year, month, day] = date.split("-").map(Number);
   const [hours, minutes] = time.split(":").map(Number);
@@ -146,23 +154,51 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ID should be assigned based on return from database at some point!
-    const event: Event = {
-      startRecur: stringToDate(formData.startDate, formData.startTime),
-      endRecur: stringToDate(formData.endDate, formData.endTime),
-      title: formData.title,
-      id: Math.random().toString(),
-    };
     const errors = await getFormErrors();
     if (Object.keys(errors).length !== 0) {
       setFormErrors(errors);
       return;
     }
 
-    addEvent(event);
-    onCreate();
-    setFormData(EMPTY_FORM);
-    setImagePreviewUrl(null);
+    if (formData.photo) {
+      const fileData = new FormData();
+      fileData.append("file", formData.photo);
+
+      try {
+        const uploadResponse = await fetch("api/s3-upload/route", {
+          method: "POST",
+          body: fileData,
+        });
+
+        const uploadResult = await uploadResponse.json();
+        console.log(uploadResponse);
+
+        if (uploadResponse.ok) {
+          const event: Event = {
+            startRecur: stringToDate(formData.startDate, formData.startTime),
+            endRecur: stringToDate(formData.endDate, formData.endTime),
+            title: formData.title,
+            id: Math.random().toString(),
+            imageUrl: uploadResult.url,
+          };
+
+          addEvent(event);
+          onCreate();
+          setFormData(EMPTY_FORM);
+          setImagePreviewUrl(null);
+        } else {
+          setFormErrors((prev) => ({
+            ...prev,
+            photo: "Failed to upload image",
+          }));
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        setFormErrors((prev) => ({ ...prev, photo: "Error uploading image" }));
+      }
+    } else {
+      setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
