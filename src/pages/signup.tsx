@@ -177,8 +177,8 @@ export default function SignUp() {
                             </label>
                             <div className={styles.inputContainer}>
                                 <input
-                                    type="name"
-                                    id="lName"
+                                    type="position"
+                                    id="position"
                                     placeholder="Enter Position "
                                     className={styles.input}
                                     value={email}
@@ -193,7 +193,7 @@ export default function SignUp() {
                             </label>
                             <div className={styles.inputContainer}>
                                 <input
-                                    type="name"
+                                    type="phone"
                                     id="phone"
                                     placeholder="Enter Phone Number "
                                     className={styles.input}
