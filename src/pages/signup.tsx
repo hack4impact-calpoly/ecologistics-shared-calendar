@@ -15,11 +15,15 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [passwordValidation, setPasswordValidation] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const [pendingVerification, setPendingVerification] = useState(true);
+  const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
 
+  interface InputRef {
+    current: HTMLInputElement | null;
+  }
+
   // Refs to control each digit input element
-  const inputRefs = [
+  const inputRefs: InputRef[] = [
     useRef(null),
     useRef(null),
     useRef(null),
@@ -35,10 +39,10 @@ export default function SignUp() {
   }, [code]); //eslint-disable-line
 
   // handle input to verification
-  function handleInput(e, index) {
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
     const input = e.target;
-    const previousInput = inputRefs[index - 1];
-    const nextInput = inputRefs[index + 1];
+    const previousInput = inputRefs[index - 1]?.current;
+    const nextInput = inputRefs[index + 1]?.current;
 
     // Update code state with single digit
     const newCode = [code];
@@ -46,7 +50,7 @@ export default function SignUp() {
     if (/^[a-z]+$/.test(input.value)) {
       const uc = input.value.toUpperCase();
       newCode[index] = uc;
-      inputRefs[index].current.value = uc;
+      inputRefs[index].current!.value = uc;
     } else {
       newCode[index] = input.value;
     }
@@ -57,24 +61,27 @@ export default function SignUp() {
     if (input.value === "") {
       // If the value is deleted, select previous input, if exists
       if (previousInput) {
-        previousInput.current.focus();
+        previousInput.focus();
       }
     } else if (nextInput) {
       // Select next input on entry, if exists
-      nextInput.current.select();
+      nextInput.select();
     }
   }
 
   // Select the contents on focus
-  function handleFocus(e) {
+  function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
     e.target.select();
   }
 
   // Handle backspace key
-  function handleKeyDown(e, index) {
-    const input = e.target;
-    const previousInput = inputRefs[index - 1];
-    const nextInput = inputRefs[index + 1];
+  function handleKeyDown(
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) {
+    const input = e.target as HTMLInputElement;
+    const previousInput = inputRefs[index - 1]?.current;
+    const nextInput = inputRefs[index + 1]?.current;
 
     if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
       e.preventDefault();
@@ -82,18 +89,20 @@ export default function SignUp() {
         (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1)
       );
       if (previousInput) {
-        previousInput.current.focus();
+        previousInput.focus();
       }
     }
   }
 
   // Capture pasted characters
-  const handlePaste = (e) => {
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedCode = e.clipboardData.getData("text");
     if (pastedCode.length === 6) {
       setCode(pastedCode);
       inputRefs.forEach((inputRef, index) => {
-        inputRef.current.value = pastedCode.charAt(index);
+        if (inputRef.current) {
+          inputRef.current.value = pastedCode.charAt(index);
+        }
       });
     }
   };
