@@ -8,13 +8,25 @@ interface EventDocument extends Document {
   location: string;
 }
 
-// Schema for the Event
-const EventSchema: Schema<EventDocument> = new Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  date: { type: Date, required: true },
-  location: { type: String, required: true },
-});
+const EventSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    description: { type: String, required: false },
+    isVirtual: { type: Boolean, required: true },
+    location: {
+      type: { street: String, city: String, state: String, postalCode: String },
+      required: false,
+    },
+    virtualLocation: { type: String, required: false },
+    status: { type: Number, required: true, default: 0 }, // Idea: 0 pending, 1 approved, -1 or 2 denied
+    imageLink: { type: String, required: false },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Export the Event model based on the schema
 const EventModel =
