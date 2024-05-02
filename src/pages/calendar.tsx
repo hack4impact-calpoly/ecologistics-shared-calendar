@@ -13,6 +13,7 @@ import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
+import Navbar from "../components/navbar";
 
 export interface Event {
   startRecur: Date;
@@ -124,10 +125,11 @@ export default function CalendarPage() {
       {isShowingEventPopUp && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
+      <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-            <button
+            {/* <button
               onClick={handleLogout}
               onMouseOver={(e) =>
                 ((e.target as HTMLButtonElement).style.backgroundColor =
@@ -140,9 +142,9 @@ export default function CalendarPage() {
               className={style1.logoutButton}
             >
               Logout
-            </button>
-            <Link prefetch={false} href="/adminEvents">
-              <button
+            </button> */}
+            {/* <Link prefetch={false} href="/adminEvents">
+             <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")
@@ -170,7 +172,7 @@ export default function CalendarPage() {
               >
                 Profile
               </button>
-            </Link>
+            </Link> */}
           </div>
           <style>{calendarStyles}</style>
 
@@ -319,7 +321,7 @@ const calendarStyles = `
      justify-content: center;
    }
    .fc-header-toolbar {
-     margin-top: 5%;
+     margin-top: 0%;
      display: flex;
      justify-content: space-between;
      text-transform: uppercase;
