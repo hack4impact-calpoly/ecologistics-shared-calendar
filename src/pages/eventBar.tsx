@@ -132,14 +132,13 @@ function Event({ title, location, websiteURL, date, description }: EventProps) {
 // Main EventBar Component
 export default function EventBar() {
   const styles = useEventBarStyles();
-  const [windowHeight, setWindowHeight] = useState(null);
-  const [windowWidth, setWindowWidth] = useState(null);
+  const [windowHeight, setWindowHeight] = useState<number | null>(null);
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       setWindowHeight(window.innerHeight);
-
     };
 
     window.addEventListener("resize", handleResize);
@@ -174,7 +173,8 @@ export default function EventBar() {
             border: "0.1rem solid #ccc",
             outline: "none",
             boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
-            marginTop: windowWidth < windowHeight ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
+            marginTop:
+              (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
           }}
 
           // Add onChange event handler if you want to capture input
