@@ -3,10 +3,13 @@ import Link from "next/link";
 import styles from "../styles/navbar.module.css"; // Changed to import as a module
 import PositionedMenu from "./PositionedMenu";
 import Image from "next/image";
-import { useSignIn, useSession } from "@clerk/nextjs";
+import { useSession } from "@clerk/nextjs";
+import { useRouter } from 'next/router';
+
 
 const Navbar: React.FC = () => {
-  const [isActive, setIsActive] = useState(false);
+  const router = useRouter(); // Get the router object
+  const { pathname } = router; // Destructure the pathname from the router
 
   const menuItems = [];
 
@@ -15,7 +18,7 @@ const Navbar: React.FC = () => {
   if (!isLoaded) {
     return null;
   }
-  if (!isSignedIn) {
+  if (pathname === '/publicCalendar') {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
     menuItems.push({ path: "/profile", label: "Account Settings" });
