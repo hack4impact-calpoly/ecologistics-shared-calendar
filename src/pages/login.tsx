@@ -8,7 +8,6 @@ import styles from "./style/login.module.css"; // Make sure the path is correct
 // Icons
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/LockOutlined";
-import Navbar from "../components/navbar";
 
 export default function LoginPage() {
   const router = useRouter();

@@ -129,7 +129,6 @@ export default function CalendarPage() {
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-
             {/* <button
               onClick={handleLogout}
               onMouseOver={(e) =>
@@ -322,7 +321,7 @@ const calendarStyles = `
      justify-content: center;
    }
    .fc-header-toolbar {
-     margin-top: 5%;
+     margin-top: 0%;
      display: flex;
      justify-content: space-between;
      text-transform: uppercase;
