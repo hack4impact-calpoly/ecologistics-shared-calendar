@@ -145,11 +145,11 @@ export default function SignUp() {
                             </label>
                             <div className={styles.inputContainer}>
                                 <input
-                                    type="name"
+                                    type="fName"
                                     id="fName"
                                     placeholder="Enter First Name "
                                     className={styles.input}
-                                    value={email}
+                                    value={fName}
                                     onChange={(e) => setFName(e.target.value)}
                                     required
                                 />
@@ -165,7 +165,7 @@ export default function SignUp() {
                                     id="lName"
                                     placeholder="Enter Last Name "
                                     className={styles.input}
-                                    value={email}
+                                    value={lName}
                                     onChange={(e) => setLName(e.target.value)}
                                     required
                                 />
@@ -181,7 +181,7 @@ export default function SignUp() {
                                     id="position"
                                     placeholder="Enter Position "
                                     className={styles.input}
-                                    value={email}
+                                    value={position}
                                     onChange={(e) => setPosition(e.target.value)}
                                     required
                                 />
@@ -197,7 +197,7 @@ export default function SignUp() {
                                     id="phone"
                                     placeholder="Enter Phone Number "
                                     className={styles.input}
-                                    value={email}
+                                    value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     required
                                 />
