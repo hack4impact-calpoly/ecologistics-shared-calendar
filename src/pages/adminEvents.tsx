@@ -1,6 +1,6 @@
 import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 
 const pending = [
   {
@@ -398,7 +398,44 @@ const archived = [
   // ... other requests come after
 ];
 
+// Interfaces for Event and API responses
+interface Event {
+  id: number;
+  name: string;
+  email: string;
+  status: string;
+  date: string;
+  time: string;
+  description: string;
+}
+
+interface ApiResponse {
+  message: string;
+  data: Event[];
+}
+
+
+
 export default function AdminRequestTable() {
+  const [pending, setPending] = useState<Event[]>([]);
+  const [approved, setApproved] = useState<Event[]>([]);
+  const [postponed, setPostponed] = useState<Event[]>([]);
+  const [declined, setDeclined] = useState<Event[]>([]);
+  const [archived, setArchived] = useState<Event[]>([]);
+
+  useEffect(() => {
+    fetch('/api/users/eventRoutes')
+      .then(response => response.json())
+      .then((response: ApiResponse) => {
+        setPending(response.data.filter(event => event.status === 'Pending'));
+        setApproved(response.data.filter(event => event.status === 'Approved'));
+        setPostponed(response.data.filter(event => event.status === 'Postponed'));
+        setDeclined(response.data.filter(event => event.status === 'Declined'));
+        setArchived(response.data.filter(event => event.status === 'Archived'));
+      })
+      .catch(error => console.error('Failed to fetch events:', error));
+  }, []);
+
   return (
     <Layout>
       {/* Requested Events */}
