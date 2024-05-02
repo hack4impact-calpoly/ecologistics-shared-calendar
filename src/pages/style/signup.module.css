@@ -1,340 +1,361 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 10vh;
-  width: 100%;
-  background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    width: 100%;
+    background-color: white;
 }
 
 .formBox {
-  border-radius: 8px;
-  background-color: white;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    border-radius: 8px;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .title {
-  font-family: "DM Sans", sans-serif;
-  font-size: 3.75em;
-  text-align: center;
-  margin-bottom: -0.5em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 3.75em;
+    text-align: center;
+    margin-bottom: -0.5em;
 }
 
 .subtitle {
-  font-family: "DM Sans", sans-serif;
-  font-size: 2em;
-  text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-size: 2em;
+    text-align: center;
 }
 
 .inputBox {
-  margin-top: 1em;
-  width: 51%;
+    margin-top: 1em;
+    width: 51%;
 }
 
 .label {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1.5625em;
-  margin-left: 0.2em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 1.5625em;
+    margin-left: 0.2em;
 }
 
 .input {
-  font-family: "DM Sans", sans-serif;
-  padding: 0.23em;
-  padding-left: 0.5em;
-  font-size: 2em;
-  color: black;
-  width: 100%;
-  border: 1px solid black;
-  border-radius: 4px;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    font-family: "DM Sans", sans-serif;
+    padding: 0.23em;
+    padding-left: 0.5em;
+    font-size: 2em;
+    color: black;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .bottomText {
-  margin-top: 1.5625em;
-  margin-bottom: 1.5625em;
-  font-size: 1em;
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
 }
 
 .button {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1em;
-  color: black;
-  margin-top: 1em;
-  padding-top: 0.7em;
-  padding-bottom: 0.7em;
-  background-color: #f7ab74;
-  border: none;
-  border-radius: 10px;
-  width: 12%;
-  cursor: pointer;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    font-family: "DM Sans", sans-serif;
+    font-size: 1em;
+    color: black;
+    margin-top: 1em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+    background-color: #f7ab74;
+    border: none;
+    border-radius: 10px;
+    width: 12%;
+    cursor: pointer;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .statusMessage {
-  font-family: "DM Sans", sans-serif;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1em;
-  color: #28a745;
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #28a745;
+}
+
+.inputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.togglePasswordButton {
+    font-family: "DM Sans";
+    font-size: 1em;
+    color: gray;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    right: 5px; /* Adjust the position of the button as needed */
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Media Query Styling */
 
 /* IPhone SE - S20 Ultra */
 @media only screen and (min-width: 320px) and (max-width: 1440px) and (min-height: 568px) and (max-height: 3200px) {
-  .container {
-    min-height: 80vh;
-  }
+    .container {
+        min-height: 80vh;
+    }
 
-  .title {
-    font-size: 2em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 2em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 1.3em;
-  }
+    .subtitle {
+        font-size: 1.3em;
+    }
 
-  .inputBox {
-    margin-top: 0.5em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 0.5em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 1em;
-  }
+    .label {
+        font-size: 1em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 1.3em;
-    width: 96%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 1.3em;
+        width: 96%;
+    }
 
-  .bottomText {
-    font-size: 1em;
-  }
+    .bottomText {
+        font-size: 1em;
+    }
 
-  .button {
-    width: 20%;
-    font-size: 1em;
-    margin-top: 1em;
-  }
+    .button {
+        width: 20%;
+        font-size: 1em;
+        margin-top: 1em;
+    }
 }
 
 /* IPad Mini */
 @media (min-height: 1024px) and (max-height: 1024px) and (max-width: 768px) and (min-width: 768px) {
-  .container {
-    min-height: 90vh;
-  }
+    .container {
+        min-height: 90vh;
+    }
 
-  .title {
-    font-size: 4em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 4em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 2.5em;
-  }
+    .subtitle {
+        font-size: 2.5em;
+    }
 
-  .inputBox {
-    margin-top: 1em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 1em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 2em;
-  }
+    .label {
+        font-size: 2em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 2em;
-    width: 97%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 2em;
+        width: 97%;
+    }
 
-  .bottomText {
-    font-size: 2em;
-  }
+    .bottomText {
+        font-size: 2em;
+    }
 
-  .button {
-    width: 20%;
-    font-size: 1.5em;
-  }
+    .button {
+        width: 20%;
+        font-size: 1.5em;
+    }
 }
 
 /* IPad Air - IPad Pro  */
 @media (min-height: 1180px) and (min-width: 820px) {
-  .container {
-    min-height: 90vh;
-  }
+    .container {
+        min-height: 90vh;
+    }
 
-  .title {
-    font-size: 5.3em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 5.3em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 3.5em;
-  }
+    .subtitle {
+        font-size: 3.5em;
+    }
 
-  .inputBox {
-    margin-top: 1em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 1em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 3em;
-  }
+    .label {
+        font-size: 3em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 3em;
-    width: 100%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 3em;
+        width: 100%;
+    }
 
-  .bottomText {
-    font-size: 2.5em;
-  }
+    .bottomText {
+        font-size: 2.5em;
+    }
 
-  .button {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    width: 25%;
-    font-size: 2.5em;
-  }
+    .button {
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        width: 25%;
+        font-size: 2.5em;
+    }
 }
 
 /* Surface pro 7 */
 @media (min-height: 1368px) and (max-height: 1368px) and (max-width: 912px) and (min-width: 912px) {
-  .container {
-    min-height: 90vh;
-  }
+    .container {
+        min-height: 90vh;
+    }
 
-  .title {
-    font-size: 5em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 5em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 3em;
-  }
+    .subtitle {
+        font-size: 3em;
+    }
 
-  .inputBox {
-    margin-top: 1em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 1em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 3em;
-  }
+    .label {
+        font-size: 3em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 3em;
-    width: 100%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 3em;
+        width: 100%;
+    }
 
-  .bottomText {
-    font-size: 2.5em;
-  }
+    .bottomText {
+        font-size: 2.5em;
+    }
 
-  .button {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    width: 25%;
-    font-size: 2.5em;
-  }
+    .button {
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        width: 25%;
+        font-size: 2.5em;
+    }
 }
 
 /* Galaxy Fold */
 @media (height: 653px) and (min-width: 280px) {
-  .container {
-    min-height: 80vh;
-  }
+    .container {
+        min-height: 80vh;
+    }
 
-  .title {
-    font-size: 1.5em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 1.5em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 0.9em;
-  }
+    .subtitle {
+        font-size: 0.9em;
+    }
 
-  .inputBox {
-    margin-top: 0.5em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 0.5em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 0.75em;
-  }
+    .label {
+        font-size: 0.75em;
+    }
 
-  .input {
-    padding-left: 0.5em;
-    font-size: 1em;
-    width: 100%;
-  }
+    .input {
+        padding-left: 0.5em;
+        font-size: 1em;
+        width: 100%;
+    }
 
-  .bottomText {
-    font-size: 0.75em;
-  }
+    .bottomText {
+        font-size: 0.75em;
+    }
 
-  .button {
-    font-size: 0.75em;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    width: 25%;
-  }
+    .button {
+        font-size: 0.75em;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        width: 25%;
+    }
 }
 
 /* Nest Hubs */
 @media only screen and (min-device-width: 1024px) and (max-device-width: 1024px) and (min-device-height: 600px) and (max-device-height: 600px),
-  only screen and (min-device-width: 1280px) and (max-device-width: 1280px) and (min-device-height: 800px) and (max-device-height: 800px) {
-  .container {
-    min-height: 50vh;
-  }
+    only screen and (min-device-width: 1280px) and (max-device-width: 1280px) and (min-device-height: 800px) and (max-device-height: 800px) {
+    .container {
+        min-height: 50vh;
+    }
 
-  .title {
-    font-size: 3.8em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 3.8em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 2em;
-  }
+    .subtitle {
+        font-size: 2em;
+    }
 
-  .inputBox {
-    margin-top: 0.5em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 0.5em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 1em;
-  }
+    .label {
+        font-size: 1em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 2em;
-    width: 100%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 2em;
+        width: 100%;
+    }
 
-  .bottomText {
-    font-size: 1.3em;
-  }
+    .bottomText {
+        font-size: 1.3em;
+    }
 
-  .button {
-    font-size: 1.3em;
-    margin-top: 1em;
-    padding-top: 0.7em;
-    padding-bottom: 0.7em;
-  }
+    .button {
+        font-size: 1.3em;
+        margin-top: 1em;
+        padding-top: 0.7em;
+        padding-bottom: 0.7em;
+    }
 }

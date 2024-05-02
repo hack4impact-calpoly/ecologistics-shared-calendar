@@ -281,7 +281,7 @@ export default function AdminRequestTable() {
     }, []); // Empty dependency array to ensure the effect runs only once
 
     const pendingUsers = users.filter((user) => user.role === "pending");
-    const approvedUsers = users.filter((user) => user.role === "user");
+    const approvedUsers = users.filter((user) => user.role === "approved");
     const declinedUsers = users.filter((user) => user.role === "denied");
 
     return (

@@ -14,9 +14,9 @@ export default authMiddleware({
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
-            "/eventDetails": ["admin", "user"],
-            "/eventBar": ["admin", "user"],
-            "/calendar": ["admin", "user"],
+            "/eventDetails": ["admin", "approved"],
+            "/eventBar": ["admin", "approved"],
+            "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
         };
 

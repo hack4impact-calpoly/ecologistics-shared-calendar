@@ -52,7 +52,6 @@ export default async function handler(
                     {
                         public_metadata: {
                             role: "pending",
-                            organization: organization,
                         },
                         private_metadata: {},
                         unsafe_metadata: {},
@@ -67,6 +66,7 @@ export default async function handler(
                     clerkId: userId,
                     organization: organization,
                     email: email,
+                    role: "pending",
                 });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {

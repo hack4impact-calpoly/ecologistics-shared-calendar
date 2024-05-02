@@ -52,7 +52,7 @@ export default function LoginPage() {
                 //redirect based on role
                 const role = session?.user?.publicMetadata?.role;
                 if (role === "pending") router.push("/confirmation-page");
-                else if (role === "admin" || role === "user")
+                else if (role === "admin" || role === "approved")
                     router.push("/calendar");
             } else {
                 console.log(result);
@@ -95,7 +95,7 @@ export default function LoginPage() {
                         </div>
                     </div>
                     <div className={styles.inputBox}>
-                        <label htmlFor="email" className={styles.label}>
+                        <label htmlFor="password" className={styles.label}>
                             Password
                         </label>
 
