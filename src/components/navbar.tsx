@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
   if (!isLoaded) {
     return null;
   }
-  if (pathname === '/publicCalendar') {
+  if (pathname === '/publicCalendar' || pathname === '/') {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
     menuItems.push({ path: "/profile", label: "Account Settings" });

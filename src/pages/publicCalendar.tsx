@@ -21,7 +21,7 @@ export interface Event {
   id: string;
 }
 
-export default function CalendarPage() {
+export default function PublicCalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
@@ -127,8 +127,7 @@ export default function CalendarPage() {
       <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
-          <div style={styles.signoutContainer}>
-          </div>
+          <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
 
           <FullCalendar
@@ -142,19 +141,10 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
-                },
-                hint: "none",
-              },
-            }}
             headerToolbar={{
               left: "",
               center: "prev title next",
-              right: windowWidth >= 786 ? "AddEvent" : "",
+              right: "",
             }}
             buttonIcons={{
               prev: "arrow-left",
@@ -179,16 +169,6 @@ export default function CalendarPage() {
             eventColor="#c293ff"
           />
         </div>
-        {/* Conditionally render the Add Event button below the calendar for smaller screens */}
-        {windowWidth < 786 && (
-          <button
-            className={style1.addButton} // Ensure you have an 'addButton' style in your CSS module
-            style={{ display: "block", margin: "20px auto 0" }}
-            onClick={() => setIsAddingEvent((prev) => !prev)}
-          >
-            Add Event
-          </button>
-        )}
         {!isAddingEvent ? (
           <EventBar />
         ) : (

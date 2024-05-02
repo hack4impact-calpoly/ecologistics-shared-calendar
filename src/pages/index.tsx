@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "../components/layout";
 import Login from "./login";
+import PublicCalendarPage from "./publicCalendar";
 
 export default function HomePage() {
     // const handleApiCall = async () => {
@@ -22,7 +23,7 @@ export default function HomePage() {
     // };
 
     return (
-        <Login />
+        <PublicCalendarPage />
         // code below was in the layout tags
         // <button onClick={handleApiCall}>Test API</button>
         // <button onClick={() => createUser("David", "password")}>
