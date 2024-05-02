@@ -427,7 +427,7 @@ export default function AdminRequestTable() {
     fetch('/api/users/eventRoutes')
       .then(response => response.json())
       .then((response: ApiResponse) => {
-        setPending(response.data.filter(event => event.status === 'Pending'));
+        setPending(response.data.filter(event => event.status === "Pending"));
         setApproved(response.data.filter(event => event.status === 'Approved'));
         setPostponed(response.data.filter(event => event.status === 'Postponed'));
         setDeclined(response.data.filter(event => event.status === 'Declined'));
@@ -435,6 +435,7 @@ export default function AdminRequestTable() {
       })
       .catch(error => console.error('Failed to fetch events:', error));
   }, []);
+  console.log("pending", pending);
 
   return (
     <Layout>

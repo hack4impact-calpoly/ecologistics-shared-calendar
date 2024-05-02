@@ -15,12 +15,13 @@ export default authMiddleware({
       "/signup",
       "/forgot-password",
       "/publicCalendar",
+      "/eventDetails",
     ];
 
     // Define route-specific permissions
     const routePermissions: { [key: string]: string[] } = {
       "/admin": ["admin"],
-      "/eventDetails": ["admin", "user"],
+      // "/eventDetails": ["admin", "user"],
       "/eventBar": ["admin", "user"],
       "/calendar": ["admin", "user"],
       "/confirmation-page": ["pending"],
