@@ -4,7 +4,6 @@ import styles from "../styles/navbar.module.css"; // Changed to import as a modu
 import PositionedMenu from "./PositionedMenu";
 import Image from "next/image";
 import { useSignIn, useSession } from "@clerk/nextjs";
-import { I } from "@fullcalendar/resource/internal-common";
 
 const Navbar: React.FC = () => {
   const [isActive, setIsActive] = useState(false);

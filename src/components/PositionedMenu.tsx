@@ -22,7 +22,7 @@ interface PositionedMenuProps {
 
 const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const buttonRef = useRef(null); // Reference to the button
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const open = Boolean(anchorEl);
   const { signOut } = useClerk();
@@ -56,7 +56,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
   // Get the button width using the button reference
   const buttonWidth = buttonRef.current
     ? buttonRef.current.offsetWidth
-    : undefined;
+    : 0;
 
   return (
         <div>

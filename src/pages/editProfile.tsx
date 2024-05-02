@@ -5,7 +5,6 @@ import Grid from "@mui/material/Grid";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import Navbar from "@/components/navbar";
 
 export default function EditProfilePage() {
   const { user } = useUser();
