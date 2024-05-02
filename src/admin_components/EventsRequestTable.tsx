@@ -189,6 +189,11 @@ const DenyPopup: React.FC<PopupProps> = ({
 export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
+  if (events[0]){
+    console.log("events:",events,events[0].status);
+    console.log("itemsperpage",ITEMS_PER_PAGE);
+  }
+  
 
   // Delete popup
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -207,6 +212,8 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     startIndex + ITEMS_PER_PAGE,
     accountRequests.length
   );
+
+  console.log("Here in table");
 
   // Slice the accountRequests array to display only the items for the current page
   const currentRequests = accountRequests.slice(startIndex, endIndex);
