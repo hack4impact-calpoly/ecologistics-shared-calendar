@@ -6,15 +6,19 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
+import { EventDocument } from "database/eventSchema";
+import { set } from "mongoose";
 
-export interface Event {
+// Recurring because events may span multiple days.
+// This still works for single-day events.
+export interface FullCalenderRecurringEvent {
   startRecur: Date;
   endRecur: Date;
   title: string;
@@ -22,7 +26,10 @@ export interface Event {
 }
 
 export default function CalendarPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventDocument[]>([]);
+  const [calenderEvents, setCalenderEvents] = useState<
+    FullCalenderRecurringEvent[]
+  >([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
@@ -55,9 +62,34 @@ export default function CalendarPage() {
     };
   }, []);
 
-  const addEvent = (event: Event) => {
-    setEvents((prev) => [...prev, event]);
-  };
+  // Anytime events change, re render the calendar events.
+  useEffect(() => {
+    // setCalenderEvents .....
+    if (!events) return;
+    setCalenderEvents(
+      events.map((event) => ({
+        startRecur: event.startDate,
+        endRecur: event.endDate,
+        title: event.title,
+        id: event._id,
+      }))
+    );
+  }, [events]);
+
+  // Fetch events from the database
+  useEffect(() => {
+    fetch("/api/users/eventRoutes")
+      .then((res) => res.json())
+      .then((res) => {
+        setEvents(res.data as EventDocument[]);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
+
+  const addEvent = (event: Omit<EventDocument, "_id">) => {};
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
@@ -127,7 +159,6 @@ export default function CalendarPage() {
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}>
-
             <button
               onClick={handleLogout}
               onMouseOver={(e) =>
@@ -143,7 +174,7 @@ export default function CalendarPage() {
               Logout
             </button>
             <Link prefetch={false} href="/adminEvents">
-             <button
+              <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")
@@ -158,7 +189,7 @@ export default function CalendarPage() {
               </button>
             </Link>
             <Link prefetch={false} href="/profile">
-             <button
+              <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")
@@ -209,14 +240,7 @@ export default function CalendarPage() {
             editable={true}
             select={() => {}}
             selectable={true}
-            initialEvents={[
-              {
-                title: "nice event",
-                start: new Date(),
-                resourceId: "a",
-              },
-            ]}
-            events={events}
+            events={calenderEvents}
             eventClick={function (info) {
               window.location.href = "/eventDetails";
             }}
