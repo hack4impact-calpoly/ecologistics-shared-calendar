@@ -15,6 +15,7 @@ import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
 import { set } from "mongoose";
+import { useRouter } from "next/router";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -36,6 +37,7 @@ export default function CalendarPage() {
 
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
+  const router = useRouter();
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -242,7 +244,13 @@ export default function CalendarPage() {
             selectable={true}
             events={calenderEvents}
             eventClick={function (info) {
-              window.location.href = "/eventDetails";
+              console.log(info.event);
+              router.push({
+                pathname: "/eventDetails",
+                query: {
+                  eventId: info.event.id,
+                },
+              });
             }}
             eventColor="#c293ff"
           />
