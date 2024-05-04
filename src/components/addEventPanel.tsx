@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
-import { Event } from "../pages/calendar";
+import axios from "axios";
 
 interface AddEventForm {
+  organization: string;
   title: string;
   startDate: string;
   endDate: string;
@@ -30,6 +31,7 @@ interface FormErrors {
 
 const EMPTY_FORM = {
   title: "",
+  organization: "",
   startDate: "",
   endDate: "",
   startTime: "",
@@ -45,11 +47,15 @@ const EMPTY_FORM = {
 };
 
 interface Event {
-  startRecur: Date;
-  endRecur: Date;
   title: string;
-  id: string;
-  imageUrl?: string;
+  organization: string;
+  startDate: Date;
+  endDate: Date;
+  description: string;
+  location: string;
+  status: Number;
+  isVirtual: boolean;
+  imageLink?: string;
 }
 
 const stringToDate = (date: string, time: string): Date => {
@@ -73,6 +79,7 @@ export default function AddEventPanel({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -154,34 +161,44 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const errors = await getFormErrors();
-    if (Object.keys(errors).length !== 0) {
-      setFormErrors(errors);
-      return;
-    }
+    setIsLoading(true);
+    try {
+      const errors = await getFormErrors();
+      if (Object.keys(errors).length !== 0) {
+        setFormErrors(errors);
+        return;
+      }
 
-    if (formData.photo) {
-      const fileData = new FormData();
-      fileData.append("file", formData.photo);
+      if (formData.photo) {
+        const fileData = new FormData();
+        fileData.append("file", formData.photo);
 
-      try {
-        const uploadResponse = await fetch("api/s3-upload/route", {
-          method: "POST",
-          body: fileData,
-        });
+        const uploadResponse = await axios.post(
+          "api/s3-upload/route",
+          fileData
+        );
+        const uploadResult = uploadResponse.data;
 
-        const uploadResult = await uploadResponse.json();
-        console.log(uploadResponse);
+        let address = formData.url;
 
-        if (uploadResponse.ok) {
-          const event: Event = {
-            startRecur: stringToDate(formData.startDate, formData.startTime),
-            endRecur: stringToDate(formData.endDate, formData.endTime),
-            title: formData.title,
-            id: Math.random().toString(),
-            imageUrl: uploadResult.url,
-          };
+        if (!formData.isVirtual) {
+          address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
+        }
 
+        const event: Event = {
+          title: formData.title,
+          organization: formData.organization,
+          startDate: stringToDate(formData.startDate, formData.startTime),
+          endDate: stringToDate(formData.endDate, formData.endTime),
+          description: formData.description,
+          isVirtual: formData.isVirtual,
+          location: address,
+          status: 0,
+          imageLink: uploadResult.URL,
+        };
+
+        const eventResponse = await axios.post("api/users/eventRoutes", event);
+        if (eventResponse.status === 201) {
           addEvent(event);
           onCreate();
           setFormData(EMPTY_FORM);
@@ -189,15 +206,20 @@ export default function AddEventPanel({
         } else {
           setFormErrors((prev) => ({
             ...prev,
-            photo: "Failed to upload image",
+            photo: "Failed to create event",
           }));
         }
-      } catch (error) {
-        console.error("Upload error:", error);
-        setFormErrors((prev) => ({ ...prev, photo: "Error uploading image" }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
-    } else {
-      setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+    } catch (error) {
+      console.error("Error:", error);
+      setFormErrors((prev) => ({
+        ...prev,
+        photo: "Error uploading image or creating event",
+      }));
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -222,7 +244,19 @@ export default function AddEventPanel({
         style={styles.input}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         value={formData.title}
+        disabled={isLoading}
         required
+      />
+      <h4 style={styles.inputTitle}>Organization</h4>
+      <input
+        type="text"
+        style={styles.input}
+        onChange={(e) =>
+          setFormData({ ...formData, organization: e.target.value })
+        }
+        value={formData.organization}
+        required
+        disabled={isLoading}
       />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -237,6 +271,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
             }
+            disabled={isLoading}
             value={formData.startDate}
             required
           />
@@ -251,6 +286,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, startTime: e.target.value })
             }
             value={formData.startTime}
+            disabled={isLoading}
             required
           />
         </div>
@@ -267,6 +303,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endDate: e.target.value })
             }
             value={formData.endDate}
+            disabled={isLoading}
             required
           />
 
@@ -281,6 +318,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endTime: e.target.value })
             }
             value={formData.endTime}
+            disabled={isLoading}
             required
           />
         </div>
@@ -320,6 +358,7 @@ export default function AddEventPanel({
               e.target.checked && setFormData({ ...formData, isVirtual: true })
             }
             required
+            disabled={isLoading}
           />
           Virtual
         </label>
@@ -333,6 +372,7 @@ export default function AddEventPanel({
               e.target.checked && setFormData({ ...formData, isVirtual: false })
             }
             required
+            disabled={isLoading}
           />
           In Person
         </label>
@@ -349,6 +389,7 @@ export default function AddEventPanel({
             }
             value={formData.street}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>City</h4>
           <input
@@ -357,6 +398,7 @@ export default function AddEventPanel({
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
             value={formData.city}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>State</h4>
           <input
@@ -367,6 +409,7 @@ export default function AddEventPanel({
             }
             value={formData.state}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>Postal Code</h4>
           <input
@@ -377,6 +420,7 @@ export default function AddEventPanel({
             }
             value={formData.postalCode}
             required
+            disabled={isLoading}
           />
         </>
       ) : (
@@ -388,6 +432,7 @@ export default function AddEventPanel({
             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
             value={formData.url ? formData.url : ""}
             required
+            disabled={isLoading}
           />
         </>
       )}
@@ -429,8 +474,8 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <button style={styles.button} type="submit">
-        Add Event
+      <button style={styles.button} type="submit" disabled={isLoading}>
+        {isLoading ? "Loading..." : "Add Event"}
       </button>
     </form>
   );

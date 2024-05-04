@@ -16,6 +16,7 @@ export default authMiddleware({
       "/forgot-password",
       "/api/s3-upload/route",
       "/api/test",
+      "/api/users/eventRoutes",
       "/api/s3-upload/test",
     ];
 

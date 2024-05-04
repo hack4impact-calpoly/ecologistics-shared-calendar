@@ -1,40 +1,15 @@
-// pages/api/upload.ts
-import type { NextApiRequest, NextApiResponse } from "next";
-import multer from "multer";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import formidable from "formidable";
+import { NextApiRequest, NextApiResponse } from "next";
+import fs from "fs";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-// Extend the NextApiRequest to include the file from multer
-interface NextApiRequestWithMulter extends NextApiRequest {
-  file: Express.Multer.File;
-}
-
-// Configure the AWS S3 client
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
   },
 });
-
-// Configure multer to store files in memory
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-// Function to upload a file to S3
-const uploadFileToS3 = async (file: any, fileName: any): Promise<string> => {
-  const { buffer, originalname } = file;
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME!,
-    Key: `uploads/${Date.now()}-${originalname}`,
-    Body: buffer,
-    ContentType: file.mimetype, // Use the file's mimetype
-  };
-
-  await s3Client.send(new PutObjectCommand(params));
-  return `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
-};
 
 export const config = {
   api: {
@@ -62,10 +37,33 @@ export default async function handler(
     }
 
     const [file] = files.file;
-    console.log(file);
     const fileName = `${file.originalFilename}`;
-    console.log(fileName);
-    const imageURL = uploadFileToS3(file, fileName);
-    return res.json({ success: true, fileName });
+    // console.log(fileName);
+
+    const filePath = file.filepath;
+    const fs = require("fs");
+
+    try {
+      const data = await fs.promises.readFile(filePath);
+      const imageURL = await uploadFileToS3(data, fileName);
+      return res
+        .status(200)
+        .json({ success: true, Name: fileName, URL: imageURL });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to read the file." });
+    }
   });
+}
+
+async function uploadFileToS3(file: any, fileName: String) {
+  const fileBuffer = file;
+  const params = {
+    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
+    Key: `${Date.now()}-${fileName}`,
+    Body: fileBuffer,
+    ContentType: "/image/jpeg",
+  };
+  await s3Client.send(new PutObjectCommand(params));
+  const url = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+  return url;
 }

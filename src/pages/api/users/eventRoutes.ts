@@ -21,7 +21,21 @@ export default async function handler(
     }
   } else if (req.method === "POST") {
     try {
+      // console.log("Received body:", req.body);
+      // console.log("Types:", {
+      //   organization: typeof req.body.organization + req.body.organization,
+      //   title: typeof req.body.title +  req.body.title,
+      //   startDate: typeof req.body.startDate + req.body.startDate,
+      //   endDate: typeof req.body.endDate + req.body.endDate,
+      //   description: typeof req.body.description + req.body.description,
+      //   isVirtual: typeof req.body.isVirtual + req.body.isVirtual,
+      //   location: typeof req.body.location + req.body.location,
+      //   status: typeof req.body.status + req.body.status,
+      //   imageLink: typeof req.body.imageLink + req.body.imageLink,
+      // });
+
       const {
+        organization,
         title,
         startDate,
         endDate,
@@ -31,7 +45,11 @@ export default async function handler(
         status,
         imageLink,
       } = await req.body;
+
+      // console.log("AFTER: ", req.body);
+
       const event = await Event.create({
+        organization,
         title,
         startDate,
         endDate,
@@ -41,8 +59,10 @@ export default async function handler(
         status,
         imageLink,
       });
+
       res.status(201).json({ message: "Created event.", data: event });
     } catch (err) {
+      console.log(err);
       res.status(400).json({ message: "POST Failed.", data: err });
     }
   } else if (req.method === "DELETE") {
