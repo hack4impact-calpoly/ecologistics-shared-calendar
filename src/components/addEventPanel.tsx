@@ -179,7 +179,7 @@ export default function AddEventPanel({
         );
         const uploadResult = uploadResponse.data;
 
-        let address = formData.url;
+        let address = formData.url || "";
 
         if (!formData.isVirtual) {
           address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;

@@ -1,15 +1,25 @@
+import { S3Client, PutObjectCommand, S3ClientConfig } from "@aws-sdk/client-s3";
 import formidable from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const s3Client = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
+const region = process.env.NEXT_PUBLIC_AWS_REGION;
+const accessKeyId = process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY;
+
+if (!region || !accessKeyId || !secretAccessKey) {
+  throw new Error("AWS environment variables are missing");
+}
+
+const s3ClientConfig: S3ClientConfig = {
+  region,
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+    accessKeyId,
+    secretAccessKey,
   },
-});
+};
+
+const s3Client = new S3Client(s3ClientConfig);
 
 export const config = {
   api: {
@@ -36,12 +46,9 @@ export default async function handler(
       return;
     }
 
-    const [file] = files.file;
+    const file = Array.isArray(files.file) ? files.file[0] : files.file;
     const fileName = `${file.originalFilename}`;
-    // console.log(fileName);
-
     const filePath = file.filepath;
-    const fs = require("fs");
 
     try {
       const data = await fs.promises.readFile(filePath);
@@ -61,7 +68,7 @@ async function uploadFileToS3(file: any, fileName: String) {
     Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
     Key: `${Date.now()}-${fileName}`,
     Body: fileBuffer,
-    ContentType: "/image/jpeg",
+    ContentType: "image/jpeg",
   };
   await s3Client.send(new PutObjectCommand(params));
   const url = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;

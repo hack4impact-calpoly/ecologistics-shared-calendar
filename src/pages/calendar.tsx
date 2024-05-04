@@ -15,10 +15,9 @@ import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 
 export interface Event {
-  startRecur: Date;
-  endRecur: Date;
+  startDate: Date;
+  endDate: Date;
   title: string;
-  id: string;
 }
 
 export default function CalendarPage() {
