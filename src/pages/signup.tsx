@@ -52,12 +52,15 @@ export default function SignUp() {
             await signUp.create({
                 emailAddress: email,
                 password: password,
+                firstName: fName,
+                lastName: lName,
             });
 
             // send the email.
-            await signUp.prepareEmailAddressVerification({
+            const res = await signUp.prepareEmailAddressVerification({
                 strategy: "email_code",
             });
+            console.log("res", res);
 
             // change the UI to our pending section.
             setPendingVerification(true);
@@ -94,6 +97,10 @@ export default function SignUp() {
                 await axios.post("/api/userRoutes", {
                     email: email,
                     organization: organization,
+                    phoneNumber: phone,
+                    firstName: fName,
+                    lastName: lName,
+                    position: position,
                 });
 
                 await router.push("/confirmation-page");

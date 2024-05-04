@@ -44,9 +44,17 @@ export default async function handler(
 
         case "POST":
             try {
-                const { userId } = getAuth(req);
+                const { userId, sessionClaims } = getAuth(req);
 
-                const { organization, email } = req.body;
+                const {
+                    organization,
+                    email,
+                    phoneNumber,
+                    lastName,
+                    firstName,
+                    position,
+                } = req.body;
+
                 await axios.patch(
                     `https://api.clerk.com/v1/users/${userId}/metadata`,
                     {
@@ -66,6 +74,10 @@ export default async function handler(
                     clerkId: userId,
                     organization: organization,
                     email: email,
+                    phoneNumber: phoneNumber,
+                    position: position,
+                    firstName: firstName,
+                    lastName: lastName,
                     role: "pending",
                 });
                 res.status(201).json({ success: true, data: user });

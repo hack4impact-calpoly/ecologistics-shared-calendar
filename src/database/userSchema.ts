@@ -10,6 +10,7 @@ interface UserDocument extends Document {
     lastName: string;
     position: string;
     phoneNumber: string;
+    createdAt: Date;
 }
 
 // Schema for the User
@@ -22,6 +23,7 @@ const UserSchema: Schema<UserDocument> = new Schema({
     lastName: { type: String },
     position: { type: String },
     phoneNumber: { type: String },
+    createdAt: { type: Date, default: new Date() },
 });
 
 // Export the User model based on the schema
