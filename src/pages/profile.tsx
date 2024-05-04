@@ -2,7 +2,7 @@ import Layout from "../components/layout";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Button } from "@mui/material";
+import { Button, useIsFocusVisible } from "@mui/material";
 import { Paper, Typography } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/router";
@@ -27,6 +27,9 @@ export default function ProfilePage() {
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
   const [userOrAdmin, setUserOrAdmin] = useState("admin");
+  if(uid=="" && user){
+    setUID(user.id);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,13 +42,14 @@ export default function ProfilePage() {
         console.log(responseData);
         setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-    if (user) {
-      setUID(user.id);
-      fetchData();
-    }
-  }, [user, uid]);
+    console.log("Effect triggered");
+    setUID(uid);
+    fetchData();
+  }, [uid]);
 
   return (
     <Layout>
