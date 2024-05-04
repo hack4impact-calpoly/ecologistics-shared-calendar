@@ -359,3 +359,34 @@
         padding-bottom: 0.7em;
     }
 }
+
+.verificationButton {
+  margin: 0 5px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 50px;
+  border: solid 1px #ccc;
+  box-shadow: 0 0 5px #ccc inset;
+  outline: none;
+  width: 6%;
+  transition: all 0.2s ease-in-out;
+  border-radius: 3px;
+}
+
+.verificationContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainContainer {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 50vh;
+}
+.mainContainer h3 {
+  margin: 0;
+  padding: 0;
+}

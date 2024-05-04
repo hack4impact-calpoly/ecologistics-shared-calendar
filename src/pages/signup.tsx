@@ -1,5 +1,5 @@
 import Layout from "../components/layout";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSignUp, useSession } from "@clerk/nextjs";
 import axios from "axios";
@@ -22,6 +22,99 @@ export default function SignUp() {
     const [phone, setPhone] = useState("");
     const [position, setPosition] = useState("");
 
+    interface InputRef {
+        current: HTMLInputElement | null;
+    }
+
+    // Refs to control each digit input element
+    const inputRefs: InputRef[] = [
+        useRef(null),
+        useRef(null),
+        useRef(null),
+        useRef(null),
+        useRef(null),
+        useRef(null),
+    ];
+    // Call our callback when code = 6 chars
+    useEffect(() => {
+        if (code.length === 6) {
+            onPressVerify(code);
+        }
+    }, [code]); //eslint-disable-line
+
+    // handle input to verification
+    function handleInput(
+        e: React.ChangeEvent<HTMLInputElement>,
+        index: number
+    ) {
+        const input = e.target;
+        const previousInput = inputRefs[index - 1]?.current;
+        const nextInput = inputRefs[index + 1]?.current;
+
+        // Update code state with single digit
+        const newCode = [code];
+        // Convert lowercase letters to uppercase
+        if (/^[a-z]+$/.test(input.value)) {
+            const uc = input.value.toUpperCase();
+            newCode[index] = uc;
+            inputRefs[index].current!.value = uc;
+        } else {
+            newCode[index] = input.value;
+        }
+        setCode(newCode.join(""));
+
+        input.select();
+
+        if (input.value === "") {
+            // If the value is deleted, select previous input, if exists
+            if (previousInput) {
+                previousInput.focus();
+            }
+        } else if (nextInput) {
+            // Select next input on entry, if exists
+            nextInput.select();
+        }
+    }
+
+    // Select the contents on focus
+    function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
+        e.target.select();
+    }
+
+    // Handle backspace key
+    function handleKeyDown(
+        e: React.KeyboardEvent<HTMLInputElement>,
+        index: number
+    ) {
+        const input = e.target as HTMLInputElement;
+        const previousInput = inputRefs[index - 1]?.current;
+        const nextInput = inputRefs[index + 1]?.current;
+
+        if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
+            e.preventDefault();
+            setCode(
+                (prevCode) =>
+                    prevCode.slice(0, index) + prevCode.slice(index + 1)
+            );
+            if (previousInput) {
+                previousInput.focus();
+            }
+        }
+    }
+
+    // Capture pasted characters
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        const pastedCode = e.clipboardData.getData("text");
+        if (pastedCode.length === 6) {
+            setCode(pastedCode);
+            inputRefs.forEach((inputRef, index) => {
+                if (inputRef.current) {
+                    inputRef.current.value = pastedCode.charAt(index);
+                }
+            });
+        }
+    };
+
     const goToLogin = () => {
         router.push("/login"); // Use Next.js router for navigation
     };
@@ -29,19 +122,18 @@ export default function SignUp() {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
-        if (!isLoaded) {
-            return;
-        }
-        // Reset password validation message
-        setPasswordValidation("");
+        await signUp.create({
+            emailAddress: email,
+            password: password,
+            firstName: fName,
+            lastName: lName,
+        });
 
-        // Password length validation
-        if (password.length < 8) {
-            setPasswordValidation(
-                "Password must be at least 8 characters long."
-            );
-            return;
-        }
+        // send the email.
+        const res = await signUp.prepareEmailAddressVerification({
+            strategy: "email_code",
+        });
+        console.log("res", res);
 
         try {
             //delete previous session if user was alread logged in
@@ -52,15 +144,16 @@ export default function SignUp() {
             await signUp.create({
                 emailAddress: email,
                 password: password,
-                firstName: fName,
-                lastName: lName,
+                unsafeMetadata: {
+                    organization,
+                    role: "pending",
+                },
             });
 
             // send the email.
-            const res = await signUp.prepareEmailAddressVerification({
+            await signUp.prepareEmailAddressVerification({
                 strategy: "email_code",
             });
-            console.log("res", res);
 
             // change the UI to our pending section.
             setPendingVerification(true);
@@ -73,7 +166,6 @@ export default function SignUp() {
         /*
         Verifies confirmation code
         */
-        e.preventDefault();
         if (!isLoaded) {
             return;
         }
@@ -97,10 +189,6 @@ export default function SignUp() {
                 await axios.post("/api/userRoutes", {
                     email: email,
                     organization: organization,
-                    phoneNumber: phone,
-                    firstName: fName,
-                    lastName: lName,
-                    position: position,
                 });
 
                 await router.push("/confirmation-page");
@@ -125,10 +213,7 @@ export default function SignUp() {
                         </p>
 
                         <div className={styles.inputBox}>
-                            <label
-                                htmlFor="organization"
-                                className={styles.label}
-                            >
+                            <label htmlFor="email" className={styles.label}>
                                 Name of Organization
                             </label>
                             <div className={styles.inputContainer}>
@@ -145,6 +230,7 @@ export default function SignUp() {
                                 />
                             </div>
                         </div>
+
                         <div className={styles.inputBox}>
                             <label htmlFor="fName" className={styles.label}>
                                 First Name of Organization Representative
@@ -211,6 +297,7 @@ export default function SignUp() {
                                 />
                             </div>
                         </div>
+
                         <div className={styles.inputBox}>
                             <label htmlFor="email" className={styles.label}>
                                 Email Address
@@ -227,8 +314,9 @@ export default function SignUp() {
                                 />
                             </div>
                         </div>
+
                         <div className={styles.inputBox}>
-                            <label htmlFor="password" className={styles.label}>
+                            <label htmlFor="email" className={styles.label}>
                                 Password
                             </label>
                             <div className={styles.inputContainer}>
@@ -283,7 +371,7 @@ export default function SignUp() {
                     </form>
                 )}
                 {pendingVerification && (
-                    <div>
+                    /*<div>
                         <form>
                             <input
                                 value={code}
@@ -297,6 +385,30 @@ export default function SignUp() {
                         <p>
                             Enter 6 digit code sent to email address: {email}.
                         </p>
+                    </div>*/
+
+                    <div className={`${styles.mainContainer}`}>
+                        <h3>Verify your email address</h3>
+                        <p>
+                            We emailed you a 6-digit code to {email}. Enter the
+                            code below to confirm your email address
+                        </p>
+                        <div className={`${styles.verificationContainer}`}>
+                            {[0, 1, 2, 3, 4, 5].map((index) => (
+                                <input
+                                    className={`${styles.verificationButton}`}
+                                    key={index}
+                                    type="text"
+                                    maxLength={1}
+                                    onChange={(e) => handleInput(e, index)}
+                                    ref={inputRefs[index]}
+                                    autoFocus={index === 0}
+                                    onFocus={handleFocus}
+                                    onKeyDown={(e) => handleKeyDown(e, index)}
+                                    onPaste={handlePaste}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

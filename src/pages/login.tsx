@@ -95,7 +95,7 @@ export default function LoginPage() {
                         </div>
                     </div>
                     <div className={styles.inputBox}>
-                        <label htmlFor="password" className={styles.label}>
+                        <label htmlFor="email" className={styles.label}>
                             Password
                         </label>
 
