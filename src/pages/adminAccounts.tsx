@@ -1,11 +1,11 @@
 import AccountsTable from "../admin_components/AccountsRequestTable";
 import Layout from "../components/layout";
 import React, { useState, useEffect } from "react";
-import UserDocument from "../database/userSchema";
+import { UserDocument } from "../database/userSchema";
 import axios from "axios";
 
 export default function AdminRequestTable() {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<UserDocument[]>([]);
     useEffect(() => {
         // Define a function to fetch users from the API endpoint
         const fetchUsers = async () => {
@@ -40,7 +40,7 @@ export default function AdminRequestTable() {
             });
             // Update the role in the user state variable
             const updatedUsers = users.map((user) => {
-                if (user.id === id) {
+                if (user._id === id) {
                     return { ...user, role: "approved" };
                 }
                 return user;
@@ -50,7 +50,7 @@ export default function AdminRequestTable() {
             console.error(err);
         }
     };
-    const declineUser = async (id) => {
+    const declineUser = async (id: any) => {
         /*
         Approves user in clerk/mongodb and updates state
         :param id: user mongo id
@@ -62,7 +62,7 @@ export default function AdminRequestTable() {
             });
             // Update the role in the user state variable
             const updatedUsers = users.map((user) => {
-                if (user.id === id) {
+                if (user._id === id) {
                     return { ...user, role: "declined" };
                 }
                 return user;

@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
+import { UserDocument } from "../database/userSchema";
 
 type AdminProps = {
-    events: {
-        _id: string;
-        clerkId: string;
-        organization: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        phoneNumber: string;
-        position: string;
-        role: string;
-        createdAt: string;
-    }[];
+    events: UserDocument[];
+
     ITEMS_PER_PAGE: number;
 };
 
@@ -220,15 +211,13 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     const openDenyPopup = () => setIsDenyPopupOpen(true);
     const closeDenyPopup = () => setIsDenyPopupOpen(false);
     const [message, setMessage] = useState("");
-    const [accountRequests, setAccountRequests] = useState([]);
+    const [accountRequests, setAccountRequests] = useState<UserDocument[]>([]);
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = Math.min(
         startIndex + ITEMS_PER_PAGE,
         accountRequests.length
     );
-    const approvedUser = async (id) => {};
-    const declineUser = async (id) => {};
 
     // Slice the accountRequests array to display only the items for the current page
     const currentRequests = accountRequests.slice(startIndex, endIndex);
@@ -447,7 +436,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                             padding: "5px 50px",
                                         }}
                                     >
-                                        {request.createdAt}
+                                        {request.createdAt.toString()}
                                     </td>
                                     <td
                                         style={{

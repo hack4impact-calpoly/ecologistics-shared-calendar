@@ -1,7 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 // Interface for the User document
-interface UserDocument extends Document {
+export type UserDocument = {
+    _id: string;
     clerkId: string;
     email: string;
     organization: string;
@@ -11,7 +12,7 @@ interface UserDocument extends Document {
     position: string;
     phoneNumber: string;
     createdAt: Date;
-}
+};
 
 // Schema for the User
 const UserSchema: Schema<UserDocument> = new Schema({

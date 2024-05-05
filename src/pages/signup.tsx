@@ -41,6 +41,10 @@ export default function SignUp() {
             onPressVerify(code);
         }
     }, [code]); //eslint-disable-line
+    if (!isLoaded) {
+        // Handle loading state
+        return null;
+    }
 
     // handle input to verification
     function handleInput(

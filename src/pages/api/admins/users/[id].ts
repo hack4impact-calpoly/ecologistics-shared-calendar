@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import UserModel from "@/database/userSchema";
-
+import UserModel from "../../../../database/userSchema";
 import { getAuth } from "@clerk/nextjs/server";
 // pages/api/user/[id].js
 
@@ -24,7 +23,7 @@ export default async function handler(
             try {
                 //Verify admin role from clekr
                 const { sessionClaims } = getAuth(req);
-                let { role } = sessionClaims.publicMetadata as UserMetadata;
+                let { role } = sessionClaims?.publicMetadata as UserMetadata;
                 if (!role || role !== "admin") {
                     res.status(403);
                 }
