@@ -12,6 +12,7 @@ export type UserDocument = {
     position: string;
     phoneNumber: string;
     createdAt: Date;
+    declineMessage: string;
 };
 
 // Schema for the User
@@ -25,6 +26,7 @@ const UserSchema: Schema<UserDocument> = new Schema({
     position: { type: String },
     phoneNumber: { type: String },
     createdAt: { type: Date, default: new Date() },
+    declineMessage: { type: String },
 });
 
 // Export the User model based on the schema

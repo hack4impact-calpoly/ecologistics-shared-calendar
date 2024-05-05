@@ -92,7 +92,6 @@ export default function ForgotPassword() {
                     // Set the active session to
                     // the newly created session (user is now signed in)
                     setActive({ session: result.createdSessionId });
-                    setError("");
                     router.push("/login");
                 } else {
                     console.log(result);

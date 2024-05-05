@@ -31,7 +31,6 @@ export default async function handler(
                     res.status(200).json({ success: true, data: user });
                 }
                 */
-                console.log(users);
                 res.status(200).json({ success: true, data: users });
             } catch (error) {
                 console.log(error);

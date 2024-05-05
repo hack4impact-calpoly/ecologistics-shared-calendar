@@ -34,6 +34,7 @@ export default function AdminRequestTable() {
         :param id: user mongo id
         */
         try {
+            console.log("request patch");
             //axios patch to update role
             await axios.patch(`/api/users/${id}`, {
                 role: "approved",
@@ -50,7 +51,7 @@ export default function AdminRequestTable() {
             console.error(err);
         }
     };
-    const declineUser = async (id: any) => {
+    const declineUser = async (id: any, message: string) => {
         /*
         Approves user in clerk/mongodb and updates state
         :param id: user mongo id
@@ -58,7 +59,8 @@ export default function AdminRequestTable() {
         try {
             //axios patch to update role
             await axios.patch(`/api/users/${id}`, {
-                role: "approved",
+                role: "declined",
+                declineMessage: message,
             });
             // Update the role in the user state variable
             const updatedUsers = users.map((user) => {
@@ -87,7 +89,12 @@ export default function AdminRequestTable() {
                         style={{ height: "0.35714rem", background: "#F07F2D" }}
                     ></div>
                     <h3>Requested Accounts</h3>
-                    <AccountsTable ITEMS_PER_PAGE={4} events={pendingUsers} />
+                    <AccountsTable
+                        ITEMS_PER_PAGE={4}
+                        events={pendingUsers}
+                        approveUser={approveUser}
+                        declineUser={declineUser}
+                    />
                 </div>
                 {/* Approved Accounts */}
                 <div>
@@ -99,13 +106,23 @@ export default function AdminRequestTable() {
                         }}
                     ></div>
                     <h3>Approved Accounts</h3>
-                    <AccountsTable ITEMS_PER_PAGE={1} events={approvedUsers} />
+                    <AccountsTable
+                        ITEMS_PER_PAGE={1}
+                        events={approvedUsers}
+                        approveUser={approveUser}
+                        declineUser={declineUser}
+                    />
                 </div>
 
                 {/* Declined Accounts */}
                 <div>
                     <h3>Declined Accounts</h3>
-                    <AccountsTable ITEMS_PER_PAGE={1} events={declinedUsers} />
+                    <AccountsTable
+                        ITEMS_PER_PAGE={1}
+                        events={declinedUsers}
+                        approveUser={approveUser}
+                        declineUser={declineUser}
+                    />
                 </div>
             </div>
         </Layout>

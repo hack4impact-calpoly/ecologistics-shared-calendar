@@ -4,7 +4,8 @@ import { UserDocument } from "../database/userSchema";
 
 type AdminProps = {
     events: UserDocument[];
-
+    approveUser: (id: string) => void;
+    declineUser: (id: string, declineMessage: string) => void;
     ITEMS_PER_PAGE: number;
 };
 
@@ -13,6 +14,14 @@ interface PopupProps {
     onClose: () => void;
     handleAction: (requestID: string, action: string) => void;
     requestID: string;
+}
+interface DenyProps {
+    isOpen: boolean;
+    onClose: () => void;
+    handleAction: (requestID: string, action: string) => void;
+    requestID: string;
+    message: string;
+    setMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const DeletePopup: React.FC<PopupProps> = ({
@@ -91,13 +100,14 @@ const DeletePopup: React.FC<PopupProps> = ({
     );
 };
 
-const DenyPopup: React.FC<PopupProps> = ({
+const DenyPopup: React.FC<DenyProps> = ({
     isOpen,
     onClose,
     handleAction,
     requestID,
+    message,
+    setMessage,
 }) => {
-    const [message, setMessage] = useState("");
     if (!isOpen) return null;
     return (
         <>
@@ -196,7 +206,12 @@ const DenyPopup: React.FC<PopupProps> = ({
     );
 };
 
-export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
+export default function AdminPage({
+    events,
+    ITEMS_PER_PAGE,
+    approveUser,
+    declineUser,
+}: AdminProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const profileImage = require("../images/profileImage.webp");
     const [users, setUsers] = useState([]);
@@ -266,10 +281,15 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
 
             // I would assume that when an event is approved or denied, it is updated on the
             // the backend, and is then rerendered on the new list
+            if (action === "accepted") {
+                approveUser(requestId);
+            } else if (action === "deny") {
+                declineUser(requestId, message);
+            }
+
             const updatedRequests = accountRequests.filter(
                 (request) => request._id.toString() !== requestId
             );
-
             // Update the state with the new account requests array
             setAccountRequests(updatedRequests);
         }
@@ -544,6 +564,8 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                                     onClose={closeDenyPopup}
                                                     handleAction={handleAction}
                                                     requestID={request._id.toString()}
+                                                    message={message}
+                                                    setMessage={setMessage}
                                                 />
                                             </>
                                         ) : (

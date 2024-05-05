@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import UserModel from "../../../../database/userSchema";
+import UserModel from "../../../database/userSchema";
 import { getAuth } from "@clerk/nextjs/server";
 // pages/api/user/[id].js
 
@@ -23,13 +23,14 @@ export default async function handler(
             try {
                 //Verify admin role from clekr
                 const { sessionClaims } = getAuth(req);
-                let { role } = sessionClaims?.publicMetadata as UserMetadata;
-                if (!role || role !== "admin") {
+                const metadata = sessionClaims?.publicMetadata as UserMetadata;
+                const cur_role = metadata?.role;
+                if (!cur_role || cur_role !== "admin") {
                     res.status(403);
                 }
 
                 //get new role for user from request body
-                role = req.body.role;
+                const { role, declineMessage } = req.body;
                 if (role !== "approved" && role !== "declined") {
                     res.status(403);
                 }
@@ -60,6 +61,7 @@ export default async function handler(
 
                 //update role in mongodb
                 user.role = role;
+                if (declineMessage) user["declineMessage"] = declineMessage;
                 await user.save();
             } catch (error) {
                 console.error(error);
