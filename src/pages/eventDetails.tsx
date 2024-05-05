@@ -4,6 +4,7 @@ import StaticMap from "../components/map";
 import { EventDocument } from "@/database/eventSchema";
 import { useRouter } from "next/router";
 import { add } from "ol/coordinate";
+import { convertEventDatesToDates, getFormattedDate } from "../utils/events";
 
 interface Address {
   street: string;
@@ -21,17 +22,6 @@ function parseAddress(address: string): Address {
     state,
     postalCode,
   };
-}
-
-function getFormattedDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 export default function EventPage() {
@@ -52,10 +42,12 @@ export default function EventPage() {
         const response = await fetch(`/api/users/eventRoutes?id=${eventId}`);
         const data = await response.json();
 
-        data.data.startDate = new Date(data.data.startDate);
-        data.data.endDate = new Date(data.data.endDate);
+        convertEventDatesToDates(data.data);
+        const event: EventDocument = data.data[0];
+        event.startDate = new Date(event.startDate);
+        event.endDate = new Date(event.endDate);
 
-        setEvent(data.data);
+        setEvent(event);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -65,8 +57,7 @@ export default function EventPage() {
   }, [eventId]);
 
   useEffect(() => {
-    if (event) {
-      console.log(parseAddress(event.location));
+    if (event && !event.isVirtual) {
       setAddress(parseAddress(event.location));
     }
   }, [event]);

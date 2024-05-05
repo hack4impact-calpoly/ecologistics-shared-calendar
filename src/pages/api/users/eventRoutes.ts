@@ -7,6 +7,27 @@ type ResponseData = {
   data: any;
 };
 
+interface QueryParams {
+  _id: string;
+  status: string;
+}
+
+const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
+  let queryObject: Partial<QueryParams> = {};
+
+  if (req.query.id) {
+    const { id } = req.query;
+    queryObject._id = id as string;
+  }
+
+  if (req.query.status) {
+    const { status } = req.query;
+    queryObject.status = status as string;
+  }
+
+  return queryObject;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -14,14 +35,12 @@ export default async function handler(
   await connectDB();
   if (req.method === "GET") {
     try {
-      if (req.query.id) {
-        const { id } = req.query;
-        const event = await Event.findById({ _id: id });
-        res.status(200).json({ message: "Fetched event.", data: event });
-      }
+      const queryObject = getQueryObject(req);
+      const eventOrEvents = await Event.find(queryObject);
 
-      const allEvents = await Event.find({});
-      res.status(200).json({ message: "Fetched all events.", data: allEvents });
+      res
+        .status(200)
+        .json({ message: "Fetched event(s).", data: eventOrEvents });
     } catch (err) {
       res.status(404).json({ message: "GET Failed.", data: err });
     }

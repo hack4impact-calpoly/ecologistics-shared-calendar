@@ -16,6 +16,7 @@ import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
 import { set } from "mongoose";
 import { useRouter } from "next/router";
+import { convertEventDatesToDates } from "../utils/events";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -80,9 +81,10 @@ export default function CalendarPage() {
 
   // Fetch events from the database
   useEffect(() => {
-    fetch("/api/users/eventRoutes")
+    fetch("/api/users/eventRoutes?status=1")
       .then((res) => res.json())
       .then((res) => {
+        convertEventDatesToDates(res.data as EventDocument[]);
         setEvents(res.data as EventDocument[]);
         console.log(res.data);
       })
@@ -266,7 +268,7 @@ export default function CalendarPage() {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar />
+          <EventBar events={events} />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
