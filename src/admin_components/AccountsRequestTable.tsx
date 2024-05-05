@@ -1,15 +1,18 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
 
 type AdminProps = {
     events: {
-        id: number;
-        name: string;
+        _id: string;
+        clerkId: string;
+        organization: string;
+        firstName: string;
+        lastName: string;
         email: string;
-        status: string;
-        date: string;
-        time: string;
-        description: string;
+        phoneNumber: string;
+        position: string;
+        role: string;
+        createdAt: string;
     }[];
     ITEMS_PER_PAGE: number;
 };
@@ -205,6 +208,7 @@ const DenyPopup: React.FC<PopupProps> = ({
 export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const profileImage = require("../images/profileImage.webp");
+    const [users, setUsers] = useState([]);
 
     // Delete popup
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -216,13 +220,15 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     const openDenyPopup = () => setIsDenyPopupOpen(true);
     const closeDenyPopup = () => setIsDenyPopupOpen(false);
     const [message, setMessage] = useState("");
-    const [accountRequests, setAccountRequests] = useState(events);
+    const [accountRequests, setAccountRequests] = useState([]);
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = Math.min(
         startIndex + ITEMS_PER_PAGE,
         accountRequests.length
     );
+    const approvedUser = async (id) => {};
+    const declineUser = async (id) => {};
 
     // Slice the accountRequests array to display only the items for the current page
     const currentRequests = accountRequests.slice(startIndex, endIndex);
@@ -245,11 +251,11 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
         if (action === "trash") {
             // Filter out the request with the given id
             const updatedRequests = accountRequests.filter(
-                (request) => request.id.toString() !== requestId
+                (request) => request._id.toString() !== requestId
             );
             if (
                 requestId ===
-                accountRequests[accountRequests.length - 1].id.toString()
+                accountRequests[accountRequests.length - 1]._id.toString()
             ) {
                 setCurrentPage(currentPage - 1);
             }
@@ -272,13 +278,17 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
             // I would assume that when an event is approved or denied, it is updated on the
             // the backend, and is then rerendered on the new list
             const updatedRequests = accountRequests.filter(
-                (request) => request.id.toString() !== requestId
+                (request) => request._id.toString() !== requestId
             );
 
             // Update the state with the new account requests array
             setAccountRequests(updatedRequests);
         }
     };
+
+    useEffect(() => {
+        setAccountRequests(events);
+    }, [events]);
 
     return (
         <div>
@@ -287,7 +297,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                     display: "flex",
                     justifyContent: "left",
                     boxSizing: "border-box",
-                    width: "90rem",
+                    width: "100rem",
                 }}
             >
                 <table
@@ -317,6 +327,26 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                     border: "1px solid #f7f7f7",
                                 }}
                             >
+                                Name
+                            </th>
+                            <th
+                                style={{
+                                    padding: "10px",
+                                    background: "#f7f7f7",
+                                    fontWeight: 500,
+                                    border: "1px solid #f7f7f7",
+                                }}
+                            >
+                                Position
+                            </th>
+                            <th
+                                style={{
+                                    padding: "10px",
+                                    background: "#f7f7f7",
+                                    fontWeight: 500,
+                                    border: "1px solid #f7f7f7",
+                                }}
+                            >
                                 Email
                             </th>
                             <th
@@ -327,7 +357,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                     border: "1px solid #f7f7f7",
                                 }}
                             >
-                                Status
+                                Phone #
                             </th>
                             <th
                                 style={{
@@ -347,7 +377,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                     border: "1px solid #f7f7f7",
                                 }}
                             >
-                                Description
+                                Status
                             </th>
                             <th
                                 style={{
@@ -366,7 +396,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                             )
                             .map((request) => (
                                 <tr
-                                    key={request.id}
+                                    key={request._id}
                                     style={{ border: "1px solid #f7f7f7" }}
                                 >
                                     <td
@@ -375,7 +405,25 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                             padding: "5px 50px",
                                         }}
                                     >
-                                        {request.name || "default name"}
+                                        {`${request.organization}` ||
+                                            "default name"}
+                                    </td>
+                                    <td
+                                        style={{
+                                            ...styles.name,
+                                            padding: "5px 50px",
+                                        }}
+                                    >
+                                        {`${request.firstName} ${request.lastName}` ||
+                                            "default name"}
+                                    </td>
+                                    <td
+                                        style={{
+                                            ...styles.email,
+                                            padding: "5px 50px",
+                                        }}
+                                    >
+                                        {request.position}
                                     </td>
                                     <td
                                         style={{
@@ -387,6 +435,22 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                     </td>
                                     <td
                                         style={{
+                                            ...styles.email,
+                                            padding: "5px 50px",
+                                        }}
+                                    >
+                                        {request.phoneNumber}
+                                    </td>
+                                    <td
+                                        style={{
+                                            ...styles.email,
+                                            padding: "5px 50px",
+                                        }}
+                                    >
+                                        {request.createdAt}
+                                    </td>
+                                    <td
+                                        style={{
                                             ...styles.statusContainer,
                                             padding: "5px 50px",
                                         }}
@@ -394,19 +458,17 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                         <span
                                             style={{
                                                 color:
-                                                    request.status ===
-                                                    "Approved"
+                                                    request.role === "approved"
                                                         ? "#007500"
-                                                        : request.status ===
-                                                          "Declined"
+                                                        : request.role ===
+                                                          "declined"
                                                         ? "#9C0006"
                                                         : "#0d4f90",
                                                 background:
-                                                    request.status ===
-                                                    "Approved"
+                                                    request.role === "approved"
                                                         ? "#DFF0D8"
-                                                        : request.status ===
-                                                          "Declined"
+                                                        : request.role ===
+                                                          "declined"
                                                         ? "#FADBD8"
                                                         : "#d4eaff",
 
@@ -415,48 +477,22 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                                 fontWeight: "700px",
                                             }}
                                         >
-                                            {request.status}
+                                            {(request.role === "approved" &&
+                                                "approved") ||
+                                                (request.role === "declined" &&
+                                                    "Declined") ||
+                                                (request.role === "pending" &&
+                                                    "Pending")}
                                         </span>
                                     </td>
-                                    <td style={{ padding: "5px 50px" }}>
-                                        <span
-                                            style={{
-                                                ...styles.date,
-                                                fontSize: "16px",
-                                                color: "black",
-                                                fontWeight: "700",
-                                                display: "block",
-                                            }}
-                                        >
-                                            {request.date || "default data"}
-                                        </span>
-                                        <span
-                                            style={{
-                                                ...styles.time,
-                                                fontSize: "14px",
-                                                color: "black",
-                                                display: "block",
-                                            }}
-                                        >
-                                            {request.time || "default time"}
-                                        </span>
-                                    </td>
-                                    <td
-                                        style={{
-                                            ...styles.description,
-                                            padding: "5px 50px",
-                                        }}
-                                    >
-                                        {request.description ||
-                                            "default description"}
-                                    </td>
+
                                     <td
                                         style={{
                                             ...styles.buttonContainer,
                                             padding: "20px 50px",
                                         }}
                                     >
-                                        {request.status === "Pending" ? ( // Render buttons based on status
+                                        {request.role === "pending" ? ( // Render buttons based on status
                                             <>
                                                 <button
                                                     style={{
@@ -465,7 +501,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                                     }}
                                                     onClick={() =>
                                                         handleAction(
-                                                            request.id.toString(),
+                                                            request._id.toString(),
                                                             "accepted"
                                                         )
                                                     }
@@ -518,7 +554,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                                     isOpen={isDenyPopupOpen}
                                                     onClose={closeDenyPopup}
                                                     handleAction={handleAction}
-                                                    requestID={request.id.toString()}
+                                                    requestID={request._id.toString()}
                                                 />
                                             </>
                                         ) : (
@@ -558,7 +594,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                                                     isOpen={isDeletePopupOpen}
                                                     onClose={closeDeletePopup}
                                                     handleAction={handleAction}
-                                                    requestID={request.id.toString()}
+                                                    requestID={request._id.toString()}
                                                 />
                                             </>
                                         )}
