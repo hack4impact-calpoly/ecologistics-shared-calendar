@@ -126,20 +126,14 @@ export default function SignUp() {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
-        await signUp.create({
-            emailAddress: email,
-            password: password,
-            firstName: fName,
-            lastName: lName,
-        });
-
-        // send the email.
-        const res = await signUp.prepareEmailAddressVerification({
-            strategy: "email_code",
-        });
-        console.log("res", res);
-
         try {
+            await signUp.create({
+                emailAddress: email,
+                password: password,
+                firstName: fName,
+                lastName: lName,
+            });
+
             //delete previous session if user was alread logged in
             if (session) {
                 await session.end();
@@ -148,10 +142,8 @@ export default function SignUp() {
             await signUp.create({
                 emailAddress: email,
                 password: password,
-                unsafeMetadata: {
-                    organization,
-                    role: "pending",
-                },
+                firstName: fName,
+                lastName: lName,
             });
 
             // send the email.
@@ -193,6 +185,10 @@ export default function SignUp() {
                 await axios.post("/api/userRoutes", {
                     email: email,
                     organization: organization,
+                    phoneNumber: phone,
+                    firstName: fName,
+                    lastName: lName,
+                    position: position,
                 });
 
                 await router.push("/confirmation-page");
@@ -320,7 +316,7 @@ export default function SignUp() {
                         </div>
 
                         <div className={styles.inputBox}>
-                            <label htmlFor="email" className={styles.label}>
+                            <label htmlFor="password" className={styles.label}>
                                 Password
                             </label>
                             <div className={styles.inputContainer}>

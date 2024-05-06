@@ -39,8 +39,9 @@ export default async function handler(
 
         case "POST":
             try {
-                const { userId, sessionClaims } = getAuth(req);
+                const { userId } = getAuth(req);
 
+                console.log("users");
                 const {
                     organization,
                     email,
