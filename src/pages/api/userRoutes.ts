@@ -19,10 +19,8 @@ export default async function handler(
     switch (method) {
         case "GET":
             try {
-                const users = await User.find({});
-
-                /*
-                const { clerkId } = req.query;
+                const { userId: clerkId } = getAuth(req);
+                console.log(clerkId);
                 if (clerkId) {
                     const user = await User.findOne({ clerkId });
                     if (!user) {
@@ -30,8 +28,6 @@ export default async function handler(
                     }
                     res.status(200).json({ success: true, data: user });
                 }
-                */
-                res.status(200).json({ success: true, data: users });
             } catch (error) {
                 console.log(error);
                 res.status(400).json({

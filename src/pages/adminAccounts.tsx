@@ -11,7 +11,7 @@ export default function AdminRequestTable() {
         const fetchUsers = async () => {
             try {
                 // Fetch data from the API endpoint
-                const response = await fetch("/api/userRoutes");
+                const response = await fetch("/api/admins/users");
                 if (!response.ok) {
                     throw new Error("Failed to fetch users");
                 }
@@ -36,7 +36,7 @@ export default function AdminRequestTable() {
         try {
             console.log("request patch");
             //axios patch to update role
-            await axios.patch(`/api/users/${id}`, {
+            await axios.patch(`/api/admins/users/${id}`, {
                 role: "approved",
             });
             // Update the role in the user state variable
@@ -58,7 +58,7 @@ export default function AdminRequestTable() {
         */
         try {
             //axios patch to update role
-            await axios.patch(`/api/users/${id}`, {
+            await axios.patch(`/api/admins/users/${id}`, {
                 role: "declined",
                 declineMessage: message,
             });

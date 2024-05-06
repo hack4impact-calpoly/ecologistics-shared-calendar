@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import UserModel from "../../../database/userSchema";
+import UserModel from "../../../../database/userSchema";
 import { getAuth } from "@clerk/nextjs/server";
 // pages/api/user/[id].js
 

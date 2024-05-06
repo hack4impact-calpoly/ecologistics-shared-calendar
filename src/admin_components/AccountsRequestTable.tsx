@@ -214,7 +214,7 @@ export default function AdminPage({
 }: AdminProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const profileImage = require("../images/profileImage.webp");
-    const [users, setUsers] = useState([]);
+    //const [users, setUsers] = useState([]);
 
     // Delete popup
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -235,7 +235,7 @@ export default function AdminPage({
     );
 
     // Slice the accountRequests array to display only the items for the current page
-    const currentRequests = accountRequests.slice(startIndex, endIndex);
+    //const currentRequests = accountRequests.slice(startIndex, endIndex);
 
     // Handle page change
     const handlePageChange = (page: React.SetStateAction<number>) => {
@@ -306,7 +306,7 @@ export default function AdminPage({
                     display: "flex",
                     justifyContent: "left",
                     boxSizing: "border-box",
-                    width: "100rem",
+                    width: "120rem",
                 }}
             >
                 <table

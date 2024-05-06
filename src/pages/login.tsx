@@ -54,6 +54,7 @@ export default function LoginPage() {
                 if (role === "pending") router.push("/confirmation-page");
                 else if (role === "admin" || role === "approved")
                     router.push("/calendar");
+                else if (role === "declined") router.push("/declined");
             } else {
                 console.log(result);
             }
