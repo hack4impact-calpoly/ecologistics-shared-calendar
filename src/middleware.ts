@@ -26,7 +26,7 @@ export default authMiddleware({
             "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
             "/adminAccounts": ["admin"],
-            "/declined": ["declined", "admin"],
+            "/declined": ["declined"],
         };
 
         // Check if the current route is public
