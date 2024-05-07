@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import connectDB from "../../../database/db";
 import Event from "../../../database/eventSchema";
+import User from "../../../database/userSchema";
+import { getAuth } from "@clerk/nextjs/server";
+import axios from "axios";
 
 type ResponseData = {
   message: string;
@@ -33,7 +36,6 @@ export default async function handler(
       //   status: typeof req.body.status + req.body.status,
       //   imageLink: typeof req.body.imageLink + req.body.imageLink,
       // });
-
       const {
         organization,
         title,
@@ -47,6 +49,10 @@ export default async function handler(
       } = await req.body;
 
       // console.log("AFTER: ", req.body);
+      const { userId: clerkId } = getAuth(req);
+
+      const user = await User.findOne({ clerkId });
+      console.log("USER: ", user);
 
       const event = await Event.create({
         organization,
@@ -58,6 +64,7 @@ export default async function handler(
         location,
         status,
         imageLink,
+        createdBy: user._id,
       });
 
       res.status(201).json({ message: "Created event.", data: event });

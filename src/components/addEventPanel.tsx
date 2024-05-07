@@ -53,7 +53,7 @@ interface Event {
   endDate: Date;
   description: string;
   location: string;
-  status: Number;
+  status: string;
   isVirtual: boolean;
   imageLink?: string;
 }
@@ -193,7 +193,7 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
-          status: 0,
+          status: "Pending",
           imageLink: uploadResult.URL,
         };
 
