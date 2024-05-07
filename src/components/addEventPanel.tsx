@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import Image from "next/image";
 
 interface AddEventForm {
   organization: string;
@@ -447,13 +448,12 @@ export default function AddEventPanel({
         <input {...getInputProps()} />
         {imagePreviewUrl ? (
           <div>
-            <img
+            <Image
               src={imagePreviewUrl}
               alt="Preview"
-              style={{
-                maxWidth: "20%",
-                maxHeight: "20%",
-              }}
+              width={0}
+              height={0}
+              style={{ width: "20%", height: "20%" }}
             />
           </div>
         ) : (
