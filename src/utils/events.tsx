@@ -1,14 +1,11 @@
 import { EventDocument } from "@/database/eventSchema";
 
 export function getFormattedDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return `${date.toLocaleDateString(undefined, {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  })} ${date.toLocaleTimeString(undefined, {
+    hour: '2-digit', minute: '2-digit'
+  })}`;
 }
 
 // Converts the date strings in the events to Date objects.

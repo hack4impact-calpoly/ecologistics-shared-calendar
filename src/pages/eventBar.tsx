@@ -37,8 +37,6 @@ function Event(event: EventDocument) {
           {getFormattedDate(event.startDate)}
         </div>
         <div style={styles.tagContainer}>
-          <CircleIcon style={{ ...styles.icon, color: "#F07F2D" }} />
-          <div style={{ ...styles.eventTag, color: "#F07F2D" }}>Event Tags</div>
           <PlaceOutlinedIcon
             style={{
               ...styles.icon,
@@ -46,11 +44,9 @@ function Event(event: EventDocument) {
               color: "#335543",
             }}
           />
-          <div style={styles.eventTag}>{event.location}</div>
-          <LinkOutlinedIcon
-            style={{ ...styles.icon, fontSize: "medium", color: "#335543" }}
-          />
-          <div style={styles.eventTag}>{event.location}</div>
+          <div style={styles.eventTag}>{event.isVirtual ? "Virtual" : "In Person"}</div>
+          <CircleIcon style={{ ...styles.icon, color: "#F07F2D" }} />
+          <div style={{ ...styles.eventTag, color: "#F07F2D" }}>{event.organization}</div>
         </div>
         <div style={styles.eventText}>{event.description}</div>
       </div>
