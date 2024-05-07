@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
@@ -14,7 +14,6 @@ import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
-import { set } from "mongoose";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
 
@@ -26,6 +25,7 @@ export interface FullCalenderRecurringEvent {
   title: string;
   id: string;
 }
+
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
@@ -81,12 +81,11 @@ export default function CalendarPage() {
 
   // Fetch events from the database
   useEffect(() => {
-    fetch("/api/users/eventRoutes?status=1")
+    fetch("/api/users/eventRoutes?status=Approved")
       .then((res) => res.json())
       .then((res) => {
         convertEventDatesToDates(res.data as EventDocument[]);
         setEvents(res.data as EventDocument[]);
-        console.log(res.data);
       })
       .catch((error) => {
         console.error("Error fetching events:", error);

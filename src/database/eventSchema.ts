@@ -6,14 +6,16 @@ const EventSchema = new Schema(
     title: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
+    time: { type: String, requred: true },
     description: { type: String, required: false },
     isVirtual: { type: Boolean, required: true },
     location: {
       type: String,
       required: true,
     },
-    status: { type: Number, required: true, default: 0 },
+    status: { type: String, required: true, default: 0 },
     imageLink: { type: String, required: false },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   {
     timestamps: true,
@@ -27,17 +29,17 @@ export type EventDocument = {
   title: string;
   startDate: Date;
   endDate: Date;
+  time: string;
   description?: string;
   isVirtual: boolean;
   location: string;
-  status: number;
+  status: string;
   imageLink?: string;
+  createdBy: mongoose.Schema.Types.ObjectId;
   _id: string;
 };
-
 // Export the Event model based on the schema
 const EventModel =
   mongoose.models.Events ||
   mongoose.model<EventDocument>("Events", EventSchema);
-
 export default EventModel;
