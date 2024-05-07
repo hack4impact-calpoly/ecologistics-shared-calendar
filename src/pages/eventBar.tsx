@@ -1,10 +1,8 @@
 import React from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-
 import { useRouter } from "next/router";
-import { EventDocument } from "@/database/eventSchema";
+import { EventDocument } from "../database/eventSchema";
 import { getFormattedDate } from "../utils/events";
 
 function Event(event: EventDocument) {
@@ -109,7 +107,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
 
-        {events.map((event) => (
+        {events && events.map((event) => (
           <Event key={event._id} {...event} />
         ))}
       </div>

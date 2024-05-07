@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
-import { Event } from "../pages/calendar";
 
 interface AddEventForm {
   title: string;
@@ -146,20 +145,7 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ID should be assigned based on return from database at some point!
-    const event: Event = {
-      startRecur: stringToDate(formData.startDate, formData.startTime),
-      endRecur: stringToDate(formData.endDate, formData.endTime),
-      title: formData.title,
-      id: Math.random().toString(),
-    };
-    const errors = await getFormErrors();
-    if (Object.keys(errors).length !== 0) {
-      setFormErrors(errors);
-      return;
-    }
 
-    addEvent(event);
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);

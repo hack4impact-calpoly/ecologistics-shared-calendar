@@ -92,7 +92,7 @@ export default function CalendarPage() {
       });
   }, []);
 
-  const addEvent = (event: Omit<EventDocument, "_id">) => {};
+  const addEvent = (event: Event) => {};
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");

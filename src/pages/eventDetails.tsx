@@ -1,9 +1,8 @@
 import React, { use, useEffect } from "react";
 import Layout from "../components/layout";
 import StaticMap from "../components/map";
-import { EventDocument } from "@/database/eventSchema";
+import { EventDocument } from "../database/eventSchema";
 import { useRouter } from "next/router";
-import { add } from "ol/coordinate";
 import { convertEventDatesToDates, getFormattedDate } from "../utils/events";
 
 interface Address {

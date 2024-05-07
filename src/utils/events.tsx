@@ -1,4 +1,4 @@
-import { EventDocument } from "@/database/eventSchema";
+import { EventDocument } from "../database/eventSchema";
 
 export function getFormattedDate(date: Date): string {
   return `${date.toLocaleDateString(undefined, {
