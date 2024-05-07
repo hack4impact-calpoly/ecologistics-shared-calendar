@@ -52,7 +52,7 @@ export default async function handler(
       const { userId: clerkId } = getAuth(req);
 
       const user = await User.findOne({ clerkId });
-      console.log("USER: ", user);
+      // console.log("USER: ", user);
 
       const event = await Event.create({
         organization,
