@@ -6,6 +6,7 @@ type AdminProps = {
     events: UserDocument[];
     approveUser: (id: string) => void;
     declineUser: (id: string, declineMessage: string) => void;
+    deleteUser: (id: string) => void;
     ITEMS_PER_PAGE: number;
 };
 
@@ -22,6 +23,29 @@ interface DenyProps {
     requestID: string;
     message: string;
     setMessage: React.Dispatch<React.SetStateAction<string>>;
+}
+
+function parseCommentTime(date: Date) {
+    /*
+    Parses MongoDB/TS date object
+    :param time: date object
+    :return: string reprsenting date
+    */
+    // Convert to Los Angeles time
+    const losAngelesDate = new Date(
+        date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+    );
+
+    // Format the date as desired
+    const formattedDate = losAngelesDate.toLocaleString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
+    return formattedDate;
 }
 
 const DeletePopup: React.FC<PopupProps> = ({
@@ -211,6 +235,7 @@ export default function AdminPage({
     ITEMS_PER_PAGE,
     approveUser,
     declineUser,
+    deleteUser,
 }: AdminProps) {
     const [currentPage, setCurrentPage] = useState(1);
     const profileImage = require("../images/profileImage.webp");
@@ -253,6 +278,7 @@ export default function AdminPage({
 
     const handleAction = (requestId: string, action: string) => {
         if (action === "trash") {
+            deleteUser(requestId);
             // Filter out the request with the given id
             const updatedRequests = accountRequests.filter(
                 (request) => request._id.toString() !== requestId
@@ -315,6 +341,7 @@ export default function AdminPage({
                         borderCollapse: "collapse",
                         borderSpacing: 0,
                         borderBottom: "2px solid #f7f7f7",
+                        width: "100%",
                     }}
                 >
                     <thead>
@@ -324,6 +351,7 @@ export default function AdminPage({
                                     padding: "10px",
                                     background: "#f7f7f7",
                                     border: "1px solid #f7f7f7",
+                                    width: "12.5%",
                                 }}
                             >
                                 Request For
@@ -334,6 +362,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "12.5%",
                                 }}
                             >
                                 Name
@@ -344,6 +373,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "12.5%",
                                 }}
                             >
                                 Position
@@ -354,6 +384,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "20%",
                                 }}
                             >
                                 Email
@@ -364,6 +395,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "10%",
                                 }}
                             >
                                 Phone #
@@ -374,6 +406,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "12.5%",
                                 }}
                             >
                                 Date & Time
@@ -384,6 +417,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
+                                    width: "10%",
                                 }}
                             >
                                 Status
@@ -392,6 +426,7 @@ export default function AdminPage({
                                 style={{
                                     padding: "10px",
                                     background: "#f7f7f7",
+                                    width: "10%",
                                 }}
                             ></th>{" "}
                             {/* Add this column for buttons */}
@@ -415,7 +450,7 @@ export default function AdminPage({
                                         }}
                                     >
                                         {`${request.organization}` ||
-                                            "default name"}
+                                            "No Org LListed"}
                                     </td>
                                     <td
                                         style={{
@@ -424,7 +459,7 @@ export default function AdminPage({
                                         }}
                                     >
                                         {`${request.firstName} ${request.lastName}` ||
-                                            "default name"}
+                                            "First Last"}
                                     </td>
                                     <td
                                         style={{
@@ -456,7 +491,7 @@ export default function AdminPage({
                                             padding: "5px 50px",
                                         }}
                                     >
-                                        {request.createdAt.toString()}
+                                        {parseCommentTime(request.createdAt)}
                                     </td>
                                     <td
                                         style={{

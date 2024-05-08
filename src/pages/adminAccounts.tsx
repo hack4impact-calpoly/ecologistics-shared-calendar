@@ -28,13 +28,12 @@ export default function AdminRequestTable() {
         fetchUsers();
     }, []); // Empty dependency array to ensure the effect runs only once
 
-    const approveUser = async (id: any) => {
+    const approveUser = async (id: string) => {
         /*
         Approves user in clerk/mongodb and updates state
         :param id: user mongo id
         */
         try {
-            console.log("request patch");
             //axios patch to update role
             await axios.patch(`/api/admins/users/${id}`, {
                 role: "approved",
@@ -51,7 +50,7 @@ export default function AdminRequestTable() {
             console.error(err);
         }
     };
-    const declineUser = async (id: any, message: string) => {
+    const declineUser = async (id: string, message: string) => {
         /*
         Approves user in clerk/mongodb and updates state
         :param id: user mongo id
@@ -70,6 +69,18 @@ export default function AdminRequestTable() {
                 return user;
             });
             setUsers(updatedUsers);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const deleteUser = async (id: string) => {
+        /*
+        Deletes user rom mongo and clerk if trash button clicked
+        :param id: user to delete's mongo _id
+        */
+        try {
+            await axios.delete(`/api/admins/users/${id}`);
         } catch (err) {
             console.error(err);
         }
@@ -94,6 +105,7 @@ export default function AdminRequestTable() {
                         events={pendingUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
+                        deleteUser={deleteUser}
                     />
                 </div>
                 {/* Approved Accounts */}
@@ -111,6 +123,7 @@ export default function AdminRequestTable() {
                         events={approvedUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
+                        deleteUser={deleteUser}
                     />
                 </div>
 
@@ -122,6 +135,7 @@ export default function AdminRequestTable() {
                         events={declinedUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
+                        deleteUser={deleteUser}
                     />
                 </div>
             </div>

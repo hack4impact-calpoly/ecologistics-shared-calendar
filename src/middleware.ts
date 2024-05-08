@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface UserMetadata {
     role: string;
-    organization: string;
 }
 
 export default authMiddleware({
