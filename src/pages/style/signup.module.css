@@ -35,6 +35,13 @@
   width: 51%;
 }
 
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .label {
   font-family: "DM Sans", sans-serif;
   font-size: 1.5625em;
@@ -80,6 +87,20 @@
   margin-top: 20px;
   font-size: 1em;
   color: #28a745;
+}
+
+.togglePasswordButton {
+  font-family: "DM Sans";
+    font-size: 1em;
+    color: gray;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    right: 5px; /* Adjust the position of the button as needed */
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Media Query Styling */

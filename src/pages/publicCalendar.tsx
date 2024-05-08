@@ -175,7 +175,7 @@ export default function PublicCalendarPage() {
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
             onCreate={() => setIsShowingEventPopUp(true)}
-            addEvent={() => addEvent}
+            addEvent={addEvent}
           />
         )}
       </div>
