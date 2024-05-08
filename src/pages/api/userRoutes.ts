@@ -86,11 +86,14 @@ export default async function handler(
                 
                 const {clerkId}=req.query;
                 
-                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
-                    publicMetadata: {
-                      organization: organization
-                    }
-                  })
+                try{
+                    let uid=clerkId!
+                    await clerkClient.users.updateUserMetadata(uid.toString(), {
+                        publicMetadata: {
+                        organization: organization
+                        }
+                    })
+                } catch(e){}
                 const user = await User.findOneAndUpdate({clerkId:clerkId}, {
                     clerkId: userId,
                     organization: organization,
