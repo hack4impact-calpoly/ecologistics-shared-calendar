@@ -48,12 +48,12 @@ export default function ProfilePage() {
         setFName(responseData.data.firstName)
         setLName(responseData.data.lastName)
         setUserOrAdmin(responseData.data.role)
+        setOrg(responseData.data.organization)
         
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    setUID(uid);
     fetchData();
   }, [uid]);
 
