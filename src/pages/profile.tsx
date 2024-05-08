@@ -30,7 +30,6 @@ export default function ProfilePage() {
   let tagColor="#497cb0"
   if(uid=="" && user){
     setUID(user.id);
-    setOrg(user.unsafeMetadata.organization.toString());
   }
 
   useEffect(() => {
