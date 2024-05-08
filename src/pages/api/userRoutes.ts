@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
+import axios from "axios";
 
 interface UserMetadata {
     role: string;
@@ -41,12 +42,24 @@ export default async function handler(
         case "POST":
             try {
                 const { userId } = getAuth(req);
-                const { role, organization, email } = req.body;
+                const {
+                    organization,
+                    email,
+                    phoneNumber,
+                    lastName,
+                    firstName,
+                    position,
+                } = req.body;
 
                 const user = await User.create({
                     clerkId: userId,
                     organization: organization,
                     email: email,
+                    phoneNumber: phoneNumber,
+                    position: position,
+                    firstName: firstName,
+                    lastName: lastName,
+                    role: "pending",
                 });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
@@ -60,13 +73,45 @@ export default async function handler(
         case "PUT":
             try {
                 const { userId } = getAuth(req);
-                const { role, organization, email } = req.body;
+                const {
+                    organization,
+                    email,
+                    phoneNumber,
+                    lastName,
+                    firstName,
+                    position,
+                    role
+                } = req.body;
                 
                 const {clerkId}=req.query;
+                
+                await axios.patch(
+                    `https://api.clerk.com/v1/users/${userId}/metadata`,
+                    {
+                        public_metadata: {
+                            organization: organization,
+                            role: role
+                        },
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                        },
+                    }
+                ).then((data) => {
+                    console.log(data);
+                  }).catch((error) => {
+                    console.error("Error:", error);
+                  });
                 const user = await User.findOneAndUpdate({clerkId:clerkId}, {
                     clerkId: userId,
                     organization: organization,
                     email: email,
+                    phoneNumber: phoneNumber,
+                    position: position,
+                    firstName: firstName,
+                    lastName: lastName,
+                    role: role
                 });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
