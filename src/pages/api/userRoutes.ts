@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
+import { clerkClient } from "@clerk/nextjs";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
@@ -85,24 +86,11 @@ export default async function handler(
                 
                 const {clerkId}=req.query;
                 
-                await axios.patch(
-                    `https://api.clerk.com/v1/users/${userId}/metadata`,
-                    {
-                        public_metadata: {
-                            organization: organization,
-                            role: role
-                        },
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
-                        },
+                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
+                    publicMetadata: {
+                      organization: organization
                     }
-                ).then((data) => {
-                    console.log(data);
-                  }).catch((error) => {
-                    console.error("Error:", error);
-                  });
+                  })
                 const user = await User.findOneAndUpdate({clerkId:clerkId}, {
                     clerkId: userId,
                     organization: organization,
