@@ -76,8 +76,8 @@ export default function CalendarPage() {
       ) as HTMLElement;
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 0.9}px`;
-        addButton.style.fontSize = `${cellHeight * 0.4}px`;
+        addButton.style.height = `${cellHeight * 1.12}px`;
+        addButton.style.fontSize = `${cellWidth * 0.15}px`;
       }
       const prevButton = document.querySelector(
         ".fc-prev-button"
@@ -365,6 +365,8 @@ const calendarStyles = `
      border-color: #F7AB74;
      font-size: 1.1em;
      border: none;
+     width: 120px; /* Adjust the width as needed */
+     height: 40px; /* Adjust the height as needed */
    }
    .fc-col-header-cell {
      background: #335543;
