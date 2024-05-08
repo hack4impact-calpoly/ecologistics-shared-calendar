@@ -26,9 +26,11 @@ export default function ProfilePage() {
   const [position, setPosition] = useState("");
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
-  const [userOrAdmin, setUserOrAdmin] = useState("admin");
+  const [userOrAdmin, setUserOrAdmin] = useState("user");
+  let tagColor="#497cb0"
   if(uid=="" && user){
     setUID(user.id);
+    setOrg(user.unsafeMetadata.organization.toString());
   }
 
   useEffect(() => {
@@ -40,16 +42,26 @@ export default function ProfilePage() {
         }
         const responseData = await response.json();
         console.log(responseData);
-        setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
+        setPosition(responseData.data.position)
+        setPhone(responseData.data.phoneNumber)
+        setFName(responseData.data.firstName)
+        setLName(responseData.data.lastName)
+        setUserOrAdmin(responseData.data.role)
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    console.log("Effect triggered");
     setUID(uid);
     fetchData();
   }, [uid]);
+
+  if(userOrAdmin==="admin"){
+    tagColor="#497cb0"
+  } else{
+    tagColor="orange"
+  }
 
   return (
     <Layout>
@@ -66,10 +78,9 @@ export default function ProfilePage() {
               <Grid item>
                 <h2>{orgName}</h2>
               </Grid>
-
               <Grid item xs={1.1}>
                 <Paper elevation={0} style={styles.labelStyle}>
-                  <p style={{ color: "#497cb0" }}>{userOrAdmin}</p>
+                  <p style={{ color: tagColor }}>{userOrAdmin}</p>
                 </Paper>
               </Grid>
               <Grid item xs={2}>
