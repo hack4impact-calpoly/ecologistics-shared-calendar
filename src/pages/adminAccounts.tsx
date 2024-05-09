@@ -94,7 +94,7 @@ export default function AdminRequestTable() {
         <Layout>
             {/* Requested Accounts */}
             <div style={styles.container}>
-                <div>
+                <div style={{ width: "90%" }}>
                     <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
                     <div
                         style={{ height: "0.35714rem", background: "#F07F2D" }}
@@ -109,7 +109,7 @@ export default function AdminRequestTable() {
                     />
                 </div>
                 {/* Approved Accounts */}
-                <div>
+                <div style={{ width: "90%" }}>
                     <h1 style={{ alignSelf: "flex-start" }}>Active Accounts</h1>
                     <div
                         style={{
@@ -128,8 +128,9 @@ export default function AdminRequestTable() {
                 </div>
 
                 {/* Declined Accounts */}
-                <div>
+                <div style={{ width: "90%" }}>
                     <h3>Declined Accounts</h3>
+
                     <AccountsTable
                         ITEMS_PER_PAGE={1}
                         events={declinedUsers}

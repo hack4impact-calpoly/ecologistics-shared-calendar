@@ -332,7 +332,7 @@ export default function AdminPage({
                     display: "flex",
                     justifyContent: "left",
                     boxSizing: "border-box",
-                    width: "120rem",
+                    width: "100%",
                 }}
             >
                 <table
