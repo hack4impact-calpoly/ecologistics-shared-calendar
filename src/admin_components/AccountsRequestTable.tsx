@@ -48,6 +48,40 @@ function parseCommentTime(date: Date) {
     return formattedDate;
 }
 
+function formatPhoneNumber(phoneNumberString: string) {
+    if (phoneNumberString === null || phoneNumberString === undefined) {
+        return ""; // Return an empty string if input is null or undefined
+    }
+    // Remove all non-digit characters from the phone number string
+    const cleaned = phoneNumberString.replace(/\D/g, "");
+
+    // Check if the cleaned phone number is empty
+    if (cleaned.length === 0) {
+        return "";
+    }
+
+    // Format the phone number based on its length
+    let formattedNumber;
+    if (cleaned.length === 10) {
+        // Format for 10-digit phone numbers (e.g., 123-456-7890)
+        formattedNumber = cleaned.replace(
+            /(\d{3})(\d{3})(\d{4})/,
+            "($1) $2-$3"
+        );
+    } else if (cleaned.length === 11 && cleaned.charAt(0) === "1") {
+        // Format for 11-digit phone numbers with leading '1' (e.g., 1-123-456-7890)
+        formattedNumber = cleaned.replace(
+            /(\d{1})(\d{3})(\d{3})(\d{4})/,
+            "$1-$2-$3-$4"
+        );
+    } else {
+        // For any other length, return the cleaned phone number without formatting
+        formattedNumber = cleaned;
+    }
+
+    return formattedNumber;
+}
+
 const DeletePopup: React.FC<PopupProps> = ({
     isOpen,
     onClose,
@@ -351,7 +385,7 @@ export default function AdminPage({
                                     padding: "10px",
                                     background: "#f7f7f7",
                                     border: "1px solid #f7f7f7",
-                                    width: "12.5%",
+                                    width: "15%",
                                 }}
                             >
                                 Request For
@@ -387,7 +421,7 @@ export default function AdminPage({
                                     width: "20%",
                                 }}
                             >
-                                Email
+                                Contact Information
                             </th>
                             <th
                                 style={{
@@ -395,18 +429,7 @@ export default function AdminPage({
                                     background: "#f7f7f7",
                                     fontWeight: 500,
                                     border: "1px solid #f7f7f7",
-                                    width: "10%",
-                                }}
-                            >
-                                Phone #
-                            </th>
-                            <th
-                                style={{
-                                    padding: "10px",
-                                    background: "#f7f7f7",
-                                    fontWeight: 500,
-                                    border: "1px solid #f7f7f7",
-                                    width: "12.5%",
+                                    width: "17.5%",
                                 }}
                             >
                                 Date & Time
@@ -426,7 +449,7 @@ export default function AdminPage({
                                 style={{
                                     padding: "10px",
                                     background: "#f7f7f7",
-                                    width: "10%",
+                                    width: "12.5%",
                                 }}
                             ></th>{" "}
                             {/* Add this column for buttons */}
@@ -475,16 +498,12 @@ export default function AdminPage({
                                             padding: "5px 50px",
                                         }}
                                     >
-                                        {request.email}
+                                        {`                                         ${formatPhoneNumber(
+                                            request.phoneNumber
+                                        )} ${request.email}
+`}
                                     </td>
-                                    <td
-                                        style={{
-                                            ...styles.email,
-                                            padding: "5px 50px",
-                                        }}
-                                    >
-                                        {request.phoneNumber}
-                                    </td>
+
                                     <td
                                         style={{
                                             ...styles.email,
