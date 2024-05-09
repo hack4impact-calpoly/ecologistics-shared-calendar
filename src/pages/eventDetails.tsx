@@ -14,6 +14,7 @@ export default function EventPage() {
           <h1 style={styles.title}>Event Title</h1>
           <p style={styles.date}>Event Date @ Event Time</p>
           <div style={styles.imagePlaceholder}></div>
+          {/* <img src="https://calendar-image-storage.s3.amazonaws.com/1714604037955-image_6209779.jpg"/> */}
           <div style={styles.descriptionBox}>
             <p style={styles.descriptionText}>Event Description...</p>
           </div>
@@ -26,7 +27,12 @@ export default function EventPage() {
               </address>
             </div>
             <div style={styles.mapPlaceholder}>
-              <StaticMap street={street} state={state} city={city} postalCode={postalCode} />
+              <StaticMap
+                street={street}
+                state={state}
+                city={city}
+                postalCode={postalCode}
+              />
             </div>
           </div>
         </div>

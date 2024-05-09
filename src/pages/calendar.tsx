@@ -16,10 +16,9 @@ import { useClerk } from "@clerk/clerk-react";
 import Navbar from "../components/navbar";
 
 export interface Event {
-  startRecur: Date;
-  endRecur: Date;
+  startDate: Date;
+  endDate: Date;
   title: string;
-  id: string;
 }
 
 export default function CalendarPage() {
@@ -159,7 +158,7 @@ export default function CalendarPage() {
               </button>
             </Link>
             <Link prefetch={false} href="/profile">
-             <button
+              <button
                 onMouseOver={(e) =>
                   ((e.target as HTMLButtonElement).style.backgroundColor =
                     "#e69153")

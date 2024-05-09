@@ -14,6 +14,10 @@ export default authMiddleware({
       "/login",
       "/signup",
       "/forgot-password",
+      "/api/s3-upload/route",
+      "/api/test",
+      "/api/users/eventRoutes",
+      "/api/s3-upload/test",
       "/publicCalendar",
       "/eventDetails",
     ];
@@ -21,7 +25,7 @@ export default authMiddleware({
     // Define route-specific permissions
     const routePermissions: { [key: string]: string[] } = {
       "/admin": ["admin"],
-      // "/eventDetails": ["admin", "user"],
+      "/eventDetails": ["admin", "user"],
       "/eventBar": ["admin", "user"],
       "/calendar": ["admin", "user"],
       "/confirmation-page": ["pending"],

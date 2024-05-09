@@ -1,24 +1,44 @@
 import mongoose, { Schema, Document } from "mongoose";
+const EventSchema = new Schema(
+  {
+    organization: { type: String, required: true },
+    title: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    time: { type: String, requred: true },
+    description: { type: String, required: false },
+    isVirtual: { type: Boolean, required: true },
+    location: {
+      type: String,
+      required: true,
+    },
+    status: { type: String, required: true, default: 0 },
+    imageLink: { type: String, required: false },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-// Interface for the Event document
-interface EventDocument extends Document {
+// For type inference that matches the schema.
+// THIS MUST MATCH THE SCHEMA
+export type EventDocument = {
+  organization: string;
   title: string;
-  description: string;
-  date: Date;
+  startDate: Date;
+  endDate: Date;
+  time: string;
+  description?: string;
+  isVirtual: boolean;
   location: string;
-}
-
-// Schema for the Event
-const EventSchema: Schema<EventDocument> = new Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  date: { type: Date, required: true },
-  location: { type: String, required: true },
-});
-
+  status: string;
+  imageLink?: string;
+  createdBy: mongoose.Schema.Types.ObjectId;
+  _id: string;
+};
 // Export the Event model based on the schema
 const EventModel =
   mongoose.models.Events ||
   mongoose.model<EventDocument>("Events", EventSchema);
-
 export default EventModel;
