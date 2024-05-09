@@ -18,6 +18,8 @@ export default authMiddleware({
       "/api/test",
       "/api/users/eventRoutes",
       "/api/s3-upload/test",
+      "/publicCalendar",
+      "/eventDetails",
     ];
 
     // Define route-specific permissions
