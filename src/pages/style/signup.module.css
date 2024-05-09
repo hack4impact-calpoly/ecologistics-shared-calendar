@@ -35,13 +35,6 @@
   width: 51%;
 }
 
-.inputContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
 .label {
   font-family: "DM Sans", sans-serif;
   font-size: 1.5625em;
@@ -58,6 +51,13 @@
   border: 1px solid black;
   border-radius: 4px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .bottomText {
@@ -133,7 +133,6 @@
     padding: 0.23em;
     padding-left: 0.5em;
     font-size: 1.3em;
-    width: 96%;
   }
 
   .bottomText {
@@ -144,6 +143,10 @@
     width: 20%;
     font-size: 1em;
     margin-top: 1em;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
@@ -185,6 +188,10 @@
   .button {
     width: 20%;
     font-size: 1.5em;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
@@ -229,6 +236,10 @@
     width: 25%;
     font-size: 2.5em;
   }
+
+  .inputContainer {
+    width: 100%;
+  }
 }
 
 /* Surface pro 7 */
@@ -272,6 +283,10 @@
     width: 25%;
     font-size: 2.5em;
   }
+
+  .inputContainer {
+    width: 100%;
+  }
 }
 
 /* Galaxy Fold */
@@ -313,6 +328,10 @@
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     width: 25%;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
@@ -357,6 +376,10 @@
     margin-top: 1em;
     padding-top: 0.7em;
     padding-bottom: 0.7em;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
