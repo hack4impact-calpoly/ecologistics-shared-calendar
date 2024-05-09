@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
+import axios from "axios";
+import Image from "next/image";
 
 interface AddEventForm {
+  organization: string;
   title: string;
   startDate: string;
   endDate: string;
@@ -29,6 +32,7 @@ interface FormErrors {
 
 const EMPTY_FORM = {
   title: "",
+  organization: "",
   startDate: "",
   endDate: "",
   startTime: "",
@@ -42,6 +46,18 @@ const EMPTY_FORM = {
   state: "",
   postalCode: "",
 };
+
+interface Event {
+  title: string;
+  organization: string;
+  startDate: Date;
+  endDate: Date;
+  description: string;
+  location: string;
+  status: string;
+  isVirtual: boolean;
+  imageLink?: string;
+}
 
 const stringToDate = (date: string, time: string): Date => {
   const [year, month, day] = date.split("-").map(Number);
@@ -64,6 +80,7 @@ export default function AddEventPanel({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -149,6 +166,66 @@ export default function AddEventPanel({
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
+    setIsLoading(true);
+    try {
+      const errors = await getFormErrors();
+      if (Object.keys(errors).length !== 0) {
+        setFormErrors(errors);
+        return;
+      }
+
+      if (formData.photo) {
+        const fileData = new FormData();
+        fileData.append("file", formData.photo);
+
+        const uploadResponse = await axios.post(
+          "api/s3-upload/route",
+          fileData
+        );
+        const uploadResult = uploadResponse.data;
+
+        let address = formData.url || "";
+
+        if (!formData.isVirtual) {
+          address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
+        }
+
+        const event: Event = {
+          title: formData.title,
+          organization: formData.organization,
+          startDate: stringToDate(formData.startDate, formData.startTime),
+          endDate: stringToDate(formData.endDate, formData.endTime),
+          description: formData.description,
+          isVirtual: formData.isVirtual,
+          location: address,
+          status: "Pending",
+          imageLink: uploadResult.URL,
+        };
+
+        const eventResponse = await axios.post("api/users/eventRoutes", event);
+        if (eventResponse.status === 201) {
+          addEvent(event);
+          onCreate();
+          setFormData(EMPTY_FORM);
+          setImagePreviewUrl(null);
+        } else {
+          setFormErrors((prev) => ({
+            ...prev,
+            photo: "Failed to create event",
+          }));
+        }
+      } else {
+        setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setFormErrors((prev) => ({
+        ...prev,
+        photo: "Error uploading image or creating event",
+      }));
+    } finally {
+      setIsLoading(false); // End loading
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -172,7 +249,19 @@ export default function AddEventPanel({
         style={styles.input}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         value={formData.title}
+        disabled={isLoading}
         required
+      />
+      <h4 style={styles.inputTitle}>Organization</h4>
+      <input
+        type="text"
+        style={styles.input}
+        onChange={(e) =>
+          setFormData({ ...formData, organization: e.target.value })
+        }
+        value={formData.organization}
+        required
+        disabled={isLoading}
       />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -187,6 +276,7 @@ export default function AddEventPanel({
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
             }
+            disabled={isLoading}
             value={formData.startDate}
             required
           />
@@ -201,6 +291,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, startTime: e.target.value })
             }
             value={formData.startTime}
+            disabled={isLoading}
             required
           />
         </div>
@@ -217,6 +308,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endDate: e.target.value })
             }
             value={formData.endDate}
+            disabled={isLoading}
             required
           />
 
@@ -231,6 +323,7 @@ export default function AddEventPanel({
               setFormData({ ...formData, endTime: e.target.value })
             }
             value={formData.endTime}
+            disabled={isLoading}
             required
           />
         </div>
@@ -270,6 +363,7 @@ export default function AddEventPanel({
               e.target.checked && setFormData({ ...formData, isVirtual: true })
             }
             required
+            disabled={isLoading}
           />
           Virtual
         </label>
@@ -283,6 +377,7 @@ export default function AddEventPanel({
               e.target.checked && setFormData({ ...formData, isVirtual: false })
             }
             required
+            disabled={isLoading}
           />
           In Person
         </label>
@@ -299,6 +394,7 @@ export default function AddEventPanel({
             }
             value={formData.street}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>City</h4>
           <input
@@ -307,6 +403,7 @@ export default function AddEventPanel({
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
             value={formData.city}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>State</h4>
           <input
@@ -317,6 +414,7 @@ export default function AddEventPanel({
             }
             value={formData.state}
             required
+            disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>Postal Code</h4>
           <input
@@ -327,6 +425,7 @@ export default function AddEventPanel({
             }
             value={formData.postalCode}
             required
+            disabled={isLoading}
           />
         </>
       ) : (
@@ -338,6 +437,7 @@ export default function AddEventPanel({
             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
             value={formData.url ? formData.url : ""}
             required
+            disabled={isLoading}
           />
         </>
       )}
@@ -352,13 +452,12 @@ export default function AddEventPanel({
         <input {...getInputProps()} />
         {imagePreviewUrl ? (
           <div>
-            <img
+            <Image
               src={imagePreviewUrl}
               alt="Preview"
-              style={{
-                maxWidth: "20%",
-                maxHeight: "20%",
-              }}
+              width={0}
+              height={0}
+              style={{ width: "20%", height: "20%" }}
             />
           </div>
         ) : (
@@ -379,8 +478,8 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <button style={styles.button} type="submit">
-        Add Event
+      <button style={styles.button} type="submit" disabled={isLoading}>
+        {isLoading ? "Loading..." : "Add Event"}
       </button>
     </form>
   );

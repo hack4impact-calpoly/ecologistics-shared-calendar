@@ -9,41 +9,26 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
-import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
-import { EventDocument } from "database/eventSchema";
-import { useRouter } from "next/router";
-import { convertEventDatesToDates } from "../utils/events";
 import Navbar from "../components/navbar";
 
-// Recurring because events may span multiple days.
-// This still works for single-day events.
-export interface FullCalenderRecurringEvent {
+export interface Event {
   startRecur: Date;
   endRecur: Date;
-  }
-
-export interface Event {
-  startDate: Date;
-  endDate: Date;
   title: string;
+  id: string;
 }
 
-
-export default function CalendarPage() {
-  const [events, setEvents] = useState<EventDocument[]>([]);
-  const [calenderEvents, setCalenderEvents] = useState<
-    FullCalenderRecurringEvent[]
-  >([]);
+export default function PublicCalendarPage() {
+  const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
-  const router = useRouter();
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -70,34 +55,9 @@ export default function CalendarPage() {
     };
   }, []);
 
-  // Anytime events change, re render the calendar events.
-  useEffect(() => {
-    // setCalenderEvents .....
-    if (!events) return;
-    setCalenderEvents(
-      events.map((event) => ({
-        startRecur: event.startDate,
-        endRecur: event.endDate,
-        title: event.title,
-        id: event._id,
-      }))
-    );
-  }, [events]);
-
-  // Fetch events from the database
-  useEffect(() => {
-    fetch("/api/users/eventRoutes?status=Approved")
-      .then((res) => res.json())
-      .then((res) => {
-        convertEventDatesToDates(res.data as EventDocument[]);
-        setEvents(res.data as EventDocument[]);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  }, []);
-
-  const addEvent = (event: Event) => {};
+  const addEvent = (event: Event) => {
+    setEvents((prev) => [...prev, event]);
+  };
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
@@ -115,8 +75,8 @@ export default function CalendarPage() {
       ) as HTMLElement;
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 1.12}px`;
-        addButton.style.fontSize = `${cellWidth * 0.15}px`;
+        addButton.style.height = `${cellHeight * 0.9}px`;
+        addButton.style.fontSize = `${cellHeight * 0.4}px`;
       }
       const prevButton = document.querySelector(
         ".fc-prev-button"
@@ -167,55 +127,7 @@ export default function CalendarPage() {
       <Navbar />
       <div className={style1.calendarPageContainer}>
         <div className="calendar-container">
-          <div style={styles.signoutContainer}>
-            {/* <button
-              onClick={handleLogout}
-              onMouseOver={(e) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#e69153")
-              }
-              onMouseOut={(e) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#f7ab74")
-              }
-              className={style1.logoutButton}
-            >
-              Logout
-            </button>
-            <Link prefetch={false} href="/adminEvents">
-              <button
-            </button> */}
-            {/* <Link prefetch={false} href="/adminEvents">
-             <button
-                onMouseOver={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#e69153")
-                }
-                onMouseOut={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#f7ab74")
-                }
-                className={style1.adminButton}
-              >
-                Admin
-              </button>
-            </Link>
-            <Link prefetch={false} href="/profile">
-              <button
-                onMouseOver={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#e69153")
-                }
-                onMouseOut={(e) =>
-                  ((e.target as HTMLButtonElement).style.backgroundColor =
-                    "#f7ab74")
-                }
-                className={style1.adminButton}
-              >
-                Profile
-              </button>
-            </Link> */}
-          </div>
+          <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
 
           <FullCalendar
@@ -229,19 +141,10 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
-                },
-                hint: "none",
-              },
-            }}
             headerToolbar={{
               left: "",
               center: "prev title next",
-              right: windowWidth >= 786 ? "AddEvent" : "",
+              right: "",
             }}
             buttonIcons={{
               prev: "arrow-left",
@@ -252,36 +155,27 @@ export default function CalendarPage() {
             editable={true}
             select={() => {}}
             selectable={true}
-            events={calenderEvents}
+            initialEvents={[
+              {
+                title: "nice event",
+                start: new Date(),
+                resourceId: "a",
+              },
+            ]}
+            events={events}
             eventClick={function (info) {
-              console.log(info.event);
-              router.push({
-                pathname: "/eventDetails",
-                query: {
-                  eventId: info.event.id,
-                },
-              });
+              window.location.href = "/eventDetails";
             }}
             eventColor="#c293ff"
           />
         </div>
-        {/* Conditionally render the Add Event button below the calendar for smaller screens */}
-        {windowWidth < 786 && (
-          <button
-            className={style1.addButton} // Ensure you have an 'addButton' style in your CSS module
-            style={{ display: "block", margin: "20px auto 0" }}
-            onClick={() => setIsAddingEvent((prev) => !prev)}
-          >
-            Add Event
-          </button>
-        )}
         {!isAddingEvent ? (
-          <EventBar events={events} />
+          <EventBar />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
             onCreate={() => setIsShowingEventPopUp(true)}
-            addEvent={addEvent}
+            addEvent={() => addEvent}
           />
         )}
       </div>
@@ -406,8 +300,6 @@ const calendarStyles = `
      border-color: #F7AB74;
      font-size: 1.1em;
      border: none;
-     width: 120px; /* Adjust the width as needed */
-     height: 40px; /* Adjust the height as needed */
    }
    .fc-col-header-cell {
      background: #335543;

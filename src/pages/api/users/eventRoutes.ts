@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import connectDB from "../../../database/db";
 import Event from "../../../database/eventSchema";
+import User from "../../../database/userSchema";
+import { getAuth } from "@clerk/nextjs/server";
+import axios from "axios";
 
 type ResponseData = {
   message: string;
@@ -46,8 +49,37 @@ export default async function handler(
     }
   } else if (req.method === "POST") {
     try {
-      const { title, description, date, location } = await req.body;
-      const event = await Event.create({ title, description, date, location });
+      const {
+        organization,
+        title,
+        startDate,
+        endDate,
+        description,
+        isVirtual,
+        location,
+        status,
+        imageLink,
+      } = await req.body;
+
+      // console.log("AFTER: ", req.body);
+      const { userId: clerkId } = getAuth(req);
+
+      const user = await User.findOne({ clerkId });
+      // console.log("USER: ", user);
+
+      const event = await Event.create({
+        organization,
+        title,
+        startDate,
+        endDate,
+        description,
+        isVirtual,
+        location,
+        status,
+        imageLink,
+        createdBy: user._id,
+      });
+
       res.status(201).json({ message: "Created event.", data: event });
     } catch (err) {
       res.status(400).json({ message: "POST Failed.", data: err });

@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-
 const EventSchema = new Schema(
   {
     organization: { type: String, required: true },
