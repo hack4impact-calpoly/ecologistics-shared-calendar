@@ -23,14 +23,13 @@ import Navbar from "../components/navbar";
 export interface FullCalenderRecurringEvent {
   startRecur: Date;
   endRecur: Date;
-  }
+}
 
 export interface Event {
   startDate: Date;
   endDate: Date;
   title: string;
 }
-
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
@@ -470,4 +469,5 @@ const calendarStyles = `
      border: 1px solid #ddd;
      border-right: 1px solid #ddd;
    }
+
  `;

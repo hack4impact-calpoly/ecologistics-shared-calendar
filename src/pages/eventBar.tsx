@@ -44,9 +44,13 @@ function Event(event: EventDocument) {
               color: "#335543",
             }}
           />
-          <div style={styles.eventTag}>{event.isVirtual ? "Virtual" : "In Person"}</div>
+          <div style={styles.eventTag}>
+            {event.isVirtual ? "Virtual" : "In Person"}
+          </div>
           <CircleIcon style={{ ...styles.icon, color: "#F07F2D" }} />
-          <div style={{ ...styles.eventTag, color: "#F07F2D" }}>{event.organization}</div>
+          <div style={{ ...styles.eventTag, color: "#F07F2D" }}>
+            {event.organization}
+          </div>
         </div>
         <div style={styles.eventText}>{event.description}</div>
       </div>
@@ -62,6 +66,11 @@ function Event(event: EventDocument) {
         {" "}
         {/* Image placeholder */}
         {/* If you have an image URL you can use an <img> tag here */}
+        <img
+          src={event.imageLink}
+          alt="Event Image"
+          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+        />
       </div>
     </div>
   );
@@ -89,6 +98,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        width: "75%",
       }}
     >
       <div
@@ -122,9 +132,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
 
-        {events && events.map((event) => (
-          <Event key={event._id} {...event} />
-        ))}
+        {events && events.map((event) => <Event key={event._id} {...event} />)}
       </div>
     </div>
   );
