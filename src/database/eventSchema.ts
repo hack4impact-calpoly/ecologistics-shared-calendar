@@ -5,22 +5,22 @@ const EventSchema = new Schema(
     title: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
+    time: { type: String, requred: true },
     description: { type: String, required: false },
     isVirtual: { type: Boolean, required: true },
     location: {
       type: String,
       required: true,
     },
-    status: { type: String, required: true, default: "Pending" },
-    deniedReason: { type: String, required: false },
+    status: { type: String, required: true, default: 0 },
     imageLink: { type: String, required: false },
-    createdBy: { type: mongoose.Types.ObjectId, ref: "users", required: true },
-    _id: { type: mongoose.Types.ObjectId, required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
   },
   {
     timestamps: true,
   }
 );
+
 // For type inference that matches the schema.
 // THIS MUST MATCH THE SCHEMA
 export type EventDocument = {
@@ -28,6 +28,7 @@ export type EventDocument = {
   title: string;
   startDate: Date;
   endDate: Date;
+  time: string;
   description?: string;
   isVirtual: boolean;
   location: string;
