@@ -498,10 +498,12 @@ export default function AdminPage({
                                             padding: "5px 50px",
                                         }}
                                     >
-                                        {`                                         ${formatPhoneNumber(
-                                            request.phoneNumber
-                                        )} ${request.email}
-`}
+                                        <p>
+                                            {formatPhoneNumber(
+                                                request.phoneNumber
+                                            )}
+                                        </p>
+                                        <p>{request.email}</p>
                                     </td>
 
                                     <td
