@@ -162,6 +162,10 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
+
+    onCreate();
+    setFormData(EMPTY_FORM);
+    setImagePreviewUrl(null);
     setIsLoading(true);
     try {
       const errors = await getFormErrors();

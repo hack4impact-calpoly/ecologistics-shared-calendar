@@ -10,6 +10,27 @@ type ResponseData = {
   data: any;
 };
 
+interface QueryParams {
+  _id: string;
+  status: string;
+}
+
+const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
+  let queryObject: Partial<QueryParams> = {};
+
+  if (req.query.id) {
+    const { id } = req.query;
+    queryObject._id = id as string;
+  }
+
+  if (req.query.status) {
+    const { status } = req.query;
+    queryObject.status = status as string;
+  }
+
+  return queryObject;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -17,25 +38,17 @@ export default async function handler(
   await connectDB();
   if (req.method === "GET") {
     try {
-      const allEvents = await Event.find({});
-      res.status(200).json({ message: "Fetched all events.", data: allEvents });
+      const queryObject = getQueryObject(req);
+      const eventOrEvents = await Event.find(queryObject);
+
+      res
+        .status(200)
+        .json({ message: "Fetched event(s).", data: eventOrEvents });
     } catch (err) {
       res.status(404).json({ message: "GET Failed.", data: err });
     }
   } else if (req.method === "POST") {
     try {
-      // console.log("Received body:", req.body);
-      // console.log("Types:", {
-      //   organization: typeof req.body.organization + req.body.organization,
-      //   title: typeof req.body.title +  req.body.title,
-      //   startDate: typeof req.body.startDate + req.body.startDate,
-      //   endDate: typeof req.body.endDate + req.body.endDate,
-      //   description: typeof req.body.description + req.body.description,
-      //   isVirtual: typeof req.body.isVirtual + req.body.isVirtual,
-      //   location: typeof req.body.location + req.body.location,
-      //   status: typeof req.body.status + req.body.status,
-      //   imageLink: typeof req.body.imageLink + req.body.imageLink,
-      // });
       const {
         organization,
         title,
@@ -69,7 +82,6 @@ export default async function handler(
 
       res.status(201).json({ message: "Created event.", data: event });
     } catch (err) {
-      console.log(err);
       res.status(400).json({ message: "POST Failed.", data: err });
     }
   } else if (req.method === "DELETE") {

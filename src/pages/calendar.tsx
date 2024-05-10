@@ -13,7 +13,17 @@ import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
+import { EventDocument } from "database/eventSchema";
+import { useRouter } from "next/router";
+import { convertEventDatesToDates } from "../utils/events";
 import Navbar from "../components/navbar";
+
+// Recurring because events may span multiple days.
+// This still works for single-day events.
+export interface FullCalenderRecurringEvent {
+  startRecur: Date;
+  endRecur: Date;
+  }
 
 export interface Event {
   startDate: Date;
@@ -21,14 +31,19 @@ export interface Event {
   title: string;
 }
 
+
 export default function CalendarPage() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventDocument[]>([]);
+  const [calenderEvents, setCalenderEvents] = useState<
+    FullCalenderRecurringEvent[]
+  >([]);
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
+  const router = useRouter();
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -55,9 +70,34 @@ export default function CalendarPage() {
     };
   }, []);
 
-  const addEvent = (event: Event) => {
-    setEvents((prev) => [...prev, event]);
-  };
+  // Anytime events change, re render the calendar events.
+  useEffect(() => {
+    // setCalenderEvents .....
+    if (!events) return;
+    setCalenderEvents(
+      events.map((event) => ({
+        startRecur: event.startDate,
+        endRecur: event.endDate,
+        title: event.title,
+        id: event._id,
+      }))
+    );
+  }, [events]);
+
+  // Fetch events from the database
+  useEffect(() => {
+    fetch("/api/users/eventRoutes?status=Approved")
+      .then((res) => res.json())
+      .then((res) => {
+        convertEventDatesToDates(res.data as EventDocument[]);
+        setEvents(res.data as EventDocument[]);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
+
+  const addEvent = (event: Event) => {};
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
@@ -141,6 +181,9 @@ export default function CalendarPage() {
               className={style1.logoutButton}
             >
               Logout
+            </button>
+            <Link prefetch={false} href="/adminEvents">
+              <button
             </button> */}
             {/* <Link prefetch={false} href="/adminEvents">
              <button
@@ -209,16 +252,15 @@ export default function CalendarPage() {
             editable={true}
             select={() => {}}
             selectable={true}
-            initialEvents={[
-              {
-                title: "nice event",
-                start: new Date(),
-                resourceId: "a",
-              },
-            ]}
-            events={events}
+            events={calenderEvents}
             eventClick={function (info) {
-              window.location.href = "/eventDetails";
+              console.log(info.event);
+              router.push({
+                pathname: "/eventDetails",
+                query: {
+                  eventId: info.event.id,
+                },
+              });
             }}
             eventColor="#c293ff"
           />
@@ -234,7 +276,7 @@ export default function CalendarPage() {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar />
+          <EventBar events={events} />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
