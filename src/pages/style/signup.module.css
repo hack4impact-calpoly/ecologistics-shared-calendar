@@ -1,56 +1,56 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 10vh;
-  width: 100%;
-  background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    width: 100%;
+    background-color: white;
 }
 
 .formBox {
-  border-radius: 8px;
-  background-color: white;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    border-radius: 8px;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .title {
-  font-family: "DM Sans", sans-serif;
-  font-size: 3.75em;
-  text-align: center;
-  margin-bottom: -0.5em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 3.75em;
+    text-align: center;
+    margin-bottom: -0.5em;
 }
 
 .subtitle {
-  font-family: "DM Sans", sans-serif;
-  font-size: 2em;
-  text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-size: 2em;
+    text-align: center;
 }
 
 .inputBox {
-  margin-top: 1em;
-  width: 51%;
+    margin-top: 1em;
+    width: 51%;
 }
 
 .label {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1.5625em;
-  margin-left: 0.2em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 1.5625em;
+    margin-left: 0.2em;
 }
 
 .input {
-  font-family: "DM Sans", sans-serif;
-  padding: 0.23em;
-  padding-left: 0.5em;
-  font-size: 2em;
-  color: black;
-  width: 100%;
-  border: 1px solid black;
-  border-radius: 4px;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    font-family: "DM Sans", sans-serif;
+    padding: 0.23em;
+    padding-left: 0.5em;
+    font-size: 2em;
+    color: black;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .inputContainer {
@@ -61,32 +61,32 @@
 }
 
 .bottomText {
-  margin-top: 1.5625em;
-  margin-bottom: 1.5625em;
-  font-size: 1em;
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
 }
 
 .button {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1em;
-  color: black;
-  margin-top: 1em;
-  padding-top: 0.7em;
-  padding-bottom: 0.7em;
-  background-color: #f7ab74;
-  border: none;
-  border-radius: 10px;
-  width: 12%;
-  cursor: pointer;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    font-family: "DM Sans", sans-serif;
+    font-size: 1em;
+    color: black;
+    margin-top: 1em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+    background-color: #f7ab74;
+    border: none;
+    border-radius: 10px;
+    width: 12%;
+    cursor: pointer;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .statusMessage {
-  font-family: "DM Sans", sans-serif;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1em;
-  color: #28a745;
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #28a745;
 }
 
 .togglePasswordButton {
@@ -107,47 +107,48 @@
 
 /* IPhone SE - S20 Ultra */
 @media only screen and (min-width: 320px) and (max-width: 1440px) and (min-height: 568px) and (max-height: 3200px) {
-  .container {
-    min-height: 80vh;
-  }
+    .container {
+        min-height: 80vh;
+    }
 
-  .title {
-    font-size: 2em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 2em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 1.3em;
-  }
+    .subtitle {
+        font-size: 1.3em;
+    }
 
-  .inputBox {
-    margin-top: 0.5em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 0.5em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 1em;
-  }
+    .label {
+        font-size: 1em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 1.3em;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 1.3em;
+        width: 96%;
+    }
 
-  .bottomText {
-    font-size: 1em;
-  }
+    .bottomText {
+        font-size: 1em;
+    }
 
-  .button {
-    width: 20%;
-    font-size: 1em;
-    margin-top: 1em;
-  }
+    .button {
+      width: 20%;
+      font-size: 1em;
+      margin-top: 1em;
+    }
 
-  .inputContainer {
-    width: 100%;
-  }
+    .inputContainer {
+      width: 100%;
+    }
 }
 
 /* IPad Mini */
