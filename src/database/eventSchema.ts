@@ -33,9 +33,10 @@ export type EventDocument = {
   isVirtual: boolean;
   location: string;
   status: string;
+  deniedReason?: string;
   imageLink?: string;
-  createdBy: mongoose.Schema.Types.ObjectId;
-  _id: string;
+  createdBy: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 };
 // Export the Event model based on the schema
 const EventModel =

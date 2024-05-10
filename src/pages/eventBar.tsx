@@ -132,7 +132,10 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
 
-        {events && events.map((event) => <Event key={event._id} {...event} />)}
+        {events &&
+          events.map((event) => (
+            <Event key={event._id.toString()} {...event} />
+          ))}
       </div>
     </div>
   );

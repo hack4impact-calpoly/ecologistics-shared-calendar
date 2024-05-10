@@ -4,7 +4,7 @@ import Event from "../../../database/eventSchema";
 import User from "../../../database/userSchema";
 import { getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
-
+import mongoose from "mongoose";
 type ResponseData = {
   message: string;
   data: any;
@@ -13,6 +13,7 @@ type ResponseData = {
 interface QueryParams {
   _id: string;
   status: string;
+  createdBy: mongoose.Types.ObjectId;
 }
 
 const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
@@ -26,6 +27,11 @@ const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
   if (req.query.status) {
     const { status } = req.query;
     queryObject.status = status as string;
+  }
+
+  if (req.query.createdBy) {
+    const { createdBy } = req.query;
+    queryObject.createdBy = new mongoose.Types.ObjectId(createdBy.toString());
   }
 
   return queryObject;
@@ -86,8 +92,9 @@ export default async function handler(
     }
   } else if (req.method === "DELETE") {
     try {
-      const { id } = await req.body;
-      await Event.findByIdAndDelete({ _id: id });
+      const { id } = req.body;
+
+      await Event.findByIdAndRemove(id.toString().trim());
       res.status(200).json({ message: "Deleted event.", data: null });
     } catch (err) {
       res.status(404).json({ message: "DELETE Failed.", data: err });
