@@ -7,15 +7,19 @@ interface UserMetadata {
 
 export default authMiddleware({
     async afterAuth(auth, req: NextRequest) {
-        // Define public routes
-        const publicRoutes = [
-            "/",
-            "/login",
-            "/signup",
-            "/forgot-password",
-            "/publicCalendar",
-            "/eventDetails",
-        ];
+    // Define public routes
+      const publicRoutes = [
+        "/",
+        "/login",
+        "/signup",
+        "/forgot-password",
+        "/api/s3-upload/route",
+        "/api/test",
+        "/api/users/eventRoutes",
+        "/api/s3-upload/test",
+        "/publicCalendar",
+        "/eventDetails",
+      ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {

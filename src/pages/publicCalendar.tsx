@@ -8,11 +8,11 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState } from "react";
 import React from "react";
-import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import Navbar from "../components/navbar";
+import { EventDocument } from "../database/eventSchema";
 
 export interface Event {
   startRecur: Date;
@@ -24,7 +24,6 @@ export interface Event {
 export default function PublicCalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [resize, setResize] = useState(false);
-  const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(0);
@@ -169,15 +168,7 @@ export default function PublicCalendarPage() {
             eventColor="#c293ff"
           />
         </div>
-        {!isAddingEvent ? (
-          <EventBar />
-        ) : (
-          <AddEventPanel
-            onClose={() => setIsAddingEvent(false)}
-            onCreate={() => setIsShowingEventPopUp(true)}
-            addEvent={addEvent}
-          />
-        )}
+          <EventBar events={[] as EventDocument[]}/>
       </div>
     </Layout>
   );
