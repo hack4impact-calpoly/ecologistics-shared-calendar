@@ -47,7 +47,7 @@ export default function OrganizationEvents() {
         const user = await uid_response.json();
 
         const _id_response = await fetch(
-          "/api/users/eventRoutes/?_id=" + user.data._id
+          "/api/users/eventRoutes/?createdBy=" + user.data._id
         );
 
         if (!_id_response.ok) {

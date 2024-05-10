@@ -13,6 +13,7 @@ type ResponseData = {
 interface QueryParams {
   _id: string;
   status: string;
+  createdBy: mongoose.Types.ObjectId;
 }
 
 const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
@@ -28,6 +29,11 @@ const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
     queryObject.status = status as string;
   }
 
+  if (req.query.createdBy) {
+    const { createdBy } = req.query;
+    queryObject.createdBy = new mongoose.Types.ObjectId(createdBy.toString());
+  }
+
   return queryObject;
 };
 
@@ -38,19 +44,12 @@ export default async function handler(
   await connectDB();
   if (req.method === "GET") {
     try {
-      const { _id } = req.query;
-      if (_id) {
-        const userId = new mongoose.Types.ObjectId(_id.toString());
-        const userEvents = await Event.find({ createdBy: userId });
-        if (!userEvents) {
-          res.status(404).json({ data: "User not found" });
-        }
-        res.status(200).json({ success: true, data: userEvents });
-      } else {
-        res
-          .status(404)
-          .json({ message: "GET Failed.", data: "No user supplied" });
-      }
+      const queryObject = getQueryObject(req);
+      const eventOrEvents = await Event.find(queryObject);
+
+      res
+        .status(200)
+        .json({ message: "Fetched event(s).", data: eventOrEvents });
     } catch (err) {
       res.status(404).json({ message: "GET Failed.", data: err });
     }
