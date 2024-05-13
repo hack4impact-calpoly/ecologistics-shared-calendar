@@ -22,7 +22,7 @@ const ConfirmationPage: React.FC = () => {
         </h2>
         {/* Button to return to the specified page */}
         <button style={styles.button} onClick={handleReturn}>
-          Go to Calender
+          Go to Calendar
         </button>
       </div>
     </div>
