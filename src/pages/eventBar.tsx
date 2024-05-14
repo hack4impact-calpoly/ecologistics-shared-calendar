@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-
+import SearchBar from "../components/searchBar";
 import { useRouter } from "next/router";
+
 
 // eventually connect to data from backend
 const eventData = [
@@ -133,6 +134,18 @@ function Event({ title, location, websiteURL, date, description }: EventProps) {
 export default function EventBar() {
   const styles = useEventBarStyles();
 
+  const [searchTerm, setSearchTerm] = useState("");
+    const [filteredEvents, setFilteredEvents] = useState(eventData);
+
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchTerm(value);
+        const filtered = eventData.filter((event) =>
+          event.title.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredEvents(filtered);
+      };
+
   return (
     <div
       style={{
@@ -141,37 +154,39 @@ export default function EventBar() {
         height: "100%",
       }}
     >
-      <div
-        style={{
+    <div
+          style={{
           display: "flex",
           justifyContent: "center",
           width: "100%",
           margin: "0 0 4% 0",
-        }}
+          }}
       >
-        <input
+          <input
           type="text"
           placeholder="Search..."
           style={{
-            boxSizing: "border-box",
-            width: "85%",
-            padding: "2% 2%",
-            fontSize: "1.3rem",
-            borderRadius: "1rem",
-            border: "0.1rem solid #ccc",
-            outline: "none",
-            boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
-            marginTop: "70px",
+              boxSizing: "border-box",
+              width: "85%",
+              padding: "2% 2%",
+              fontSize: "1.3rem",
+              borderRadius: "1rem",
+              border: "0.1rem solid #ccc",
+              outline: "none",
+              boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
+              marginTop: "70px",
           }}
+
+          onChange={handleSearchChange}
 
           // Add onChange event handler if you want to capture input
           // onChange={handleSearchChange}
-        />
+          />
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
 
-        {eventData.map((event) => (
+        {filteredEvents.map((event) => (
           <Event key={event.id} {...event} />
         ))}
       </div>
