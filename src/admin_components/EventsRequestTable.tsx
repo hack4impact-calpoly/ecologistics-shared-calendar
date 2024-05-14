@@ -26,6 +26,8 @@ interface PopupProps {
   isOpen: boolean;
   onClose: () => void;
   handleAction: (requestID: string, action: string) => void;
+  message?: string;
+  setMessage?: React.Dispatch<React.SetStateAction<string>>;
   requestID: string;
 }
 
@@ -155,9 +157,10 @@ const DenyPopup: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
+  message,
+  setMessage,
   requestID,
 }) => {
-  const [message, setMessage] = useState("");
   if (!isOpen) return null;
   return (
     <>
@@ -539,6 +542,8 @@ export default function AdminPage({
                           isOpen={isDenyPopupOpen}
                           onClose={closeDenyPopup}
                           handleAction={handleAction}
+                          message={message}
+                          setMessage={setMessage}
                           requestID={request._id.toString()}
                         />
                       </>

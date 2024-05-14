@@ -1,402 +1,9 @@
 import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
 import React, { useState, useEffect} from "react";
-
-const pending = [
-  {
-    id: 1,
-    name: "AAPI SLO 1",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 2,
-    name: "AAPI SLO 2",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 3,
-    name: "AAPI SLO 3",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 4,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 5,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 6,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 7,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 8,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 9,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 10,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 11,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 12,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Pending",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  // ... other requests come after
-];
-
-const approved = [
-  {
-    id: 1,
-    name: "AAPI SLO 1",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 2,
-    name: "AAPI SLO 2",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 3,
-    name: "AAPI SLO 3",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 4,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 5,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 6,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 7,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 8,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 9,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 10,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 11,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 12,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  // ... other requests come after
-];
-
-const postponed = [
-  {
-    id: 1,
-    name: "AAPI SLO 1",
-    email: "aapislo@gmail.com",
-    status: "Postponed",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 2,
-    name: "AAPI SLO 2",
-    email: "aapislo@gmail.com",
-    status: "Postponed",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 3,
-    name: "AAPI SLO 3",
-    email: "aapislo@gmail.com",
-    status: "Postponed",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-];
-
-const declined = [
-  {
-    id: 1,
-    name: "AAPI SLO 1",
-    email: "aapislo@gmail.com",
-    status: "Declined",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 2,
-    name: "AAPI SLO 2",
-    email: "aapislo@gmail.com",
-    status: "Declined",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 3,
-    name: "AAPI SLO 3",
-    email: "aapislo@gmail.com",
-    status: "Declined",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-];
-
-const archived = [
-  {
-    id: 1,
-    name: "AAPI SLO 1",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 2,
-    name: "AAPI SLO 2",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 3,
-    name: "AAPI SLO 3",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 4,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 5,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 6,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 7,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 8,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 9,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 10,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 11,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  {
-    id: 12,
-    name: "AAPI SLO",
-    email: "aapislo@gmail.com",
-    status: "Approved",
-    date: "10/02/2023",
-    time: "1:00pm-2:30pm",
-    description: "lorem ipsum nfeoigioehge...",
-  },
-  // ... other requests come after
-];
+import axios from "axios";
+import { EventDocument } from "@/database/eventSchema";
+import { headers } from "@/next.config";
 
 // Interfaces for Event and API responses
 interface Event {
@@ -419,9 +26,8 @@ interface ApiResponse {
   data: Event[];
 }
 
-
-
 export default function AdminRequestTable() {
+  const [events, setEvents] = useState<EventDocument[]>([]);
   const [pending, setPending] = useState<Event[]>([]);
   const [approved, setApproved] = useState<Event[]>([]);
   const [postponed, setPostponed] = useState<Event[]>([]);
@@ -440,8 +46,71 @@ export default function AdminRequestTable() {
       })
       .catch(error => console.error('Failed to fetch events:', error));
   }, []);
-  // console.log("pending", pending);
-  // console.log("approved", approved);
+
+  const approveEvent = async (id: string) => {
+    /*
+    Approves user in clerk/mongodb and updates state
+    :param id: user mongo id
+    */
+    try {
+        //axios patch to update status
+        await axios.patch(`/api/admins/eventRoutes`, {
+            id: id,
+            status: "Approved",
+            declineMessage: "",
+        });
+        console.log("id", id);
+        // Update the status in the user state variable
+        const updatedEvents = events.map((event) => {
+            if (event._id.toHexString() === id) {
+                return { ...event, deniedReason:"",status: "Approved" };
+            }
+            return event;
+        });
+        setEvents(updatedEvents);
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+const declineEvent = async (id: string, message: string) => {
+    /*
+    Approves user in clerk/mongodb and updates state
+    :param id: user mongo id
+    */
+   console.log("The message :", message);
+    try {
+        //axios patch to update status
+        await axios.patch(`/api/admins/eventRoutes`, {
+            id: id,
+            status: "Denied",
+            deniedReason: message,
+        });
+        // Update the status in the user state variable
+        const updatedEvents = events.map((event) => {
+            if (event._id.toHexString() === id) {
+                return { ...event, deniedReason: message ,status: "Denied" };
+            }
+            return event;
+        });
+        setEvents(updatedEvents);
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+const deleteEvent = async (id: string) => {
+  /*
+  Deletes user rom mongo and clerk if trash button clicked
+  :param id: user to delete's mongo _id
+  */
+  try {
+    await axios.delete(`/api/admins/eventRoutes`, { data: { id } });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   return (
     <Layout>
@@ -451,7 +120,13 @@ export default function AdminRequestTable() {
           <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
           <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
           <h3>Requested Events</h3>
-          <EventsTable ITEMS_PER_PAGE={4} events={pending} />
+          <EventsTable 
+              approveEvent={approveEvent}
+              declineEvent={declineEvent}
+              deleteEvent={deleteEvent}
+              ITEMS_PER_PAGE={4} 
+              events={pending} 
+          />
         </div>
         {/* Approved Events */}
         <div>
@@ -463,18 +138,36 @@ export default function AdminRequestTable() {
             }}
           ></div>
           <h3>Approved Events</h3>
-          <EventsTable ITEMS_PER_PAGE={1} events={approved} />
+          <EventsTable 
+              approveEvent={approveEvent}
+              declineEvent={declineEvent}
+              deleteEvent={deleteEvent}
+              ITEMS_PER_PAGE={4} 
+              events={approved} 
+          />
         </div>
 
         {/* Postponed Events */}
         <div>
           <h3>Postponed Events</h3>
-          <EventsTable ITEMS_PER_PAGE={1} events={postponed} />
+          <EventsTable 
+              approveEvent={approveEvent}
+              declineEvent={declineEvent}
+              deleteEvent={deleteEvent}
+              ITEMS_PER_PAGE={4} 
+              events={postponed} 
+          />
         </div>
         {/* Declined Events */}
         <div>
           <h3>Declined Events</h3>
-          <EventsTable ITEMS_PER_PAGE={1} events={declined} />
+          <EventsTable 
+              approveEvent={approveEvent}
+              declineEvent={declineEvent}
+              deleteEvent={deleteEvent}
+              ITEMS_PER_PAGE={4} 
+              events={declined} 
+          />
         </div>
         {/* Past Events */}
         <div>
@@ -486,7 +179,13 @@ export default function AdminRequestTable() {
             }}
           ></div>
           <h3>Archived</h3>
-          <EventsTable ITEMS_PER_PAGE={3} events={archived} />
+          <EventsTable 
+              approveEvent={approveEvent}
+              declineEvent={declineEvent}
+              deleteEvent={deleteEvent}
+              ITEMS_PER_PAGE={4} 
+              events={archived} 
+          />
         </div>
       </div>
     </Layout>

@@ -15,6 +15,7 @@ const EventSchema = new Schema(
     status: { type: String, required: true, default: 0 },
     imageLink: { type: String, required: false },
     createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
+    deniedReason: { type: String, required: false },
   },
   {
     timestamps: true,
