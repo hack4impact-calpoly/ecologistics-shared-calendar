@@ -1,15 +1,27 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
 
 type AdminProps = {
   events: {
-    id: number;
-    name: string;
-    email: string;
+    // _id: number;
+    // name: string;
+    // email: string;
+    // status: string;
+    // date: string;
+    // time: string;
+    // description: string;
+    organization: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    description?: string;
+    isVirtual: boolean;
+    location: string;
     status: string;
-    date: string;
-    time: string;
-    description: string;
+    deniedReason?: string;
+    imageLink?: string;
+    createdBy: string;
+    _id: string;
   }[];
   ITEMS_PER_PAGE: number;
 };
@@ -234,12 +246,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
 
   const handleAction = (requestId: string, action: string) => {
     if (action === "trash") {
-      // Filter out the request with the given id
+      // Filter out the request with the given _id
       const updatedRequests = accountRequests.filter(
-        (request) => request.id.toString() !== requestId
+        (request) => request._id.toString() !== requestId
       );
       if (
-        requestId === accountRequests[accountRequests.length - 1].id.toString()
+        requestId === accountRequests[accountRequests.length - 1]._id.toString()
       ) {
         setCurrentPage(currentPage - 1);
       }
@@ -248,7 +260,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     } else {
       // For accept/decline actions, update the status accordingly
       /*const updatedRequests = accountRequests.map((request) => {
-        if (request.id.toString() === requestId) {
+        if (request._id.toString() === requestId) {
           return {
             ...request,
             status: action === "accepted" ? "Accepted" : "Declined",
@@ -262,13 +274,16 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
       // I would assume that when an event is approved or denied, it is updated on the
       // the backend, and is then rerendered on the new list
       const updatedRequests = accountRequests.filter(
-        (request) => request.id.toString() !== requestId
+        (request) => request._id.toString() !== requestId
       );
 
       // Update the state with the new account requests array
       setAccountRequests(updatedRequests);
     }
   };
+  useEffect(() => {
+    setAccountRequests(events);
+}, [events]);
 
   return (
     <div>
@@ -347,12 +362,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
             {accountRequests
               .slice(calculateRange().startIndex, calculateRange().endIndex)
               .map((request) => (
-                <tr key={request.id} style={{ border: "1px solid #f7f7f7" }}>
+                <tr key={request._id} style={{ border: "1px solid #f7f7f7" }}>
                   <td style={{ ...styles.name, padding: "5px 50px" }}>
-                    {request.name}
+                    {request.title}
                   </td>
                   <td style={{ ...styles.email, padding: "5px 50px" }}>
-                    {request.email}
+                    {request.organization}
                   </td>
                   <td
                     style={{ ...styles.statusContainer, padding: "5px 50px" }}
@@ -390,7 +405,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.date}
+                      {request.startDate}
                     </span>
                     <span
                       style={{
@@ -400,7 +415,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.time}
+                      {request.startDate}
                     </span>
                   </td>
                   <td style={{ ...styles.description, padding: "5px 50px" }}>
@@ -418,7 +433,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                             padding: "8px 15px",
                           }}
                           onClick={() =>
-                            handleAction(request.id.toString(), "accepted")
+                            handleAction(request._id.toString(), "accepted")
                           }
                           onMouseOver={(
                             e: React.MouseEvent<HTMLButtonElement>
@@ -466,7 +481,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           isOpen={isDenyPopupOpen}
                           onClose={closeDenyPopup}
                           handleAction={handleAction}
-                          requestID={request.id.toString()}
+                          requestID={request._id.toString()}
                         />
                       </>
                     ) : (
@@ -502,7 +517,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           isOpen={isDeletePopupOpen}
                           onClose={closeDeletePopup}
                           handleAction={handleAction}
-                          requestID={request.id.toString()}
+                          requestID={request._id.toString()}
                         />
                       </>
                     )}

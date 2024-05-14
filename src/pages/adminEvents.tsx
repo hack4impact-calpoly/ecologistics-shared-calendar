@@ -400,13 +400,18 @@ const archived = [
 
 // Interfaces for Event and API responses
 interface Event {
-  id: number;
-  name: string;
-  email: string;
+  organization: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  description?: string;
+  isVirtual: boolean;
+  location: string;
   status: string;
-  date: string;
-  time: string;
-  description: string;
+  deniedReason?: string;
+  imageLink?: string;
+  createdBy: string;
+  _id: string;
 }
 
 interface ApiResponse {
@@ -430,12 +435,13 @@ export default function AdminRequestTable() {
         setPending(response.data.filter(event => event.status === "Pending"));
         setApproved(response.data.filter(event => event.status === 'Approved'));
         setPostponed(response.data.filter(event => event.status === 'Postponed'));
-        setDeclined(response.data.filter(event => event.status === 'Declined'));
+        setDeclined(response.data.filter(event => event.status === 'Denied'));
         setArchived(response.data.filter(event => event.status === 'Archived'));
       })
       .catch(error => console.error('Failed to fetch events:', error));
   }, []);
-  console.log("pending", pending);
+  // console.log("pending", pending);
+  // console.log("approved", approved);
 
   return (
     <Layout>
