@@ -3,6 +3,7 @@ import User from "../../database/userSchema";
 import connectDB from "../../database/db";
 import { clerkClient } from "@clerk/nextjs";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
+import { getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 interface UserMetadata {
@@ -20,17 +21,15 @@ export default async function handler(
     switch (method) {
         case "GET":
             try {
-                const users = await User.find({});
-                
-                const {clerkId}=req.query;
-                if(clerkId){
-                    const user=await User.findOne({clerkId});
+                const { userId: clerkId } = getAuth(req);
+                console.log(clerkId);
+                if (clerkId) {
+                    const user = await User.findOne({ clerkId });
                     if (!user) {
-                        return res.status(404).json({ data: 'User not found' });
+                        return res.status(404).json({ data: "User not found" });
                     }
-                    res.status(200).json({ success: true, data: user});
+                    res.status(200).json({ success: true, data: user });
                 }
-                res.status(200).json({ success: true, data: users });
             } catch (error) {
                 console.log(error);
                 res.status(400).json({
@@ -43,6 +42,8 @@ export default async function handler(
         case "POST":
             try {
                 const { userId } = getAuth(req);
+
+                console.log("users");
                 const {
                     organization,
                     email,
@@ -52,6 +53,21 @@ export default async function handler(
                     position,
                 } = req.body;
 
+                await axios.patch(
+                    `https://api.clerk.com/v1/users/${userId}/metadata`,
+                    {
+                        public_metadata: {
+                            role: "pending",
+                        },
+                        private_metadata: {},
+                        unsafe_metadata: {},
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+                        },
+                    }
+                );
                 const user = await User.create({
                     clerkId: userId,
                     organization: organization,
@@ -70,7 +86,7 @@ export default async function handler(
                 });
             }
             break;
-        
+
         case "PUT":
             try {
                 const { userId } = getAuth(req);
