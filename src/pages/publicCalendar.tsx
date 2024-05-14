@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
@@ -33,16 +33,19 @@ export interface Event {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
-  const [calenderEvents, setCalenderEvents] = useState<
+  const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
   >([]);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
+    []
+  );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
-
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -51,6 +54,7 @@ export default function CalendarPage() {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
+
   const handleLogout = async () => {
     try {
       // Call signOut function to log out the current user
@@ -69,11 +73,9 @@ export default function CalendarPage() {
     };
   }, []);
 
-  // Anytime events change, re render the calendar events.
   useEffect(() => {
-    // setCalenderEvents .....
     if (!events) return;
-    setCalenderEvents(
+    setCalendarEvents(
       events.map((event) => ({
         startRecur: event.startDate,
         endRecur: event.endDate,
@@ -94,6 +96,29 @@ export default function CalendarPage() {
       .catch((error) => {
         console.error("Error fetching events:", error);
       });
+  }, []);
+
+  const handleDateClick = (arg) => {
+    const clickedDate = arg.dateStr;
+    const filteredEvents = events.filter((event) => {
+      const eventStart = new Date(event.startDate).toISOString().split("T")[0];
+      const eventEnd = new Date(event.endDate).toISOString().split("T")[0];
+      return clickedDate >= eventStart && clickedDate <= eventEnd;
+    });
+    setSelectedDateEvents(filteredEvents);
+  };
+
+  const handleOutsideClick = (event) => {
+    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+      setSelectedDateEvents([]);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
   }, []);
 
   const addEvent = (event: Event) => {};
@@ -164,12 +189,10 @@ export default function CalendarPage() {
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
       <Navbar />
-      <div className={style1.calendarPageContainer}>
+      <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
-          <div style={styles.signoutContainer}>
-          </div>
+          <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
-
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -181,15 +204,6 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            // customButtons={{
-            //   AddEvent: {
-            //     text: "Add Event",
-            //     click: function () {
-            //       setIsAddingEvent((prev) => !prev);
-            //     },
-            //     hint: "none",
-            //   },
-            // }}
             headerToolbar={{
               left: "",
               center: "prev title next",
@@ -204,9 +218,9 @@ export default function CalendarPage() {
             editable={true}
             select={() => {}}
             selectable={true}
-            events={calenderEvents}
+            events={calendarEvents}
+            dateClick={handleDateClick}
             eventClick={function (info) {
-              console.log(info.event);
               router.push({
                 pathname: "/eventDetails",
                 query: {
@@ -217,10 +231,9 @@ export default function CalendarPage() {
             eventColor="#c293ff"
           />
         </div>
-        {/* Conditionally render the Add Event button below the calendar for smaller screens */}
         {windowWidth < 786 && (
           <button
-            className={style1.addButton} // Ensure you have an 'addButton' style in your CSS module
+            className={style1.addButton}
             style={{ display: "block", margin: "20px auto 0" }}
             onClick={() => setIsAddingEvent((prev) => !prev)}
           >
@@ -228,7 +241,9 @@ export default function CalendarPage() {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={events} />
+          <EventBar
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : events}
+          />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
@@ -244,10 +259,6 @@ export default function CalendarPage() {
 const styles: { [key: string]: React.CSSProperties } = {
   spaced: {},
 };
-
-// calendarStyles is the same for all views
-
-// calendarStyles is the same for all views
 
 const calendarStyles = `
    .fc .fc-prev-button, .fc .fc-next-button {
@@ -265,32 +276,11 @@ const calendarStyles = `
    .fc .fc-AddEvent-button:hover {
      background-color: #eaeaea; 
    }
-   .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #335543;
-     border: none;
-     color: #FFF;
-     font-size: 2em;
-     font-size: 1.5em;
-     border-radius: 50%; 
-     line-height: 1;
-   }
-
-   .fc .fc-prev-button:hover,
-   .fc .fc-next-button:hover,
-   .fc .fc-AddEvent-button:hover {
-     background-color: #eaeaea; 
-   }
 
    .fc-prev-button {
      margin-left: 3%;
    }
-   .fc-prev-button {
-     margin-left: 3%;
-   }
 
-   .fc-next-button {
-     margin-right: 3%;
-   }
    .fc-next-button {
      margin-right: 3%;
    }
@@ -313,35 +303,11 @@ const calendarStyles = `
      align-items: center;
      justify-content: center;
    }
-   .fc-header-toolbar {
-     margin-top: 0%;
-     display: flex;
-     justify-content: space-between;
-     text-transform: uppercase;
-     padding-bottom: 1%;
-   }
-
-   .fc .fc-toolbar-title {
-     text-align: center;
-     margin-right: 2.5%;
-   }
-
-   .fc-toolbar-chunk {
-     display: flex;
-     align-items: center;
-     justify-content: center;
-   }
 
    .fc-toolbar-chunk:nth-child(2) {
      justify-content: center;
    }
-   .fc-toolbar-chunk:nth-child(2) {
-     justify-content: center;
-   }
 
-   .fc-toolbar-chunk:last-child {
-     justify-content: end;
-   }
    .fc-toolbar-chunk:last-child {
      justify-content: end;
    }
@@ -361,23 +327,7 @@ const calendarStyles = `
      width: 120px; /* Adjust the width as needed */
      height: 40px; /* Adjust the height as needed */
    }
-   .fc-col-header-cell {
-     background: #335543;
-     color: #FFF;
-   }
 
-   .fc .fc-AddEvent-button {
-     background-color: #F7AB74;
-     color: black;
-     border-radius: 0.9em;
-     border-color: #F7AB74;
-     font-size: 1.1em;
-     border: none;
-   }
-
-   .fc .fc-daygrid-event-harness {
-     max-width: 100%;
-   }
    .fc .fc-daygrid-event-harness {
      max-width: 100%;
    }
@@ -395,23 +345,7 @@ const calendarStyles = `
      align-items: center;
      box-sizing: border-box;
    }
-   .fc .fc-event {
-     background-color: #F7AB74;
-     border-color: #F7AB74;
-     color: black;
-     border-radius: 1em;
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-     padding: 5%;
-     padding-right: 25%;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     box-sizing: border-box;
-   }
 
-   .fc-daygrid-event-dot {
-     display: none;
-   }
    .fc-daygrid-event-dot {
      display: none;
    }
@@ -422,5 +356,4 @@ const calendarStyles = `
      border: 1px solid #ddd;
      border-right: 1px solid #ddd;
    }
-
  `;
