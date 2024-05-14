@@ -5,6 +5,7 @@ import PositionedMenu from "./PositionedMenu";
 import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
 import { useRouter } from 'next/router';
+import { el } from "@fullcalendar/core/internal-common";
 
 
 const Navbar: React.FC = () => {
@@ -15,6 +16,12 @@ const Navbar: React.FC = () => {
 
   const { isLoaded, isSignedIn, session } = useSession();
   const role = session?.user?.unsafeMetadata?.role;
+  var eventsPath;
+  if (role === "admin") {
+    eventsPath = "/adminEvents";
+  } else {
+    eventsPath = "/organizationEvents";
+  }
   if (!isLoaded) {
     return null;
   }
@@ -22,7 +29,7 @@ const Navbar: React.FC = () => {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
     menuItems.push({ path: "/profile", label: "Account Settings" });
-    menuItems.push({ path: "/login", label: "My Events" });
+    menuItems.push({ path: eventsPath, label: "My Events" });
     if (role === "admin") {
       menuItems.push({ path: "/adminEvents", label: "My Organizations" });
     }
