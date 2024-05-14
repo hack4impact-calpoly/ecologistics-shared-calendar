@@ -3,13 +3,6 @@ import { DeleteOutline } from "@mui/icons-material";
 
 type AdminProps = {
   events: {
-    // _id: number;
-    // name: string;
-    // email: string;
-    // status: string;
-    // date: string;
-    // time: string;
-    // description: string;
     organization: string;
     title: string;
     startDate: string;
@@ -24,6 +17,9 @@ type AdminProps = {
     _id: string;
   }[];
   ITEMS_PER_PAGE: number;
+  approveEvent: (id: string) => void;
+  declineEvent: (id: string, declineMessage: string) => void;
+  deleteEvent: (id: string) => void;
 };
 
 interface PopupProps {
@@ -31,6 +27,56 @@ interface PopupProps {
   onClose: () => void;
   handleAction: (requestID: string, action: string) => void;
   requestID: string;
+}
+
+function parseCommentDate(date: Date) {
+  /*
+  Parses MongoDB/TS date object
+  :param time: date object
+  :return: string reprsenting date
+  */
+  // Convert to Los Angeles time
+  const losAngelesDate = new Date(
+      date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  );
+
+  // Format the date as desired
+  const formattedDate = losAngelesDate.toLocaleString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+  });
+  return formattedDate;
+}
+
+function parseCommentTime(startDate: Date, endDate: Date) {
+  /*
+  Parses MongoDB/TS date object
+  :param time: date object
+  :return: string reprsenting date
+  */
+  // Convert to Los Angeles time
+  const losAngelesStartDate = new Date(
+      startDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  );
+  const losAngelesEndDate = new Date(
+    endDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+);
+
+  // Format the date as desired
+  const formattedStartDate = losAngelesStartDate.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+  });
+
+    // Format the date as desired
+    const formattedEndDate = losAngelesEndDate.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+  });
+  return (formattedStartDate + " - " + formattedEndDate);
 }
 
 const DeletePopup: React.FC<PopupProps> = ({
@@ -198,7 +244,13 @@ const DenyPopup: React.FC<PopupProps> = ({
   );
 };
 
-export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
+export default function AdminPage({ 
+  events,
+  ITEMS_PER_PAGE,
+  approveEvent,
+  declineEvent,
+  deleteEvent,
+}: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
   if (events[0]){
@@ -246,6 +298,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
 
   const handleAction = (requestId: string, action: string) => {
     if (action === "trash") {
+      deleteEvent(requestId);
       // Filter out the request with the given _id
       const updatedRequests = accountRequests.filter(
         (request) => request._id.toString() !== requestId
@@ -270,6 +323,11 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
         return request;
          });
         */
+        if (action === "accepted") {
+          approveEvent(requestId);
+        } else if (action === "deny") {
+          declineEvent(requestId, message);
+        }
 
       // I would assume that when an event is approved or denied, it is updated on the
       // the backend, and is then rerendered on the new list
@@ -405,7 +463,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.startDate}
+                      {parseCommentDate(new Date(request.startDate))}
                     </span>
                     <span
                       style={{
@@ -415,7 +473,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.startDate}
+                      {parseCommentTime(new Date(request.startDate), new Date(request.endDate))}
                     </span>
                   </td>
                   <td style={{ ...styles.description, padding: "5px 50px" }}>
