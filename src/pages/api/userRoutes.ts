@@ -3,7 +3,6 @@ import User from "../../database/userSchema";
 import connectDB from "../../database/db";
 import { clerkClient } from "@clerk/nextjs";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
-import { getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 interface UserMetadata {
