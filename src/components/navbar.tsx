@@ -5,7 +5,6 @@ import PositionedMenu from "./PositionedMenu";
 import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
 import { useRouter } from 'next/router';
-import { el } from "@fullcalendar/core/internal-common";
 
 
 const Navbar: React.FC = () => {
