@@ -17,6 +17,7 @@ import { EventDocument } from "database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
 import Navbar from "../components/navbar";
+import { DateTime } from "luxon";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -95,14 +96,26 @@ export default function CalendarPage() {
   }, []);
 
   const handleDateClick = (arg: { dateStr: string }) => {
-    const clickedDate: string = arg.dateStr;
+    const clickedDate = new Date(arg.dateStr);
+  
     const filteredEvents: EventDocument[] = events.filter((event: EventDocument) => {
-      const eventStart: string = new Date(event.startDate).toISOString().split("T")[0];
-      const eventEnd: string = new Date(event.endDate).toISOString().split("T")[0];
-      return clickedDate >= eventStart && clickedDate <= eventEnd;
+      const eventStart = DateTime.fromISO(event.startDate.toISOString(), { zone: 'UTC' })
+        .setZone('America/Los_Angeles')
+        .toISODate();
+      const eventEnd = DateTime.fromISO(event.endDate.toISOString(), { zone: 'UTC' })
+        .setZone('America/Los_Angeles')
+        .toISODate();
+  
+      if (!eventStart || !eventEnd) {
+        return false;
+      }
+  
+      return clickedDate >= new Date(eventStart) && clickedDate <= new Date(eventEnd);
     });
+  
     setSelectedDateEvents(filteredEvents);
   };
+  
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
