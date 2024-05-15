@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { EventDocument } from "../database/eventSchema";
 import { getFormattedDate } from "../utils/events";
 
 function Event(event: EventDocument) {
-
   const { styles } = useEventBarStyles();
   const [isHovered, setIsHovered] = React.useState(false);
 
@@ -94,16 +91,20 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
   }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
-    const [filteredEvents, setFilteredEvents] = useState(eventData);
+  const [filteredEvents, setFilteredEvents] = useState(events);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setSearchTerm(value);
-        const filtered = eventData.filter((event) =>
-          event.title.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredEvents(filtered);
-      };
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    const filtered = events.filter((event) =>
+      event.title.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredEvents(filtered);
+  };
+
+  useEffect(() => {
+    setFilteredEvents(events);
+  }, [events]);
 
   return (
     <div
@@ -114,15 +115,15 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         width: "75%",
       }}
     >
-    <div
-          style={{
+      <div
+        style={{
           display: "flex",
           justifyContent: "center",
           width: "100%",
           margin: "0 0 4% 0",
-          }}
+        }}
       >
-          <input
+        <input
           type="text"
           placeholder="Search..."
           style={{
@@ -137,17 +138,16 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
             marginTop:
               (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
           }}
-
           onChange={handleSearchChange}
 
           // Add onChange event handler if you want to capture input
           // onChange={handleSearchChange}
-          />
+        />
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
         {filteredEvents.map((event) => (
-          <Event key={event.id} {...event} />
+          <Event key={event._id.toString()} {...event} />
         ))}
       </div>
     </div>
