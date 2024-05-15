@@ -15,13 +15,23 @@ const Navbar: React.FC = () => {
 
   const { isLoaded, isSignedIn, session } = useSession();
   const role = session?.user?.unsafeMetadata?.role;
+
   let orgsPath: string;
+  
+  var eventsPath;
+  if (role === "admin") {
+    eventsPath = "/adminEvents";
+  } else {
+    eventsPath = "/organizationEvents";
+  }
+
   if (!isLoaded) {
     return null;
   }
   if (pathname === '/publicCalendar' || pathname === '/') {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
+
     if (role === "admin") {
       menuItems.push({ path: "/profile", label: "Account Settings" });
       menuItems.push({ path: "/adminEvents", label: "My Events" });
