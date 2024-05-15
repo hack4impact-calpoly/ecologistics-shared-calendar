@@ -72,7 +72,6 @@ export default function CalendarPage() {
 
 useEffect(() => {
   if (!events) return;
-  const MAX_TITLE_LENGTH = 15;
   setCalendarEvents(
     events.map((event) => ({
       startRecur: event.startDate,
