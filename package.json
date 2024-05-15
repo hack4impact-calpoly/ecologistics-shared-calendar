@@ -35,6 +35,7 @@
     "formidable": "^3.5.1",
     "fs": "^0.0.1-security",
     "leaflet": "^1.9.4",
+    "luxon": "^3.4.4",
     "mongoose": "^7.6.3",
     "multer": "^1.4.5-lts.1",
     "next": "14.0.0",
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/formidable": "^3.4.5",
+    "@types/luxon": "^3.4.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
