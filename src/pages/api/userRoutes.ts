@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
-import { getAuth } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs";
+import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 interface UserMetadata {
@@ -88,17 +89,36 @@ export default async function handler(
         case "PUT":
             try {
                 const { userId } = getAuth(req);
-                const { role, organization, email } = req.body;
-
-                const { clerkId } = req.query;
-                const user = await User.findOneAndUpdate(
-                    { clerkId: clerkId },
-                    {
-                        clerkId: userId,
-                        organization: organization,
-                        email: email,
-                    }
-                );
+                const {
+                    organization,
+                    email,
+                    phoneNumber,
+                    lastName,
+                    firstName,
+                    position,
+                    role
+                } = req.body;
+                
+                const {clerkId}=req.query;
+                
+                try{
+                    let uid=clerkId!
+                    await clerkClient.users.updateUserMetadata(uid.toString(), {
+                        publicMetadata: {
+                        organization: organization
+                        }
+                    })
+                } catch(e){}
+                const user = await User.findOneAndUpdate({clerkId:clerkId}, {
+                    clerkId: userId,
+                    organization: organization,
+                    email: email,
+                    phoneNumber: phoneNumber,
+                    position: position,
+                    firstName: firstName,
+                    lastName: lastName,
+                    role: role
+                });
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
                 res.status(400).json({

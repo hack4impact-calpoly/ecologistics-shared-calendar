@@ -15,14 +15,20 @@ export default function EditProfilePage() {
   const [position, setPosition] = useState("");
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
+  const [role, setRole] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     axios
       .put("/api/userRoutes?clerkId=" + uid, {
-        email: email,
         organization: orgName,
+        email: email,
+        phoneNumber: phone,
+        lastName: lname,
+        firstName: fname,
+        position: position,
+        role: role
       })
       .then((data) => {
         console.log(data);
@@ -33,6 +39,9 @@ export default function EditProfilePage() {
 
     router.push("/profile");
   };
+  if(uid=="" && user){
+    setUID(user.id);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,13 +54,15 @@ export default function EditProfilePage() {
         console.log(responseData);
         setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
+        setPosition(responseData.data.position)
+        setPhone(responseData.data.phoneNumber)
+        setFName(responseData.data.firstName)
+        setLName(responseData.data.lastName)
+        setRole(responseData.data.role)
       } catch (error) {}
     };
-    if (user) {
-      setUID(user.id);
-      fetchData();
-    }
-  }, [user, uid]);
+    fetchData();
+  }, [uid]);
 
   return (
     <Layout>

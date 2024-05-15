@@ -2,7 +2,7 @@ import Layout from "../components/layout";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Button } from "@mui/material";
+import { Button, useIsFocusVisible } from "@mui/material";
 import { Paper, Typography } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/router";
@@ -26,7 +26,12 @@ export default function ProfilePage() {
   const [position, setPosition] = useState("");
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
-  const [userOrAdmin, setUserOrAdmin] = useState("admin");
+  const [userOrAdmin, setUserOrAdmin] = useState("user");
+  let tagColor="#497cb0";
+  let tagColor2="#d4e9ff";
+  if(uid=="" && user){
+    setUID(user.id);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,15 +42,31 @@ export default function ProfilePage() {
         }
         const responseData = await response.json();
         console.log(responseData);
-        setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
-      } catch (error) {}
+        setPosition(responseData.data.position)
+        setPhone(responseData.data.phoneNumber)
+        setFName(responseData.data.firstName)
+        setLName(responseData.data.lastName)
+        setUserOrAdmin(responseData.data.role)
+        if(responseData.data.role=="approved"){
+          setUserOrAdmin("user");
+        }
+        setOrg(responseData.data.organization)
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-    if (user) {
-      setUID(user.id);
-      fetchData();
-    }
-  }, [user, uid]);
+    fetchData();
+  }, [uid]);
+
+  if(userOrAdmin==="admin"){
+    tagColor="#497cb0"
+    tagColor2="#d4e9ff"
+  } else{
+    tagColor="#b76c00"
+    tagColor2="orange"
+  }
 
   return (
     <Layout>
@@ -62,10 +83,16 @@ export default function ProfilePage() {
               <Grid item>
                 <h2>{orgName}</h2>
               </Grid>
-
               <Grid item xs={1.1}>
-                <Paper elevation={0} style={styles.labelStyle}>
-                  <p style={{ color: "#497cb0" }}>{userOrAdmin}</p>
+                <Paper elevation={0} style={{
+                    backgroundColor: tagColor2,
+                    borderRadius: "1rem",
+                    paddingLeft: "17px",
+                    paddingRight: "17px",
+                    marginTop: "38px",
+                    textAlign: "center"
+              }}>
+                  <p style={{ color: tagColor }}>{userOrAdmin}</p>
                 </Paper>
               </Grid>
               <Grid item xs={2}>
