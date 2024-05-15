@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import SearchBar from "../components/searchBar";
 import { useRouter } from "next/router";
 
 
@@ -137,7 +136,7 @@ export default function EventBar() {
   const [searchTerm, setSearchTerm] = useState("");
     const [filteredEvents, setFilteredEvents] = useState(eventData);
 
-    const handleSearchChange = (event) => {
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchTerm(value);
         const filtered = eventData.filter((event) =>
