@@ -1,152 +1,219 @@
-import React, { useState } from "react";
-import Layout from "../components/layout";
+import React, { useState, useRef } from "react";
 import { DeleteOutline } from "@mui/icons-material";
 
-const ITEMS_PER_PAGE = 11;
+type AdminProps = {
+  events: {
+    id: number;
+    name: string;
+    email: string;
+    status: string;
+    date: string;
+    time: string;
+    description: string;
+  }[];
+  ITEMS_PER_PAGE: number;
+};
 
-export default function AdminPage() {
+interface PopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  handleAction: (requestID: string, action: string) => void;
+  requestID: string;
+}
+
+const DeletePopup: React.FC<PopupProps> = ({
+  isOpen,
+  onClose,
+  handleAction,
+  requestID,
+}) => {
+  if (!isOpen) return null;
+  return (
+    <>
+      <div style={styles.transparentBackground} />
+      <div style={styles.popupContainer}>
+        <h2 style={{ textAlign: "center" }}>
+          Are you sure you want to delete this event?
+        </h2>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <button
+            style={{
+              ...styles.buttons,
+              width: "122px",
+              height: "37.6px",
+              padding: "7.526px 10.752p",
+              fontSize: "17px",
+              margin: "0 4px 0 0",
+            }}
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+              ((e.target as HTMLButtonElement).style.backgroundColor =
+                "#e69153")
+            }
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+              ((e.target as HTMLButtonElement).style.backgroundColor =
+                "#f7ab74")
+            }
+            onClick={onClose}
+          >
+            No
+          </button>
+          <button
+            style={{
+              ...styles.buttons,
+              width: "324px",
+              height: "37.6px",
+              padding: "10px 39px",
+              fontSize: "17px",
+              margin: "0 0 0 4px",
+            }}
+            onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+              ((e.target as HTMLButtonElement).style.backgroundColor =
+                "#e69153")
+            }
+            onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+              ((e.target as HTMLButtonElement).style.backgroundColor =
+                "#f7ab74")
+            }
+            onClick={() => {
+              handleAction(requestID, "trash");
+              onClose();
+            }}
+          >
+            Yes, I want to delete this event
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const DenyPopup: React.FC<PopupProps> = ({
+  isOpen,
+  onClose,
+  handleAction,
+  requestID,
+}) => {
+  const [message, setMessage] = useState("");
+  if (!isOpen) return null;
+  return (
+    <>
+      <div style={styles.transparentBackground} />
+      <div style={{ ...styles.popupContainer, height: "400px" }}>
+        <h2 style={{ textAlign: "center", margin: "0" }}>
+          Are you sure you want to deny this event?
+        </h2>
+        <form style={{ textAlign: "center" }}>
+          <label style={{ textAlign: "center" }}>
+            <textarea
+              name="postContent"
+              rows={8}
+              cols={63}
+              style={{
+                borderRadius: "12px",
+                fontStyle: "italic",
+                padding: "10px",
+                margin: "10px",
+              }}
+              placeholder="State reason for denying event (optional)"
+              onChange={(e) => {
+                setMessage(e.target.value);
+              }}
+            />
+          </label>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <button
+              style={{
+                ...styles.buttons,
+                width: "122px",
+                height: "37.6px",
+                padding: "7.526px 10.752p",
+                fontSize: "17px",
+                margin: "0 4px 0 0",
+              }}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              style={{
+                ...styles.buttons,
+                width: "122px",
+                height: "37.6px",
+                //padding: "10px 39px",
+                fontSize: "17px",
+                margin: "0 0 0 4px",
+              }}
+              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#e69153")
+              }
+              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
+                ((e.target as HTMLButtonElement).style.backgroundColor =
+                  "#f7ab74")
+              }
+              onClick={() => {
+                console.log(message);
+                handleAction(requestID, "deny");
+                onClose();
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
+  );
+};
+
+export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
+  if (events[0]){
+    console.log("events:",events,events[0].status);
+    console.log("itemsperpage",ITEMS_PER_PAGE);
+  }
+  
 
-  const [accountRequests, setAccountRequests] = useState([
-    {
-      id: 1,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 2,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 3,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 4,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 5,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 6,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 7,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 8,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 9,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 10,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 11,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 12,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Pending",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    {
-      id: 13,
-      name: "AAPI SLO",
-      email: "aapislo@gmail.com",
-      status: "Approved",
-      date: "10/02/2023",
-      time: "1:00pm-2:30pm",
-      description: "lorem ipsum nfeoigioehge...",
-      image: profileImage,
-    },
-    // ... other requests come after
-  ]);
+  // Delete popup
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const openDeletePopup = () => setIsDeletePopupOpen(true);
+  const closeDeletePopup = () => setIsDeletePopupOpen(false);
+
+  // Deny popup
+  const [isDenyPopupOpen, setIsDenyPopupOpen] = useState(false);
+  const openDenyPopup = () => setIsDenyPopupOpen(true);
+  const closeDenyPopup = () => setIsDenyPopupOpen(false);
+  const [message, setMessage] = useState("");
+  const [accountRequests, setAccountRequests] = useState(events);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(
     startIndex + ITEMS_PER_PAGE,
     accountRequests.length
   );
+
+  console.log("Here in table");
 
   // Slice the accountRequests array to display only the items for the current page
   const currentRequests = accountRequests.slice(startIndex, endIndex);
@@ -171,31 +238,48 @@ export default function AdminPage() {
       const updatedRequests = accountRequests.filter(
         (request) => request.id.toString() !== requestId
       );
+      if (
+        requestId === accountRequests[accountRequests.length - 1].id.toString()
+      ) {
+        setCurrentPage(currentPage - 1);
+      }
       // Update the state with the filtered requests array
       setAccountRequests(updatedRequests);
     } else {
       // For accept/decline actions, update the status accordingly
-      const updatedRequests = accountRequests.map((request) => {
+      /*const updatedRequests = accountRequests.map((request) => {
         if (request.id.toString() === requestId) {
           return {
             ...request,
             status: action === "accepted" ? "Accepted" : "Declined",
+
           };
         }
         return request;
-      });
+         });
+        */
+
+      // I would assume that when an event is approved or denied, it is updated on the
+      // the backend, and is then rerendered on the new list
+      const updatedRequests = accountRequests.filter(
+        (request) => request.id.toString() !== requestId
+      );
 
       // Update the state with the new account requests array
       setAccountRequests(updatedRequests);
     }
   };
 
-  //use effect: updates current page continuously
-
   return (
     <div>
-      <h1 style={{ textAlign: "center" }}>Admin View</h1>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "left",
+          boxSizing: "border-box",
+          width: "90rem",
+        }}
+      >
         <table
           style={{
             border: "1px solid #f7f7f7",
@@ -276,13 +360,13 @@ export default function AdminPage() {
                     <span
                       style={{
                         color:
-                          request.status === "Accepted"
+                          request.status === "Approved"
                             ? "#007500"
                             : request.status === "Declined"
                             ? "#9C0006"
                             : "#0d4f90",
                         background:
-                          request.status === "Accepted"
+                          request.status === "Approved"
                             ? "#DFF0D8"
                             : request.status === "Declined"
                             ? "#FADBD8"
@@ -328,7 +412,11 @@ export default function AdminPage() {
                     {request.status === "Pending" ? ( // Render buttons based on status
                       <>
                         <button
-                          style={{ ...styles.buttons, padding: "8px 15px" }}
+                          style={{
+                            ...styles.buttons,
+
+                            padding: "8px 15px",
+                          }}
                           onClick={() =>
                             handleAction(request.id.toString(), "accepted")
                           }
@@ -350,14 +438,13 @@ export default function AdminPage() {
                           Approve
                         </button>
                         <button
+                          onClick={openDenyPopup}
                           style={{
                             ...styles.buttons,
+
                             padding: "8px 25px",
                             background: "#d9d9d9",
                           }}
-                          onClick={() =>
-                            handleAction(request.id.toString(), "declined")
-                          }
                           onMouseOver={(
                             e: React.MouseEvent<HTMLButtonElement>
                           ) =>
@@ -375,37 +462,49 @@ export default function AdminPage() {
                         >
                           Deny
                         </button>
+                        <DenyPopup
+                          isOpen={isDenyPopupOpen}
+                          onClose={closeDenyPopup}
+                          handleAction={handleAction}
+                          requestID={request.id.toString()}
+                        />
                       </>
                     ) : (
                       // Change Approve/Deny to trash can icon when status is "Accept"
-                      <button
-                        onClick={() =>
-                          handleAction(request.id.toString(), "trash")
-                        }
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "#FECACC";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "#F6E0E1";
-                        }}
-                        style={{
-                          padding: 0,
-                          background: "#f6e0e1",
-                          border: "none",
-                          cursor: "pointer",
-                          borderRadius: "100px",
-                          color: "#9C2C30",
-                        }}
-                      >
-                        <DeleteOutline
-                          style={{
-                            fontSize: 38,
-                            backgroundColor: "transparent",
-                            borderRadius: "100px",
-                            padding: "10px",
+                      <>
+                        <button
+                          onClick={openDeletePopup}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = "#FECACC";
                           }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor = "#F6E0E1";
+                          }}
+                          style={{
+                            padding: 0,
+                            background: "#f6e0e1",
+                            border: "none",
+                            cursor: "pointer",
+                            borderRadius: "100px",
+                            color: "#9C2C30",
+                          }}
+                        >
+                          <DeleteOutline
+                            style={{
+                              fontSize: 38,
+                              backgroundColor: "transparent",
+                              borderRadius: "100px",
+                              padding: "10px",
+                            }}
+                          />
+                        </button>
+                        <DeletePopup
+                          isOpen={isDeletePopupOpen}
+                          onClose={closeDeletePopup}
+                          handleAction={handleAction}
+                          requestID={request.id.toString()}
                         />
-                      </button>
+                      </>
                     )}
                   </td>
                 </tr>
@@ -446,13 +545,29 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "space-evenly",
   },
-  // leftContainer: {
-  //   textAlign: "center",
-  //   width: "40vw",
-  //   height: "60vh",
-  //   borderRadius: "1%",
-  //   background: "#D9D9D9",
-  // },
+  transparentBackground: {
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    position: "fixed",
+    opacity: "0.5",
+    background: "black",
+    zIndex: "999",
+  },
+  popupContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "rgba(255,255,255,1)",
+    zIndex: "1000",
+    width: "649px",
+    height: "239px",
+  },
   rightContainer: {
     display: "flex",
     flexDirection: "column",

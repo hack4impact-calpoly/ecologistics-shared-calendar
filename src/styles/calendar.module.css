@@ -1,0 +1,58 @@
+.calendarPageContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding: 0px;
+  margin: 0px;
+  white-space: nowrap;
+}
+
+.logoutButton,
+.adminButton {
+  padding: 0.625rem 4.35rem;
+  height: 100%;
+  font-size: 1.143rem;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  background: #f7ab74;
+  border-radius: 0.75rem;
+  border: 0px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  margin-left: 1rem;
+}
+
+.addButton {
+  background-color: #f7ab74;
+  color: black;
+  border-radius: 0.9em;
+  border: none;
+  font-size: 1.1em;
+  width: 120px; /* Adjust the width as needed */
+  height: 40px; /* Adjust the height as needed */
+    
+}
+.addButtonWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (orientation:landscape) and (min-width: 786px) {
+  .calendarPageContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0px;
+    margin: 0px;
+    white-space: nowrap;
+  }
+}
+@media (orientation:landscape) and (min-width: 786px) {
+  .addButton {
+    display: block; /* or flex, depending on your layout */
+    width: 50%; /* Example to make it full width under the calendar */
+    margin-top: 20px; /* Space between the calendar and the button */
+  }
+}

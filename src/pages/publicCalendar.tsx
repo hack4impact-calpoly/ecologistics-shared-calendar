@@ -33,8 +33,12 @@ export interface Event {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<FullCalenderRecurringEvent[]>([]);
-  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<
+    FullCalenderRecurringEvent[]
+  >([]);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
+    []
+  );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
@@ -200,19 +204,10 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
-                },
-                hint: "none",
-              },
-            }}
             headerToolbar={{
               left: "",
               center: "prev title next",
-              right: windowWidth >= 786 ? "AddEvent" : "",
+              right: "",
             }}
             buttonIcons={{
               prev: "arrow-left",
@@ -246,7 +241,9 @@ export default function CalendarPage() {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : events} />
+          <EventBar
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : events}
+          />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
