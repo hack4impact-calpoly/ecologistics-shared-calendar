@@ -44,7 +44,7 @@ export default function AdminRequestTable() {
         setArchived(response.data.filter(event => event.status === 'Archived'));
       })
       .catch(error => console.error('Failed to fetch events:', error));
-  }, []);
+  });
 
   const approveEvent = async (id: string) => {
     /*
