@@ -131,7 +131,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
           placeholder="Search..."
           style={{
             boxSizing: "border-box",
-            width: "85%",
+            width: "90%",
             padding: "2% 2%",
             fontSize: "1.3rem",
             borderRadius: "1rem",
