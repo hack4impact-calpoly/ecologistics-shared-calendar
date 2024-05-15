@@ -70,17 +70,17 @@ export default function CalendarPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!events) return;
-    setCalendarEvents(
-      events.map((event) => ({
-        startRecur: event.startDate,
-        endRecur: event.endDate,
-        title: event.title,
-        id: event._id,
-      }))
-    );
-  }, [events]);
+useEffect(() => {
+  if (!events) return;
+  setCalendarEvents(
+    events.map((event) => ({
+      startRecur: event.startDate,
+      endRecur: event.endDate,
+      title: event.title,
+      id: event._id,
+    }))
+  );
+}, [events]);
 
   // Fetch events from the database
   useEffect(() => {
@@ -246,7 +246,8 @@ export default function CalendarPage() {
                 },
               });
             }}
-            eventColor="#c293ff"
+	    eventTextColor="black"
+	    eventBackgroundColor="#F7AB74"
           />
         </div>
         {windowWidth < 786 && (
@@ -348,6 +349,7 @@ const calendarStyles = `
      max-width: 100%;
    }
 
+
    .fc .fc-event {
      background-color: #F7AB74;
      border-color: #F7AB74;
@@ -360,7 +362,13 @@ const calendarStyles = `
      justify-content: center;
      align-items: center;
      box-sizing: border-box;
+     display: block;
    }
+
+   .fc-daygrid-event {
+  white-space: normal !important;
+  align-items: normal !important;
+}
 
    .fc-daygrid-event-dot {
      display: none;

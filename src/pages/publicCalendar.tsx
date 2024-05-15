@@ -242,7 +242,8 @@ export default function CalendarPage() {
                 },
               });
             }}
-            eventColor="#c293ff"
+	    eventTextColor="black"
+	    eventBackgroundColor="#F7AB74"
           />
         </div>
         {windowWidth < 786 && (
@@ -358,11 +359,17 @@ const calendarStyles = `
      justify-content: center;
      align-items: center;
      box-sizing: border-box;
+     display: block;
    }
 
    .fc-daygrid-event-dot {
      display: none;
    }
+
+   .fc-daygrid-event {
+	white-space: normal !important;
+	align-items: normal !important;
+    }
 
    .fc .fc-col-header-cell,
    .fc .fc-daygrid-day,
