@@ -1,8 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
-import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { EventDocument } from "../database/eventSchema";
 import { getFormattedDate } from "../utils/events";
@@ -92,6 +90,25 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredEvents, setFilteredEvents] = useState<EventDocument[]>(
+    events || []
+  );
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    const filtered = (events || []).filter((event) =>
+      event.title.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setFilteredEvents(filtered);
+  };
+
+  useEffect(() => {
+    setFilteredEvents(events || []);
+  }, [events]);
+
   return (
     <div
       style={{
@@ -124,6 +141,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
             marginTop:
               (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
           }}
+          onChange={handleSearchChange}
 
           // Add onChange event handler if you want to capture input
           // onChange={handleSearchChange}
@@ -131,11 +149,9 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
-
-        {events &&
-          events.map((event) => (
-            <Event key={event._id.toString()} {...event} />
-          ))}
+        {filteredEvents.map((event) => (
+          <Event key={event._id.toString()} {...event} />
+        ))}
       </div>
     </div>
   );
