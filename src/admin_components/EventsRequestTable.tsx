@@ -255,10 +255,6 @@ export default function AdminPage({
 }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
-  if (events[0]){
-    console.log("events:",events,events[0].status);
-    console.log("itemsperpage",ITEMS_PER_PAGE);
-  }
   
 
   // Delete popup
@@ -279,7 +275,6 @@ export default function AdminPage({
     accountRequests.length
   );
 
-  console.log("Here in table");
 
   // Slice the accountRequests array to display only the items for the current page
   const currentRequests = accountRequests.slice(startIndex, endIndex);
