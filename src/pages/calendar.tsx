@@ -247,7 +247,8 @@ useEffect(() => {
                 },
               });
             }}
-            eventColor="#c293ff"
+	    eventTextColor="black"
+	    eventBackgroundColor="#F7AB74"
           />
         </div>
         {windowWidth < 786 && (
