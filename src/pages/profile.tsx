@@ -47,7 +47,10 @@ export default function ProfilePage() {
         setPhone(responseData.data.phoneNumber)
         setFName(responseData.data.firstName)
         setLName(responseData.data.lastName)
-        setUserOrAdmin(responseData.data.role)
+        if(responseData.data.role==="approved"){
+          setUserOrAdmin("user");
+        }
+        
         setOrg(responseData.data.organization)
         
       } catch (error) {
