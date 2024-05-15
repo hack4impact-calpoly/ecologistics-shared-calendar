@@ -27,7 +27,8 @@ export default function ProfilePage() {
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
   const [userOrAdmin, setUserOrAdmin] = useState("user");
-  let tagColor="#497cb0"
+  let tagColor="#497cb0";
+  let tagColor2="#d4e9ff";
   if(uid=="" && user){
     setUID(user.id);
   }
@@ -58,8 +59,10 @@ export default function ProfilePage() {
 
   if(userOrAdmin==="admin"){
     tagColor="#497cb0"
+    tagColor2="#d4e9ff"
   } else{
-    tagColor="orange"
+    tagColor="#b76c00"
+    tagColor2="orange"
   }
 
   return (
@@ -78,7 +81,14 @@ export default function ProfilePage() {
                 <h2>{orgName}</h2>
               </Grid>
               <Grid item xs={1.1}>
-                <Paper elevation={0} style={styles.labelStyle}>
+                <Paper elevation={0} style={{
+                    backgroundColor: tagColor2,
+                    borderRadius: "1rem",
+                    paddingLeft: "17px",
+                    paddingRight: "17px",
+                    marginTop: "38px",
+                    textAlign: "center"
+              }}>
                   <p style={{ color: tagColor }}>{userOrAdmin}</p>
                 </Paper>
               </Grid>
