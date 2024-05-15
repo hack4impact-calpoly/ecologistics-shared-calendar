@@ -2,8 +2,7 @@ import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
 import React, { useState, useEffect} from "react";
 import axios from "axios";
-import { EventDocument } from "@/database/eventSchema";
-import { headers } from "@/next.config";
+import { EventDocument } from "../database/eventSchema";
 
 // Interfaces for Event and API responses
 interface Event {

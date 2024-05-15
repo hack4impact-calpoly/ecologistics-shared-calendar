@@ -157,8 +157,8 @@ const DenyPopup: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
-  message,
-  setMessage,
+  message="",
+  setMessage= ()  => {},
   requestID,
 }) => {
   if (!isOpen) return null;
@@ -233,7 +233,6 @@ const DenyPopup: React.FC<PopupProps> = ({
                   "#f7ab74")
               }
               onClick={() => {
-                console.log(message);
                 handleAction(requestID, "deny");
                 onClose();
               }}
