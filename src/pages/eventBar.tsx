@@ -91,19 +91,22 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
   }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEvents, setFilteredEvents] = useState(events);
+  const [filteredEvents, setFilteredEvents] = useState<EventDocument[]>(
+    events || []
+  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    const filtered = events.filter((event) =>
+    const filtered = (events || []).filter((event) =>
       event.title.toLowerCase().includes(value.toLowerCase())
     );
+
     setFilteredEvents(filtered);
   };
 
   useEffect(() => {
-    setFilteredEvents(events);
+    setFilteredEvents(events || []);
   }, [events]);
 
   return (
