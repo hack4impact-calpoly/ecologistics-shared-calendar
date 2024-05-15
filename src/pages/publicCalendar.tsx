@@ -98,18 +98,18 @@ export default function CalendarPage() {
       });
   }, []);
 
-  const handleDateClick = (arg) => {
-    const clickedDate = arg.dateStr;
-    const filteredEvents = events.filter((event) => {
-      const eventStart = new Date(event.startDate).toISOString().split("T")[0];
-      const eventEnd = new Date(event.endDate).toISOString().split("T")[0];
+  const handleDateClick = (arg: { dateStr: string }) => {
+    const clickedDate: string = arg.dateStr;
+    const filteredEvents: EventDocument[] = events.filter((event: EventDocument) => {
+      const eventStart: string = new Date(event.startDate).toISOString().split("T")[0];
+      const eventEnd: string = new Date(event.endDate).toISOString().split("T")[0];
       return clickedDate >= eventStart && clickedDate <= eventEnd;
     });
     setSelectedDateEvents(filteredEvents);
   };
 
-  const handleOutsideClick = (event) => {
-    if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
       setSelectedDateEvents([]);
     }
   };
