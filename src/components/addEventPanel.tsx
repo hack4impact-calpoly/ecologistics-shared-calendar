@@ -3,7 +3,7 @@ import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import Image from "next/image";
-
+import { useUser } from "@clerk/nextjs";
 interface AddEventForm {
   organization: string;
   title: string;
@@ -77,6 +77,7 @@ export default function AddEventPanel({
   onCreate,
   addEvent,
 }: AddEventPanelProps) {
+  const { user } = useUser();
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
@@ -162,7 +163,6 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -224,6 +224,32 @@ export default function AddEventPanel({
         photo: "Error uploading image or creating event",
       }));
     } finally {
+      // send the confirmation email.
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: user?.emailAddresses?.[0]?.emailAddress,
+          firstName: user?.firstName,
+          orgName: formData.organization,
+          eventTitle: formData.title,
+          templateId: "d-617ef75e7ee24ae09d4a63d92bda3db7",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
       setIsLoading(false); // End loading
     }
   };
