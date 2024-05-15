@@ -18,13 +18,13 @@ export default authMiddleware({
         "/api/users/eventRoutes",
         "/api/s3-upload/test",
         "/publicCalendar",
-        // "/eventDetails",
+        "/eventDetails",
       ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
-            "/eventDetails": ["admin", "approved"],
+            // "/eventDetails": ["admin", "approved"],
             "/eventBar": ["admin", "approved"],
             "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
