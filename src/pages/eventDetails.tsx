@@ -88,7 +88,19 @@ export default function EventPage() {
                 <h2 style={styles.locationType}>
                   {event.isVirtual ? "Link" : "Address"}
                 </h2>
-                <address style={styles.address}>{event.location}</address>
+                <address style={styles.address}>
+                  {event.isVirtual ? (
+                    <a
+                      href={event.location}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {event.location}
+                    </a>
+                  ) : (
+                    event.location
+                  )}
+                </address>
               </div>
               {address && !event.isVirtual && (
                 <div style={styles.mapPlaceholder}>
