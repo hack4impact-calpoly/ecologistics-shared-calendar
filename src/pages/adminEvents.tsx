@@ -38,10 +38,10 @@ export default function AdminRequestTable() {
       .then(response => response.json())
       .then((response: ApiResponse) => {
         setPending(response.data.filter(event => event.status === "Pending"));
-        setApproved(response.data.filter(event => event.status === 'Approved'));
+        setApproved(response.data.filter(event => (event.status === 'Approved' && new Date(event.endDate) > new Date())));
         setPostponed(response.data.filter(event => event.status === 'Postponed'));
         setDeclined(response.data.filter(event => event.status === 'Denied'));
-        setArchived(response.data.filter(event => event.status === 'Archived'));
+        setArchived(response.data.filter(event => (event.status === 'Approved' && new Date(event.endDate) < new Date())));
       })
       .catch(error => console.error('Failed to fetch events:', error));
   });
