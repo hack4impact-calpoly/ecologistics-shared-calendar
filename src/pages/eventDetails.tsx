@@ -1,36 +1,121 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import Layout from "../components/layout";
 import StaticMap from "../components/map";
+import { EventDocument } from "../database/eventSchema";
+import { useRouter } from "next/router";
+import { convertEventDatesToDates, getFormattedDate } from "../utils/events";
+
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+function parseAddress(address: string): Address {
+  const [street, city, state, postalCode] = address.split(", ");
+
+  return {
+    street,
+    city,
+    state,
+    postalCode,
+  };
+}
 
 export default function EventPage() {
-  const street = "1 Grand Ave";
-  const city = "San Luis Obispo";
-  const state = "CA";
-  const postalCode = "93407";
+  const [event, setEvent] = React.useState<EventDocument | null>(null);
+  const [address, setAddress] = React.useState<Address | null>(null);
+
+  const router = useRouter();
+  const eventId = router.query.eventId;
+
+  useEffect(() => {
+    if (!eventId) {
+      router.push("/calendar");
+      return;
+    }
+
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`/api/users/eventRoutes?id=${eventId}`);
+        const data = await response.json();
+
+        convertEventDatesToDates(data.data);
+        const event: EventDocument = data.data[0];
+        event.startDate = new Date(event.startDate);
+        event.endDate = new Date(event.endDate);
+
+        setEvent(event);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
+
+  useEffect(() => {
+    if (event && !event.isVirtual) {
+      setAddress(parseAddress(event.location));
+    }
+  }, [event]);
+
   return (
     <Layout>
-      <div style={styles.container}>
-        <div style={styles.box}>
-          <h1 style={styles.title}>Event Title</h1>
-          <p style={styles.date}>Event Date @ Event Time</p>
-          <div style={styles.imagePlaceholder}></div>
-          <div style={styles.descriptionBox}>
-            <p style={styles.descriptionText}>Event Description...</p>
-          </div>
-          <div style={styles.locationAndMapContainer}>
-            <div style={styles.locationTypeContainer}>
-              <h2 style={styles.locationType}>Location</h2>
-              <address style={styles.address}>
-                <p>1 Grand Ave</p>
-                <p>San Luis Obispo, CA 93407</p>
-              </address>
+      {event && (
+        <div style={styles.container}>
+          <div style={styles.box}>
+            <h1 style={styles.title}>{event.title}</h1>
+            <p style={styles.date}>
+              {`Starts on ${getFormattedDate(event.startDate)}`}
+            </p>
+            <p style={styles.date}>
+              {`Ends on ${getFormattedDate(event.endDate)}`}
+            </p>
+            <div style={styles.imagePlaceholder}>
+              <img
+                src={event.imageLink}
+                alt="Event Image"
+                style={{ height: "100%", width: "100%", objectFit: "cover" }}
+              />
             </div>
-            <div style={styles.mapPlaceholder}>
-              <StaticMap street={street} state={state} city={city} postalCode={postalCode} />
+            <div style={styles.descriptionBox}>
+              <p style={styles.descriptionText}>{event.description}</p>
+            </div>
+            <div style={styles.locationAndMapContainer}>
+              <div style={styles.locationTypeContainer}>
+                <h2 style={styles.locationType}>
+                  {event.isVirtual ? "Link" : "Address"}
+                </h2>
+                <address style={styles.address}>
+                  {event.isVirtual ? (
+                    <a
+                      href={event.location}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {event.location}
+                    </a>
+                  ) : (
+                    event.location
+                  )}
+                </address>
+              </div>
+              {address && !event.isVirtual && (
+                <div style={styles.mapPlaceholder}>
+                  <StaticMap
+                    street={address.street}
+                    state={address.state}
+                    city={address.city}
+                    postalCode={address.postalCode}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      )}
     </Layout>
   );
 }
