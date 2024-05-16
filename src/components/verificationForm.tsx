@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const VerificationForm = () => {
   const [codes, setCodes] = useState(['', '', '', '', '', '']); // Array to hold each digit
 
-  const handleChange = (index, value) => {
+  const handleChange = (index: number, value: string) => {
     const newCodes = [...codes];
     newCodes[index] = value;
     setCodes(newCodes);
@@ -14,7 +14,7 @@ const VerificationForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     const verificationCode = codes.join(''); // Combine the individual digits into a single code
     console.log('Verification code:', verificationCode);

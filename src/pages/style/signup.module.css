@@ -1,129 +1,154 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 10vh;
-  width: 100%;
-  background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    width: 100%;
+    background-color: white;
 }
 
 .formBox {
-  border-radius: 8px;
-  background-color: white;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    border-radius: 8px;
+    background-color: white;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .title {
-  font-family: "DM Sans", sans-serif;
-  font-size: 3.75em;
-  text-align: center;
-  margin-bottom: -0.5em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 3.75em;
+    text-align: center;
+    margin-bottom: -0.5em;
 }
 
 .subtitle {
-  font-family: "DM Sans", sans-serif;
-  font-size: 2em;
-  text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-size: 2em;
+    text-align: center;
 }
 
 .inputBox {
-  margin-top: 1em;
-  width: 51%;
+    margin-top: 1em;
+    width: 51%;
 }
 
 .label {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1.5625em;
-  margin-left: 0.2em;
+    font-family: "DM Sans", sans-serif;
+    font-size: 1.5625em;
+    margin-left: 0.2em;
 }
 
 .input {
-  font-family: "DM Sans", sans-serif;
-  padding: 0.23em;
-  padding-left: 0.5em;
-  font-size: 2em;
-  color: black;
+    font-family: "DM Sans", sans-serif;
+    padding: 0.23em;
+    padding-left: 0.5em;
+    font-size: 2em;
+    color: black;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
-  border: 1px solid black;
-  border-radius: 4px;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .bottomText {
-  margin-top: 1.5625em;
-  margin-bottom: 1.5625em;
-  font-size: 1em;
+    margin-top: 1.5625em;
+    margin-bottom: 1.5625em;
+    font-size: 1em;
 }
 
 .button {
-  font-family: "DM Sans", sans-serif;
-  font-size: 1em;
-  color: black;
-  margin-top: 1em;
-  padding-top: 0.7em;
-  padding-bottom: 0.7em;
-  background-color: #f7ab74;
-  border: none;
-  border-radius: 10px;
-  width: 12%;
-  cursor: pointer;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    font-family: "DM Sans", sans-serif;
+    font-size: 1em;
+    color: black;
+    margin-top: 1em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+    background-color: #f7ab74;
+    border: none;
+    border-radius: 10px;
+    width: 12%;
+    cursor: pointer;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .statusMessage {
-  font-family: "DM Sans", sans-serif;
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1em;
-  color: #28a745;
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #28a745;
+}
+
+.togglePasswordButton {
+  font-family: "DM Sans";
+    font-size: 1em;
+    color: gray;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    right: 5px; /* Adjust the position of the button as needed */
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 /* Media Query Styling */
 
 /* IPhone SE - S20 Ultra */
 @media only screen and (min-width: 320px) and (max-width: 1440px) and (min-height: 568px) and (max-height: 3200px) {
-  .container {
-    min-height: 80vh;
-  }
+    .container {
+        min-height: 80vh;
+    }
 
-  .title {
-    font-size: 2em;
-    margin-bottom: -0.5em;
-  }
+    .title {
+        font-size: 2em;
+        margin-bottom: -0.5em;
+    }
 
-  .subtitle {
-    font-size: 1.3em;
-  }
+    .subtitle {
+        font-size: 1.3em;
+    }
 
-  .inputBox {
-    margin-top: 0.5em;
-    width: 80%;
-  }
+    .inputBox {
+        margin-top: 0.5em;
+        width: 80%;
+    }
 
-  .label {
-    font-size: 1em;
-  }
+    .label {
+        font-size: 1em;
+    }
 
-  .input {
-    padding: 0.23em;
-    padding-left: 0.5em;
-    font-size: 1.3em;
-    width: 96%;
-  }
+    .input {
+        padding: 0.23em;
+        padding-left: 0.5em;
+        font-size: 1.3em;
+        width: 96%;
+    }
 
-  .bottomText {
-    font-size: 1em;
-  }
+    .bottomText {
+        font-size: 1em;
+    }
 
-  .button {
-    width: 20%;
-    font-size: 1em;
-    margin-top: 1em;
-  }
+    .button {
+      width: 20%;
+      font-size: 1em;
+      margin-top: 1em;
+    }
+
+    .inputContainer {
+      width: 100%;
+    }
 }
 
 /* IPad Mini */
@@ -164,6 +189,10 @@
   .button {
     width: 20%;
     font-size: 1.5em;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
@@ -208,6 +237,10 @@
     width: 25%;
     font-size: 2.5em;
   }
+
+  .inputContainer {
+    width: 100%;
+  }
 }
 
 /* Surface pro 7 */
@@ -251,6 +284,10 @@
     width: 25%;
     font-size: 2.5em;
   }
+
+  .inputContainer {
+    width: 100%;
+  }
 }
 
 /* Galaxy Fold */
@@ -292,6 +329,10 @@
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     width: 25%;
+  }
+
+  .inputContainer {
+    width: 100%;
   }
 }
 
@@ -337,4 +378,39 @@
     padding-top: 0.7em;
     padding-bottom: 0.7em;
   }
+
+  .inputContainer {
+    width: 100%;
+  }
+}
+
+.verificationButton {
+  margin: 0 5px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 50px;
+  border: solid 1px #ccc;
+  box-shadow: 0 0 5px #ccc inset;
+  outline: none;
+  width: 6%;
+  transition: all 0.2s ease-in-out;
+  border-radius: 3px;
+}
+
+.verificationContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainContainer {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 50vh;
+}
+.mainContainer h3 {
+  margin: 0;
+  padding: 0;
 }

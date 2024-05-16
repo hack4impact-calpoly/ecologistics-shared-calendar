@@ -17,7 +17,8 @@ import { EventDocument } from "database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
 import Navbar from "../components/navbar";
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon';
+
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -34,8 +35,12 @@ export interface Event {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<FullCalenderRecurringEvent[]>([]);
-  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<
+    FullCalenderRecurringEvent[]
+  >([]);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
+    []
+  );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
@@ -70,17 +75,17 @@ export default function CalendarPage() {
     };
   }, []);
 
-useEffect(() => {
-  if (!events) return;
-  setCalendarEvents(
-    events.map((event) => ({
-      startRecur: event.startDate,
-      endRecur: event.endDate,
-      title: event.title,
-      id: event._id,
-    }))
-  );
-}, [events]);
+  useEffect(() => {
+    if (!events) return;
+    setCalendarEvents(
+      events.map((event) => ({
+        startRecur: event.startDate,
+        endRecur: event.endDate,
+        title: event.title,
+        id: event._id,
+      }))
+    );
+  }, [events]);
 
   // Fetch events from the database
   useEffect(() => {
@@ -213,19 +218,10 @@ useEffect(() => {
             windowResize={function () {
               setResize(!resize);
             }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
-                },
-                hint: "none",
-              },
-            }}
             headerToolbar={{
               left: "",
               center: "prev title next",
-              right: windowWidth >= 786 ? "AddEvent" : "",
+              right: "",
             }}
             buttonIcons={{
               prev: "arrow-left",
@@ -260,7 +256,9 @@ useEffect(() => {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : events} />
+          <EventBar
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : events}
+          />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}
@@ -349,7 +347,6 @@ const calendarStyles = `
      max-width: 100%;
    }
 
-
    .fc .fc-event {
      background-color: #F7AB74;
      border-color: #F7AB74;
@@ -365,14 +362,14 @@ const calendarStyles = `
      display: block;
    }
 
-   .fc-daygrid-event {
-  white-space: normal !important;
-  align-items: normal !important;
-}
-
    .fc-daygrid-event-dot {
      display: none;
    }
+
+   .fc-daygrid-event {
+	white-space: normal !important;
+	align-items: normal !important;
+    }
 
    .fc .fc-col-header-cell,
    .fc .fc-daygrid-day,

@@ -3,21 +3,33 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface UserMetadata {
     role: string;
-    organization: string;
 }
 
 export default authMiddleware({
     async afterAuth(auth, req: NextRequest) {
-        // Define public routes
-        const publicRoutes = ["/", "/login", "/signup", "/forgot-password"];
+    // Define public routes
+      const publicRoutes = [
+        "/",
+        "/login",
+        "/signup",
+        "/forgot-password",
+        "/api/s3-upload/route",
+        "/api/test",
+        "/api/users/eventRoutes",
+        "/api/s3-upload/test",
+        "/publicCalendar",
+        "/eventDetails",
+      ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
-            "/eventDetails": ["admin", "user"],
-            "/eventBar": ["admin", "user"],
-            "/calendar": ["admin", "user"],
+            // "/eventDetails": ["admin", "approved"],
+            "/eventBar": ["admin", "approved"],
+            "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
+            "/adminAccounts": ["admin"],
+            "/declined": ["declined"],
         };
 
         // Check if the current route is public
@@ -32,7 +44,7 @@ export default authMiddleware({
 
         // Check if the user has access to the current route
         const requiredRoles = routePermissions[req.nextUrl.pathname];
-        const metadata = auth?.sessionClaims?.unsafe_metadata as UserMetadata;
+        const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
         const role = metadata?.role;
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage

@@ -9,9 +9,16 @@ import { clerkClient } from "@clerk/nextjs";
 import EmailTemplate from "../components/email-template";
 import { Resend } from "resend";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { A } from "@fullcalendar/resource/internal-common";
+// import { A } from "@fullcalendar/resource/internal-common";
 
-const VerificationForm = ({ onClose, email, uid, orgName }) => {
+interface VerificationFormProps {
+  onClose: () => void;
+  email: string;
+  uid: string;
+  orgName: string;
+}
+
+const VerificationForm: React.FC<VerificationFormProps> = (props) => {
   const [verificationCode, setVerificationCode] = useState("");
   const [codes, setCodes] = useState(["", "", "", "", "", ""]);
   const [isCodeCorrect, setIsCodeCorrect] = useState(false);
@@ -22,7 +29,7 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
     setVerificationCode(generateVerificationCode());
   }, []);
 
-  const updateEmailAddress = async (emailAddressId, params) => {
+  const updateEmailAddress = async (emailAddressId: string, params: { verified?: boolean; primary?: boolean; }) => {
     try {
       const response = await clerkClient.emailAddresses.updateEmailAddress(emailAddressId, params);
       console.log(response); // Optional: Log the response
@@ -43,7 +50,7 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
     return code;
   };
 
-  const handleChange = (index, value) => {
+  const handleChange = (index: number, value: string) => {
     const newCodes = [...codes];
     newCodes[index] = value;
     setCodes(newCodes);
@@ -55,14 +62,14 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (isCodeCorrect) {
       console.log("Verification successful!");
       axios
-          .put("/api/userRoutes?clerkId=" + uid, {
-            email: email,
-            organization: orgName,
+          .put("/api/userRoutes?clerkId=" + props.uid, {
+            email: props.email,
+            organization: props.orgName,
           })
           .then((data) => {
             console.log(data);
@@ -71,7 +78,7 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
           .catch((error) => {
             console.error("Error:", error);
           });
-      onClose(); // Close the pop-up
+      props.onClose(); // Close the pop-up
     } else {
       console.log("Incorrect verification code!");
       setError(true);
@@ -81,12 +88,12 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
   return (
     <div style={styles.overlay}>
       <div style={styles.popup}>
-        <div style={styles.closeButton} onClick={onClose}>
+        <div style={styles.closeButton} onClick={props.onClose}>
           X
         </div>
         <h1 style={styles.heading}>Verify your email address</h1>
         <p style={styles.message}>
-          We emailed you a 6-digit code to {email}. Enter the code below to
+          We emailed you a 6-digit code to {props.email}. Enter the code below to
           confirm your email address.
         </p>
         <form onSubmit={handleSubmit}>
@@ -113,7 +120,7 @@ const VerificationForm = ({ onClose, email, uid, orgName }) => {
                   marginBottom: "10px",
                   textAlign: "center",
                   borderRadius: "10px",
-                  border: error && "1px solid red",
+                  border: error ? "1px solid red": "",
                 }}
               />
             ))}
@@ -143,6 +150,7 @@ export default function EditProfilePage() {
   const [position, setPosition] = useState("");
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
+  const [role, setRole] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -165,8 +173,13 @@ export default function EditProfilePage() {
         console.log("same: " + email)
         axios
           .put("/api/userRoutes?clerkId=" + uid, {
-            email: email,
             organization: orgName,
+            email: email,
+            phoneNumber: phone,
+            lastName: lname,
+            firstName: fname,
+            position: position,
+            role: role
           })
           .then((data) => {
             console.log(data);
@@ -192,6 +205,11 @@ export default function EditProfilePage() {
         console.log(responseData);
         setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
+        setPosition(responseData.data.position)
+        setPhone(responseData.data.phoneNumber)
+        setFName(responseData.data.firstName)
+        setLName(responseData.data.lastName)
+        setRole(responseData.data.role)
       } catch (error) {}
     };
     if (user) {
@@ -232,7 +250,12 @@ export default function EditProfilePage() {
             <form onSubmit={handleSubmit}>
               <Grid item>
                 <p>Change Organization Name</p>
-                <input type="text" id="orgName" placeholder="XXXXXXX" />
+                <input
+                  type="text"
+                  id="orgName"
+                  value={orgName}
+                  onChange={(e) => setOrg(e.target.value)}
+                />
               </Grid>
               <br></br>
               <h3>Personal Information</h3>
@@ -241,13 +264,23 @@ export default function EditProfilePage() {
                   <p>
                     <b>First Name</b>
                   </p>
-                  <input type="text" id="fname" placeholder="XXXXXX" />
+                  <input
+                    type="text"
+                    id="fname"
+                    value={fname}
+                    onChange={(e) => setFName(e.target.value)}
+                  />
                 </Grid>
                 <Grid item xs={2}>
                   <p>
                     <b>Last Name</b>
                   </p>
-                  <input type="text" id="lname" placeholder="XXXXXXX" />
+                  <input
+                    type="text"
+                    id="lname"
+                    value={lname}
+                    onChange={(e) => setLName(e.target.value)}
+                  />
                 </Grid>
               </Grid>
               <p>
@@ -257,7 +290,8 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 style={{ width: "300px" }}
-                placeholder="XXXXXXXXXXX"
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
               />
 
               <h3>Organization Information</h3>
@@ -268,7 +302,6 @@ export default function EditProfilePage() {
                 type="text"
                 id="email"
                 style={{ width: "300px" }}
-                placeholder="XXXXXXX@XXX.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -279,18 +312,19 @@ export default function EditProfilePage() {
                 type="text"
                 id="phone"
                 style={{ width: "300px" }}
-                placeholder="+1-XXX-XXX-XXXX"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <br></br>
               <br></br>
               <button
-                type="submit"
                 style={{
                   width: "50px",
                   backgroundColor: "#ef7f2d",
                   color: "black",
                   borderRadius: "1rem",
                 }}
+                type="submit"
               >
                 Save
               </button>
