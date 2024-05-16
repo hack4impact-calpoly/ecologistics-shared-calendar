@@ -1,24 +1,84 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
 
 type AdminProps = {
   events: {
-    id: number;
-    name: string;
-    email: string;
+    organization: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    description?: string;
+    isVirtual: boolean;
+    location: string;
     status: string;
-    date: string;
-    time: string;
-    description: string;
+    deniedReason?: string;
+    imageLink?: string;
+    createdBy: string;
+    _id: string;
   }[];
   ITEMS_PER_PAGE: number;
+  approveEvent: (id: string) => void;
+  declineEvent: (id: string, declineMessage: string) => void;
+  deleteEvent: (id: string) => void;
 };
 
 interface PopupProps {
   isOpen: boolean;
   onClose: () => void;
   handleAction: (requestID: string, action: string) => void;
+  message?: string;
+  setMessage?: React.Dispatch<React.SetStateAction<string>>;
   requestID: string;
+}
+
+function parseCommentDate(date: Date) {
+  /*
+  Parses MongoDB/TS date object
+  :param time: date object
+  :return: string reprsenting date
+  */
+  // Convert to Los Angeles time
+  const losAngelesDate = new Date(
+      date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  );
+
+  // Format the date as desired
+  const formattedDate = losAngelesDate.toLocaleString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+  });
+  return formattedDate;
+}
+
+function parseCommentTime(startDate: Date, endDate: Date) {
+  /*
+  Parses MongoDB/TS date object
+  :param time: date object
+  :return: string reprsenting date
+  */
+  // Convert to Los Angeles time
+  const losAngelesStartDate = new Date(
+      startDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+  );
+  const losAngelesEndDate = new Date(
+    endDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+);
+
+  // Format the date as desired
+  const formattedStartDate = losAngelesStartDate.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+  });
+
+    // Format the date as desired
+    const formattedEndDate = losAngelesEndDate.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+  });
+  return (formattedStartDate + " - " + formattedEndDate);
 }
 
 const DeletePopup: React.FC<PopupProps> = ({
@@ -97,9 +157,10 @@ const DenyPopup: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
+  message="",
+  setMessage= ()  => {},
   requestID,
 }) => {
-  const [message, setMessage] = useState("");
   if (!isOpen) return null;
   return (
     <>
@@ -172,7 +233,6 @@ const DenyPopup: React.FC<PopupProps> = ({
                   "#f7ab74")
               }
               onClick={() => {
-                console.log(message);
                 handleAction(requestID, "deny");
                 onClose();
               }}
@@ -186,13 +246,15 @@ const DenyPopup: React.FC<PopupProps> = ({
   );
 };
 
-export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
+export default function AdminPage({ 
+  events,
+  ITEMS_PER_PAGE,
+  approveEvent,
+  declineEvent,
+  deleteEvent,
+}: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
-  if (events[0]){
-    console.log("events:",events,events[0].status);
-    console.log("itemsperpage",ITEMS_PER_PAGE);
-  }
   
 
   // Delete popup
@@ -213,7 +275,6 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     accountRequests.length
   );
 
-  console.log("Here in table");
 
   // Slice the accountRequests array to display only the items for the current page
   const currentRequests = accountRequests.slice(startIndex, endIndex);
@@ -234,12 +295,13 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
 
   const handleAction = (requestId: string, action: string) => {
     if (action === "trash") {
-      // Filter out the request with the given id
+      deleteEvent(requestId);
+      // Filter out the request with the given _id
       const updatedRequests = accountRequests.filter(
-        (request) => request.id.toString() !== requestId
+        (request) => request._id.toString() !== requestId
       );
       if (
-        requestId === accountRequests[accountRequests.length - 1].id.toString()
+        requestId === accountRequests[accountRequests.length - 1]._id.toString()
       ) {
         setCurrentPage(currentPage - 1);
       }
@@ -248,7 +310,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
     } else {
       // For accept/decline actions, update the status accordingly
       /*const updatedRequests = accountRequests.map((request) => {
-        if (request.id.toString() === requestId) {
+        if (request._id.toString() === requestId) {
           return {
             ...request,
             status: action === "accepted" ? "Accepted" : "Declined",
@@ -258,17 +320,25 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
         return request;
          });
         */
+        if (action === "accepted") {
+          approveEvent(requestId);
+        } else if (action === "deny") {
+          declineEvent(requestId, message);
+        }
 
       // I would assume that when an event is approved or denied, it is updated on the
       // the backend, and is then rerendered on the new list
       const updatedRequests = accountRequests.filter(
-        (request) => request.id.toString() !== requestId
+        (request) => request._id.toString() !== requestId
       );
 
       // Update the state with the new account requests array
       setAccountRequests(updatedRequests);
     }
   };
+  useEffect(() => {
+    setAccountRequests(events);
+}, [events]);
 
   return (
     <div>
@@ -347,12 +417,12 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
             {accountRequests
               .slice(calculateRange().startIndex, calculateRange().endIndex)
               .map((request) => (
-                <tr key={request.id} style={{ border: "1px solid #f7f7f7" }}>
+                <tr key={request._id} style={{ border: "1px solid #f7f7f7" }}>
                   <td style={{ ...styles.name, padding: "5px 50px" }}>
-                    {request.name}
+                    {request.title}
                   </td>
                   <td style={{ ...styles.email, padding: "5px 50px" }}>
-                    {request.email}
+                    {request.organization}
                   </td>
                   <td
                     style={{ ...styles.statusContainer, padding: "5px 50px" }}
@@ -390,7 +460,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.date}
+                      {parseCommentDate(new Date(request.startDate))}
                     </span>
                     <span
                       style={{
@@ -400,7 +470,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                         display: "block",
                       }}
                     >
-                      {request.time}
+                      {parseCommentTime(new Date(request.startDate), new Date(request.endDate))}
                     </span>
                   </td>
                   <td style={{ ...styles.description, padding: "5px 50px" }}>
@@ -418,7 +488,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                             padding: "8px 15px",
                           }}
                           onClick={() =>
-                            handleAction(request.id.toString(), "accepted")
+                            handleAction(request._id.toString(), "accepted")
                           }
                           onMouseOver={(
                             e: React.MouseEvent<HTMLButtonElement>
@@ -466,7 +536,9 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           isOpen={isDenyPopupOpen}
                           onClose={closeDenyPopup}
                           handleAction={handleAction}
-                          requestID={request.id.toString()}
+                          message={message}
+                          setMessage={setMessage}
+                          requestID={request._id.toString()}
                         />
                       </>
                     ) : (
@@ -502,7 +574,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
                           isOpen={isDeletePopupOpen}
                           onClose={closeDeletePopup}
                           handleAction={handleAction}
-                          requestID={request.id.toString()}
+                          requestID={request._id.toString()}
                         />
                       </>
                     )}
