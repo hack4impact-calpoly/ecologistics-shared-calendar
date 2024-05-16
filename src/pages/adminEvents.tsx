@@ -146,7 +146,7 @@ const deleteEvent = async (id: string) => {
           />
         </div>
 
-        {/* Postponed Events */}
+        {/* Postponed Events
         <div>
           <h3>Postponed Events</h3>
           <EventsTable 
@@ -156,7 +156,7 @@ const deleteEvent = async (id: string) => {
               ITEMS_PER_PAGE={4} 
               events={postponed} 
           />
-        </div>
+        </div> */}
         {/* Declined Events */}
         <div>
           <h3>Declined Events</h3>
