@@ -48,7 +48,7 @@ async function sendDynamicEmail(
 ) {
   const msg = {
     to: emailAddress,
-    from: "mattbosio08@gmail.com", // Change to your verified sender
+    from: "mattbosio08@gmail.com", // Change to verified sender
     templateId: templateId,
     dynamic_template_data: {
       first_name: firstName,

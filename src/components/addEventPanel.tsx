@@ -250,6 +250,41 @@ export default function AddEventPanel({
         .catch((error) => {
           console.error("Error:", error); // Handle error
         });
+      //send admin confirmation email
+      // get admin email first
+      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
+      if (!admin_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const admin = await admin_response.json();
+      const admin_email = admin.data.email;
+      console.log(admin_email);
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: admin_email,
+          firstName: user?.firstName || "default",
+          orgName: formData.organization,
+          eventTitle: formData.title,
+          templateId: "d-7a164dd16b2546539e71c7ec8ef21342",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
+
       setIsLoading(false); // End loading
     }
   };

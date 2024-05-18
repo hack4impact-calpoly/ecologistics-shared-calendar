@@ -167,9 +167,41 @@ export default function SignUp() {
         .catch((error) => {
           console.error("Error:", error); // Handle error
         });
+      // send email notif to admin
+      // get admin email first
+      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
+      if (!admin_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const admin = await admin_response.json();
+      const admin_email = admin.data.email;
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: admin_email,
+          firstName: fName,
+          orgName: organization,
+          templateId: "d-6b5fb63a4d5f41d5aa552e74be1bf3c1",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
 
       // change the UI to our pending section.
-      setPendingVerification(true);
+      //setPendingVerification(true);
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
     }
