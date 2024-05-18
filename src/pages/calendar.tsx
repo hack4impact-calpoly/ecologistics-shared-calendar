@@ -9,7 +9,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState, useRef } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
-import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
@@ -52,16 +51,7 @@ export default function CalendarPage() {
     setWindowWidth(window.innerWidth);
   };
 
-  const handleLogout = async () => {
-    try {
-      // Call signOut function to log out the current user
-      await signOut();
-      // Redirect to a different page after logout if needed
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
+
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
