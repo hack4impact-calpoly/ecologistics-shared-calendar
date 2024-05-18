@@ -1,5 +1,24 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--eco-green);
+    width: 100%;
+    padding: 0.25em 1em; 
+    box-shadow: 0 4px 2px -2px gray;
+    margin-bottom: 10px;
+    box-sizing: border-box; 
+}
+
+.dropdown {
+    padding: 0.25em; 
+    margin: 0.25em;
+    position: relative; 
+}
+
+.logo {
+    height: auto; 
+    max-height: 30px; 
+    padding: 0.25em; 
+    margin: 0.25em;
 }

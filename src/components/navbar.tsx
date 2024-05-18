@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import styles from "../styles/navbar.module.css"; // Changed to import as a module
 import PositionedMenu from "./PositionedMenu";
-import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
 import { useRouter } from 'next/router';
 
@@ -28,6 +27,7 @@ const Navbar: React.FC = () => {
   if (!isLoaded) {
     return null;
   }
+
   if (pathname === '/publicCalendar' || pathname === '/') {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
@@ -47,7 +47,10 @@ const Navbar: React.FC = () => {
   return (
     <nav className={styles.navbar}>
       <Link className={styles.link} href="/">
-        <Image src="/images/Home.png" alt="Home" width={177} height={113} />
+	<img 
+	  src="/images/Logo.png" 
+	  className={styles.logo}
+	/>
       </Link>
       <div className={styles.dropdown}>
         <PositionedMenu items={menuItems} />
@@ -57,3 +60,6 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+
+
+
