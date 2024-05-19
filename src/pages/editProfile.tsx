@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Typography from "@mui/material/Typography";
 
 export default function EditProfilePage() {
   const { user } = useUser();
@@ -18,7 +19,7 @@ export default function EditProfilePage() {
   const [role, setRole] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     axios
       .put("/api/userRoutes?clerkId=" + uid, {
@@ -28,7 +29,7 @@ export default function EditProfilePage() {
         lastName: lname,
         firstName: fname,
         position: position,
-        role: role
+        role: role,
       })
       .then((data) => {
         console.log(data);
@@ -39,7 +40,8 @@ export default function EditProfilePage() {
 
     router.push("/profile");
   };
-  if(uid=="" && user){
+
+  if (uid === "" && user) {
     setUID(user.id);
   }
 
@@ -54,113 +56,186 @@ export default function EditProfilePage() {
         console.log(responseData);
         setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
-        setPosition(responseData.data.position)
-        setPhone(responseData.data.phoneNumber)
-        setFName(responseData.data.firstName)
-        setLName(responseData.data.lastName)
-        setRole(responseData.data.role)
-      } catch (error) {}
+        setPosition(responseData.data.position);
+        setPhone(responseData.data.phoneNumber);
+        setFName(responseData.data.firstName);
+        setLName(responseData.data.lastName);
+        setRole(responseData.data.role);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
     fetchData();
   }, [uid]);
 
   return (
     <Layout>
-      <div style={{ padding: "50px" }}>
+      <Box sx={{ padding: { xs: 2, md: 5 } }}>
         <Box
-          display="flex"
-          justifyContent="left"
-          borderRadius={3}
-          width="80%"
-          paddingLeft="200px"
-          paddingTop="50px"
-          paddingBottom="20%"
-          sx={{ border: "2px solid grey" }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: 3,
+            width: "80%",
+            padding: { xs: 2, md: 5 },
+            border: "2px solid grey",
+            mx: "auto",
+          }}
         >
-          <Grid
-            container
-            direction="column"
-            justifyContent="left"
-            alignItems="left"
-          >
-            <h3>Account Information </h3>
+          <Grid container direction="column" spacing={3} alignItems="center">
+            <Typography
+              variant="h3"
+              textAlign="center"
+              marginTop="20px"
+              sx={{ mb: 3 }}
+            >
+              Account Information
+            </Typography>
 
-            <form onSubmit={handleSubmit}>
-              <Grid item>
-                <p>Change Organization Name</p>
+            <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <Grid item xs={12} sx={{ mb: 2 }}>
+                <Typography variant="h5" textAlign="center" sx={{ mb: 1 }}>
+                  Change Organization Name
+                </Typography>
                 <input
                   type="text"
                   id="orgName"
                   value={orgName}
                   onChange={(e) => setOrg(e.target.value)}
+                  style={{
+                    width: "80%",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid grey",
+                    margin: "0 auto",
+                    display: "block",
+                  }}
                 />
               </Grid>
-              <br></br>
-              <h3>Personal Information</h3>
-              <Grid container spacing={2}>
-                <Grid item xs={1.5}>
-                  <p>
+
+              <Typography variant="h5" textAlign="center" sx={{ mt: 3 }}>
+                Personal Information
+              </Typography>
+
+              <Grid
+                container
+                spacing={2}
+                sx={{ mt: 1 }}
+                justifyContent="center"
+              >
+                <Grid item xs={12} sm={6} md={4} sx={{ textAlign: "center" }}>
+                  <Typography variant="body1">
                     <b>First Name</b>
-                  </p>
+                  </Typography>
                   <input
                     type="text"
                     id="fname"
                     value={fname}
                     onChange={(e) => setFName(e.target.value)}
+                    style={{
+                      width: "80%",
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid grey",
+                      margin: "0 auto",
+                      display: "block",
+                    }}
                   />
                 </Grid>
-                <Grid item xs={2}>
-                  <p>
+                <Grid item xs={12} sm={6} md={4} sx={{ textAlign: "center" }}>
+                  <Typography variant="body1">
                     <b>Last Name</b>
-                  </p>
+                  </Typography>
                   <input
                     type="text"
                     id="lname"
                     value={lname}
                     onChange={(e) => setLName(e.target.value)}
+                    style={{
+                      width: "80%",
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid grey",
+                      margin: "0 auto",
+                      display: "block",
+                    }}
                   />
                 </Grid>
               </Grid>
-              <p>
+
+              <Typography variant="body1" sx={{ mt: 3, textAlign: "center" }}>
                 <b>Position in Organization</b>
-              </p>
-              <br></br>
+              </Typography>
               <input
                 type="text"
-                style={{ width: "300px" }}
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
+                style={{
+                  width: "80%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid grey",
+                  marginTop: "10px",
+                  margin: "0 auto",
+                  display: "block",
+                }}
               />
 
-              <h3>Organization Information</h3>
-              <p>
+              <Typography variant="h5" textAlign="center" sx={{ mt: 3 }}>
+                Organization Information
+              </Typography>
+
+              <Typography variant="body1" sx={{ mt: 3, textAlign: "center" }}>
                 <b>Email Address</b>
-              </p>
+              </Typography>
               <input
                 type="text"
                 id="email"
-                style={{ width: "300px" }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: "80%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid grey",
+                  marginTop: "10px",
+                  margin: "0 auto",
+                  display: "block",
+                }}
               />
-              <p>
+
+              <Typography variant="body1" sx={{ mt: 3, textAlign: "center" }}>
                 <b>Phone number</b>
-              </p>
+              </Typography>
               <input
                 type="text"
                 id="phone"
-                style={{ width: "300px" }}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                style={{
+                  width: "80%",
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid grey",
+                  marginTop: "10px",
+                  margin: "0 auto",
+                  display: "block",
+                  marginBottom: "20px",
+                }}
               />
-              <br></br>
-              <br></br>
+
               <button
                 style={{
-                  width: "50px",
+                  width: "30%",
                   backgroundColor: "#ef7f2d",
                   color: "black",
                   borderRadius: "1rem",
+                  padding: "10px",
+                  marginTop: "20px",
+                  border: "none",
+                  margin: "0 auto",
+                  display: "block",
                 }}
                 type="submit"
               >
@@ -169,7 +244,7 @@ export default function EditProfilePage() {
             </form>
           </Grid>
         </Box>
-      </div>
+      </Box>
     </Layout>
   );
 }
