@@ -2,16 +2,24 @@ import React, { useState, useRef } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useRouter } from "next/router";
-import CircleIcon from "@mui/icons-material/Circle";
 import { useClerk } from "@clerk/clerk-react";
 import { RxBox, RxHamburgerMenu } from "react-icons/rx";
 
+interface DropdownItem {
+  label: string;
+  path?: string;
+  action?: () => void;
+}
 
-const PositionedMenu = ({ items }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const buttonRef = useRef(null);
+interface PositionedMenuProps {
+  items: DropdownItem[];
+}
+
+
+const PositionedMenu = ({ items }: PositionedMenuProps) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = router.pathname;
   const open = Boolean(anchorEl);
@@ -25,7 +33,7 @@ const PositionedMenu = ({ items }) => {
     placeholder = "Username";
   }
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(buttonRef.current); // Use the button reference
   };
 
@@ -33,7 +41,7 @@ const PositionedMenu = ({ items }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = async (item) => {
+  const handleMenuItemClick = async (item: DropdownItem) => {
     if (item.path) {
       router.push(item.path);
     }
