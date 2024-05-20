@@ -4,9 +4,9 @@
     justify-content: space-between;
     background-color: var(--eco-green);
     width: 100%;
-    padding: 0.25em 1em; 
+    padding: 0.1em 1em; 
     box-shadow: 0 4px 2px -2px gray;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     box-sizing: border-box; 
 }
 

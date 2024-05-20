@@ -5,24 +5,15 @@ import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useRouter } from "next/router";
 import CircleIcon from "@mui/icons-material/Circle";
-import Box from "@mui/material/Box"; // Import Box
 import { useClerk } from "@clerk/clerk-react";
+import { RxBox, RxHamburgerMenu } from "react-icons/rx";
 
-interface DropdownItem {
-  label: string;
-  path?: string;
-  action?: () => void;
-}
 
-interface PositionedMenuProps {
-  items: DropdownItem[];
-}
-
-const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+const PositionedMenu = ({ items }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const buttonRef = useRef(null);
   const router = useRouter();
-  const { pathname } = router; // Destructure the pathname from the router
+  const pathname = router.pathname;
   const open = Boolean(anchorEl);
   const { signOut } = useClerk();
 
@@ -34,7 +25,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
     placeholder = "Username";
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event) => {
     setAnchorEl(buttonRef.current); // Use the button reference
   };
 
@@ -42,7 +33,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = async (item: DropdownItem) => {
+  const handleMenuItemClick = async (item) => {
     if (item.path) {
       router.push(item.path);
     }
@@ -69,27 +60,20 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
         aria-controls={open ? "customized-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
-        endIcon={<KeyboardArrowDownIcon />}
         onClick={handleClick}
         color="inherit"
         sx={{
           width: "100%", // Use 100% if the button should take the full width of its container
-          borderRadius: "5%", // Rounded corners
-          border: "2px solid black", // Border styling
           margin: "18px 10px",
           textTransform: "none", // Prevent uppercase transformation
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <CircleIcon
-          sx={{
-            color: "darkgreen",
-            bgcolor: "transparent",
-            borderRadius: "50%",
-            fontSize: 28,
-          }}
-        />
-        {placeholder}
+        <RxHamburgerMenu fontSize={28} color={"white"} />
       </Button>
+
       <Menu
         id="customized-menu"
         anchorEl={anchorEl}
@@ -105,7 +89,7 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
         }}
         PaperProps={{
           sx: {
-            width: buttonWidth - 3, // Ensure the menu width matches the button width
+            minWidth: buttonWidth - 3, // Ensure the menu width matches the button width
             marginTop: "5px", // Adds space between the button and the menu
             marginLeft: "4px", // Adds space between the button and the menu
             border: "2px solid black", // Apply a border similar to the button
@@ -145,3 +129,4 @@ const PositionedMenu: React.FC<PositionedMenuProps> = ({ items }) => {
 };
 
 export default PositionedMenu;
+
