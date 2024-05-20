@@ -49,14 +49,14 @@ export default function ForgotPassword() {
                 await session.end();
             }
 
-            await signIn.create({
+            await signIn?.create({
                 strategy: "reset_password_email_code",
                 identifier: email,
             });
 
             setSuccessfulCreation(true);
             setError("");
-        } catch (err) {
+        } catch (err: any) {
             console.error("error", err.errors[0].longMessage);
             setError(err.errors[0].longMessage);
         }
