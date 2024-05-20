@@ -50,7 +50,7 @@ const PositionedMenu = ({ items }: PositionedMenuProps) => {
         // Call signOut function to log out the current user
         await signOut();
         // Redirect to a different page after logout if needed
-        window.location.href = "/login";
+        window.location.href = "/publicCalendar";
       } catch (error) {
         console.error("Error logging out:", error);
       }

@@ -39,11 +39,11 @@ const Navbar: React.FC = () => {
       menuItems.push({ path: "/adminEvents", label: "Event Management" });
       menuItems.push({ path: "/adminAccounts", label: "Organization Management" });
       menuItems.push({ path: "/profile", label: "Account Settings" });
-      menuItems.push({ path: "/login", label: "Logout" });
+      menuItems.push({ path: "/publicCalendar", label: "Logout" });
     } else{
       menuItems.push({ path: "/profile", label: "Account Settings" });
       menuItems.push({ path: "/organizationEvents", label: "My Events" });
-      menuItems.push({ path: "/login", label: "Logout" });
+      menuItems.push({ path: "/publicCalendar", label: "Logout" });
     }
   }
 
