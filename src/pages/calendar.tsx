@@ -16,7 +16,6 @@ import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
-import Navbar from "../components/navbar";
 import { DateTime } from "luxon";
 
 // Recurring because events may span multiple days.
@@ -197,7 +196,6 @@ useEffect(() => {
       {isShowingEventPopUp && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
-      <Navbar />
       <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>

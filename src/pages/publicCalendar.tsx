@@ -16,7 +16,6 @@ import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
-import Navbar from "../components/navbar";
 import { DateTime } from 'luxon';
 
 
@@ -47,7 +46,17 @@ export default function CalendarPage() {
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
+  const clerk = useClerk();
   const calendarRef = useRef<HTMLDivElement>(null);
+
+
+  // if the user is logged in, redirect to the calendar page.
+
+  useEffect(() => {
+  if(clerk.user){
+     router.push("/calendar");
+  }
+  }, [clerk.user]);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -202,7 +211,6 @@ export default function CalendarPage() {
       {isShowingEventPopUp && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
-      <Navbar />
       <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
