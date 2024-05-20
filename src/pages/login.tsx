@@ -78,7 +78,7 @@ export default function LoginPage() {
                 err.errors[0].code === "form_password_incorrect" ||
                 err.errors[0].code === "form_identifier_not_found"
             ) {
-                toast.error("Invalid username/password", {
+                toast.error("Your email or password is invalid.", {
                     position: "top-center", // Center the toast at the top
                     className: "custom-toast", // Apply custom CSS class
                     style: {

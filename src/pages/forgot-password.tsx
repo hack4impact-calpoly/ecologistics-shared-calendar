@@ -43,22 +43,23 @@ export default function ForgotPassword() {
     async function create(e: React.FormEvent) {
         e.preventDefault();
 
-        //end existing session if any
-        if (session) await session.end();
+        try {
+            // End existing session if any
+            if (session) {
+                await session.end();
+            }
 
-        await signIn
-            ?.create({
+            await signIn.create({
                 strategy: "reset_password_email_code",
                 identifier: email,
-            })
-            .then((_) => {
-                setSuccessfulCreation(true);
-                setError("");
-            })
-            .catch((err) => {
-                console.error("error", err.errors[0].longMessage);
-                setError(err.errors[0].longMessage);
             });
+
+            setSuccessfulCreation(true);
+            setError("");
+        } catch (err) {
+            console.error("error", err.errors[0].longMessage);
+            setError(err.errors[0].longMessage);
+        }
     }
     // Reset the user's password.
     // Upon successful reset, the user will be

@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { useSignUp, useSession } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SignUp() {
     const router = useRouter();
@@ -154,7 +156,19 @@ export default function SignUp() {
             // change the UI to our pending section.
             setPendingVerification(true);
         } catch (err: any) {
-            console.error(JSON.stringify(err, null, 2));
+            if (err.errors[0].code === "form_identifier_exists") {
+                toast.error(
+                    "This email is already in use, please use a different email.",
+                    {
+                        position: "top-center", // Center the toast at the top
+                        className: "custom-toast", // Apply custom CSS class
+                        style: {
+                            backgroundColor: "white", // Green background color
+                            color: "#red", // White text color
+                        },
+                    }
+                );
+            }
         }
     };
 
