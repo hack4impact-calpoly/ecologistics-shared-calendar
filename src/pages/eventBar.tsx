@@ -31,7 +31,7 @@ function Event(event: EventDocument) {
     >
       <div style={styles.headerContainer}>
         <div style={styles.title}>{event.title}</div>
-        <div style={styles.dateContainer}>
+        <div style={styles.dateAndTime}>
           {getFormattedDate(event.startDate)}
         </div>
         <div style={styles.tagContainer}>
@@ -131,7 +131,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
           placeholder="Search..."
           style={{
             boxSizing: "border-box",
-            width: "85%",
+            width: "90%",
             padding: "2% 2%",
             fontSize: "1.3rem",
             borderRadius: "1rem",
@@ -181,9 +181,9 @@ function useEventBarStyles() {
       border: "1.5px solid var(--Grey, #989898)",
       borderRadius: "0.51213rem",
       whiteSpace: "normal",
-      width: "85%",
+      width: "90%",
       height: "30%",
-      padding: "2%",
+      padding: "5%",
       backgroundColor: "white",
       boxShadow: "0px 2.731px 2.731px 0px rgba(0, 0, 0, 0.25)",
       margin: "1%",
@@ -195,23 +195,24 @@ function useEventBarStyles() {
       alignItems: "center", //change
       flexWrap: "wrap",
       height: "10%",
+      marginBottom: "1rem"
     },
     eventTag: {
       marginRight: "1.5rem",
-      fontSize: "0.78036rem",
+      fontSize: "1rem",
     },
     title: {
-      fontSize: "1.95093rem",
+      fontSize: "2rem",
       fontWeight: "700",
     },
     dateAndTime: {
-      marginBottom: "1rem",
-      fontSize: "0.9755rem",
+      marginBottom: "0rem",
+      fontSize: "1.3rem",
     },
     eventText: {
       textAlign: "center", //change
       overflow: "scroll",
-      fontSize: "0.78036rem",
+      fontSize: "0.95rem",
     },
     headerContainer: {
       width: "65%",

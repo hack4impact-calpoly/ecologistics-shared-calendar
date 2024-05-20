@@ -4,6 +4,7 @@ import StaticMap from "../components/map";
 import { EventDocument } from "../database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates, getFormattedDate } from "../utils/events";
+import { red } from "@mui/material/colors";
 
 interface Address {
   street: string;
@@ -31,11 +32,6 @@ export default function EventPage() {
   const eventId = router.query.eventId;
 
   useEffect(() => {
-    if (!eventId) {
-      router.push("/calendar");
-      return;
-    }
-
     const fetchEvent = async () => {
       try {
         const response = await fetch(`/api/users/eventRoutes?id=${eventId}`);
@@ -66,6 +62,13 @@ export default function EventPage() {
       {event && (
         <div style={styles.container}>
           <div style={styles.box}>
+            {event.status === "Pending" && (
+              <h1 style={{ color: "green" }}>PREVIEW OF EVENT</h1>
+            )}
+            {event.status === "Denied" && (
+              <h1 style={{ color: "red" }}>DENIED</h1>
+            )}
+
             <h1 style={styles.title}>{event.title}</h1>
             <p style={styles.date}>
               {`Starts on ${getFormattedDate(event.startDate)}`}
@@ -88,7 +91,19 @@ export default function EventPage() {
                 <h2 style={styles.locationType}>
                   {event.isVirtual ? "Link" : "Address"}
                 </h2>
-                <address style={styles.address}>{event.location}</address>
+                <address style={styles.address}>
+                  {event.isVirtual ? (
+                    <a
+                      href={event.location}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {event.location}
+                    </a>
+                  ) : (
+                    event.location
+                  )}
+                </address>
               </div>
               {address && !event.isVirtual && (
                 <div style={styles.mapPlaceholder}>
@@ -125,6 +140,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: "100%",
     maxWidth: "600px",
     textAlign: "left",
+  },
+  centeredBox: {
+    backgroundColor: "white",
+    padding: "50px",
+    borderRadius: "8px",
+    width: "100%",
+    maxWidth: "600px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    height: "100vh", // Make the box take the full height of the viewport
   },
   title: {
     fontFamily: "DM Sans",

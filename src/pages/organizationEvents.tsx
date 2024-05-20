@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
+
 type eventType = {
   organization: string;
   title: string;

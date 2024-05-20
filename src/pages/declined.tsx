@@ -4,7 +4,7 @@ import { UserDocument } from "../database/userSchema";
 
 const ConfirmationPage: React.FC = () => {
     const handleReturn = () => {
-        window.location.href = "/login";
+        window.location.href = "/";
     };
 
     const [user, setUser] = useState<UserDocument>();
@@ -41,7 +41,7 @@ const ConfirmationPage: React.FC = () => {
                 </p>
                 {/* Button to return to the specified page */}
                 <button style={styles.button} onClick={handleReturn}>
-                    Go to Login
+                    Go to Calendar
                 </button>
             </div>
         </div>

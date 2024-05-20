@@ -9,7 +9,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState, useRef } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
-import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
@@ -52,16 +51,7 @@ export default function CalendarPage() {
     setWindowWidth(window.innerWidth);
   };
 
-  const handleLogout = async () => {
-    try {
-      // Call signOut function to log out the current user
-      await signOut();
-      // Redirect to a different page after logout if needed
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
+
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -70,17 +60,17 @@ export default function CalendarPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!events) return;
-    setCalendarEvents(
-      events.map((event) => ({
-        startRecur: event.startDate,
-        endRecur: event.endDate,
-        title: event.title,
-        id: event._id,
-      }))
-    );
-  }, [events]);
+useEffect(() => {
+  if (!events) return;
+  setCalendarEvents(
+    events.map((event) => ({
+      startRecur: event.startDate,
+      endRecur: event.endDate,
+      title: event.title,
+      id: event._id,
+    }))
+  );
+}, [events]);
 
   // Fetch events from the database
   useEffect(() => {
@@ -246,7 +236,8 @@ export default function CalendarPage() {
                 },
               });
             }}
-            eventColor="#c293ff"
+	    eventTextColor="black"
+	    eventBackgroundColor="#F7AB74"
           />
         </div>
         {windowWidth < 786 && (
@@ -348,6 +339,7 @@ const calendarStyles = `
      max-width: 100%;
    }
 
+
    .fc .fc-event {
      background-color: #F7AB74;
      border-color: #F7AB74;
@@ -360,7 +352,13 @@ const calendarStyles = `
      justify-content: center;
      align-items: center;
      box-sizing: border-box;
+     display: block;
    }
+
+   .fc-daygrid-event {
+  white-space: normal !important;
+  align-items: normal !important;
+}
 
    .fc-daygrid-event-dot {
      display: none;

@@ -15,24 +15,33 @@ const Navbar: React.FC = () => {
 
   const { isLoaded, isSignedIn, session } = useSession();
   const role = session?.user?.unsafeMetadata?.role;
+
+  let orgsPath: string;
+  
   var eventsPath;
   if (role === "admin") {
     eventsPath = "/adminEvents";
   } else {
     eventsPath = "/organizationEvents";
   }
+
   if (!isLoaded) {
     return null;
   }
   if (pathname === '/publicCalendar' || pathname === '/') {
     menuItems.push({ path: "/login", label: "Login" });
   } else {
-    menuItems.push({ path: "/profile", label: "Account Settings" });
-    menuItems.push({ path: eventsPath, label: "My Events" });
+
     if (role === "admin") {
-      menuItems.push({ path: "/adminEvents", label: "My Organizations" });
+      menuItems.push({ path: "/profile", label: "Account Settings" });
+      menuItems.push({ path: "/adminEvents", label: "My Events" });
+      menuItems.push({ path: "/adminAccounts", label: "My Organizations" });
+      menuItems.push({ path: "/login", label: "Logout" });
+    } else{
+      menuItems.push({ path: "/profile", label: "Account Settings" });
+      menuItems.push({ path: "/organizationEvents", label: "My Events" });
+      menuItems.push({ path: "/login", label: "Logout" });
     }
-    menuItems.push({ path: "/login", label: "Logout" });
   }
 
   return (

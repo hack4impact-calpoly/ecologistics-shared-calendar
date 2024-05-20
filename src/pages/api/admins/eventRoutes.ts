@@ -40,8 +40,22 @@ export default async function handler(
         } catch (err){
           res.status(404).json({message:"DELETE Failed.", data:err})
         }
-    }
-    else{
+    } else if (req.method === "PATCH") {
+      try {
+        const { id, status, deniedReason } = await req.body;
+        const updateFields = { status: status, deniedReason: deniedReason};
+        console.log(updateFields);
+        const updatedEvent = await Event.findByIdAndUpdate(
+          id,
+          updateFields,
+          { new: true }
+        );
+        console.log("updatedEvent",updatedEvent);
+        res.status(200).json({ message: 'Updated event status and deniedReason.', data: updatedEvent });
+      } catch (err) {
+        res.status(400).json({ message: "PATCH Failed.", data: err });
+      }
+    } else{
       res.status(404).json({message:"Method Not Allowed", data:null})
     }
 }

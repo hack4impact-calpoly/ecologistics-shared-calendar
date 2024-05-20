@@ -2,7 +2,7 @@ import React from "react";
 
 const ConfirmationPage: React.FC = () => {
   const handleReturn = () => {
-    window.location.href = "/calendar";
+    window.location.href = "/";
   };
 
   return (
