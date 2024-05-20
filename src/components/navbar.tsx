@@ -41,8 +41,9 @@ const Navbar: React.FC = () => {
       menuItems.push({ path: "/profile", label: "Account Settings" });
       menuItems.push({ path: "/publicCalendar", label: "Logout" });
     } else{
-      menuItems.push({ path: "/profile", label: "Account Settings" });
+      menuItems.push({ path: "/calendar", label: "Calendar" });
       menuItems.push({ path: "/organizationEvents", label: "My Events" });
+      menuItems.push({ path: "/profile", label: "Account Settings" });
       menuItems.push({ path: "/publicCalendar", label: "Logout" });
     }
   }
