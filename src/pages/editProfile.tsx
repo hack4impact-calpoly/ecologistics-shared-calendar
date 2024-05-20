@@ -6,16 +6,81 @@ import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { clerkClient } from "@clerk/nextjs";
+import { Clerk, EmailAddress } from "@clerk/clerk-sdk-node"
 import EmailTemplate from "../components/email-template";
 import { Resend } from "resend";
 import type { NextApiRequest, NextApiResponse } from "next";
+import connectDB from "../database/db";
+import { getAuth } from "@clerk/nextjs/dist/types/server-helpers.server";
+import { User } from "@clerk/nextjs/dist/types/server";
 // import { A } from "@fullcalendar/resource/internal-common";
+
+
+export async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  await connectDB();
+  const method = req.method;
+
+  switch (method) {
+      case "PUT":
+          try {
+              // Get the user ID from the request body
+              const { userId } = getAuth(req);
+              const {
+                  organization,
+                  email, // New email
+                  phoneNumber,
+                  lastName,
+                  firstName,
+                  position,
+                  role
+              } = req.body;
+              
+              const { clerkId } = req.query; // Assuming clerkId is passed in the query
+              
+              // Update the user's email using the Clerk client
+              await clerkClient.users.updateUser(clerkId.toString(), {
+                  email: email,
+              });
+
+              // Update the user in your database
+              const user = await User.findOneAndUpdate({ clerkId: clerkId }, {
+                  organization: organization,
+                  email: email, // Update email
+                  phoneNumber: phoneNumber,
+                  lastName: lastName,
+                  firstName: firstName,
+                  position: position,
+                  role: role
+              });
+
+              res.status(201).json({ success: true, data: user });
+          } catch (error) {
+              res.status(400).json({
+                  success: false,
+                  message: error,
+              });
+          }
+          break;
+
+      default:
+          res.status(405).json({
+              success: false,
+              message: "METHOD NOT ALLOWED. ONLY (PUT) ALLOWED",
+          });
+          break;
+  }
+}
+
 
 interface VerificationFormProps {
   onClose: () => void;
   email: string;
   uid: string;
   orgName: string;
+  onVerify: (code: string) => Promise<void>;
 }
 
 const VerificationForm: React.FC<VerificationFormProps> = (props) => {
@@ -54,7 +119,7 @@ const VerificationForm: React.FC<VerificationFormProps> = (props) => {
     const newCodes = [...codes];
     newCodes[index] = value;
     setCodes(newCodes);
-    setIsCodeCorrect(newCodes.join("") === verificationCode);
+    // setIsCodeCorrect(newCodes.join("") === verificationCode);
     // Move focus to the next input if a digit is entered
     setError(false);
     if (value && index < codes.length - 1) {
@@ -62,9 +127,11 @@ const VerificationForm: React.FC<VerificationFormProps> = (props) => {
     }
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    if (isCodeCorrect) {
+    const enteredCode = codes.join("");
+    try {
+      await props.onVerify(enteredCode);
       console.log("Verification successful!");
       axios
           .put("/api/userRoutes?clerkId=" + props.uid, {
@@ -79,7 +146,7 @@ const VerificationForm: React.FC<VerificationFormProps> = (props) => {
             console.error("Error:", error);
           });
       props.onClose(); // Close the pop-up
-    } else {
+    } catch (error) {
       console.log("Incorrect verification code!");
       setError(true);
     }
@@ -135,6 +202,7 @@ const VerificationForm: React.FC<VerificationFormProps> = (props) => {
   );
 };
 
+
 export default function EditProfilePage() {
   const [sent, setSent] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
@@ -153,6 +221,20 @@ export default function EditProfilePage() {
   const [role, setRole] = useState("");
   const router = useRouter();
 
+  const prepareVerification = async () => {
+    try {
+      // Prepare the verification email with the chosen strategy
+      await clerkClient.emailAddresses.prepareVerification({
+        emailAddressId: email, // The email address to verify
+        strategy: "email_code", // or "email_link"
+        redirectUrl: "http://localhost:3000/verify-email", // URL to redirect to after clicking the verification link (only used for "email_link" strategy)
+      });
+      console.log("Verification email sent!");
+    } catch (error) {
+      console.error("Error preparing verification:", error);
+    }
+  };
+
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
@@ -168,6 +250,7 @@ export default function EditProfilePage() {
         console.log("current: " + currentEmail)
         console.log("new: " + email)
         openVerPopup(); // Show the popup
+        await prepareVerification();
       } else {
         console.log("current: " + currentEmail)
         console.log("same: " + email)
@@ -191,6 +274,17 @@ export default function EditProfilePage() {
       }
     } catch (error) {
       console.error("Error fetching user data:", error); // Handle fetch error
+    }
+  };
+
+  const handleVerification = async (code: string) => {
+    try {
+      const response = await EmailAddress.attemptVerification({
+        code,
+      });
+      return response;
+    } catch (error) {
+      throw new Error("Verification failed");
     }
   };
 
@@ -227,7 +321,7 @@ export default function EditProfilePage() {
       `}</style>
       <div style={{ padding: "50px" }}>
         {isShowingVerPopUp && (
-          <VerificationForm onClose={closeVerPopup} email={email} uid={uid} orgName={orgName}/>
+          <VerificationForm onClose={closeVerPopup} email={email} uid={uid} orgName={orgName} onVerify={handleVerification}/>
         )}
         <Box
           display="flex"
