@@ -52,9 +52,16 @@ const Navbar: React.FC = () => {
 	  className={styles.logo}
 	/>
       </Link>
+      {pathname === '/calendar' ? (
       <div className={styles.dropdown}>
         <PositionedMenu items={menuItems} />
       </div>
+      ) : (
+      	<div className={styles.charityLoginButton}>
+      	    <button onClick={() => router.push("login/")}>Charity Login</button>
+      	</div>
+      )}
+      
     </nav>
   );
 };

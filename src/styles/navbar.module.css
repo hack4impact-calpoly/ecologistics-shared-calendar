@@ -10,9 +10,15 @@
     box-sizing: border-box; 
 }
 
-.dropdown {
-    padding: 0.25em; 
+.dropdown, .charityLoginButton {
+    display: flex;
+    align-items: center;
+    height: auto; /* Remove fixed height for more flexibility */
     margin: 0.25em;
+}
+
+.dropdown {
+    padding: 0.25em; /* Increase padding for more spacing */
     position: relative; 
 }
 
@@ -22,3 +28,20 @@
     padding: 0.25em; 
     margin: 0.25em;
 }
+
+.charityLoginButton button {
+    background-color: #F07F2D; /* matching the orange color from the image */
+    color: black;
+    border: none;
+    padding: 0.75em 1.5em; /* Increase padding for more spacing */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.charityLoginButton button:hover {
+    background-color: #a8572a; /* darker shade of the button color */
+}
+
