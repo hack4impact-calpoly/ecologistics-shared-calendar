@@ -17,6 +17,8 @@ const Navbar: React.FC = () => {
   const { isLoaded, isSignedIn, session } = useSession();
   const role = session?.user?.unsafeMetadata?.role;
 
+  const DONT_SHOW_LOGIN_PATHS = ["/login", "/signup", "/forgot-password"];
+
   let orgsPath: string;
   
   var eventsPath: string;
@@ -48,6 +50,7 @@ const Navbar: React.FC = () => {
     }
   }
 
+
   return (
     <nav className={styles.navbar}>
       <Link className={styles.link} href={clerk.user ? "/calendar" : "/publicCalendar"}>
@@ -56,13 +59,13 @@ const Navbar: React.FC = () => {
 	  className={styles.logo}
 	/>
       </Link>
-      {clerk.user ? (
+      {clerk.user && (
       <div className={styles.dropdown}>
         <PositionedMenu items={menuItems} />
       </div>
-      ) : (
+      )} {!clerk.user && !DONT_SHOW_LOGIN_PATHS.includes(pathname) && (
       	<div className={styles.charityLoginButton}>
-      	    <button onClick={() => router.push("login/")}>Charity Login</button>
+      	    <button onClick={() => router.push("/login")}>Charity Login</button>
       	</div>
       )}
       
