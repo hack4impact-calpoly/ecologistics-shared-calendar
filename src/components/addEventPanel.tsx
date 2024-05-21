@@ -162,7 +162,6 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -182,7 +181,10 @@ export default function AddEventPanel({
           "api/s3-upload/route",
           fileData
         );
+
         const uploadResult = uploadResponse.data;
+
+        console.log("UPLOADED: ", uploadResponse);
 
         let address = formData.url || "";
 
@@ -214,6 +216,8 @@ export default function AddEventPanel({
             photo: "Failed to create event",
           }));
         }
+        
+        console.log("CREATED EVENT: ", eventResponse);
       } else {
         setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
