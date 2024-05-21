@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
 
+
 interface AddEventForm {
-  organization: string;
+  //organization: string;
   title: string;
   startDate: string;
   endDate: string;
@@ -32,7 +34,7 @@ interface FormErrors {
 
 const EMPTY_FORM = {
   title: "",
-  organization: "",
+  // organization: "",
   startDate: "",
   endDate: "",
   startTime: "",
@@ -77,6 +79,7 @@ export default function AddEventPanel({
   onCreate,
   addEvent,
 }: AddEventPanelProps) {
+  const { user } = useUser();
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
@@ -93,7 +96,7 @@ export default function AddEventPanel({
       { field: "dates", error: "End time is required." },
       { field: "description", error: "Description is required." },
       { field: "location", error: "Link or address is required." },
-      { field: "photo", error: "Photo is required.", isFile: true },
+    //{ field: "photo",isFile: true }, // 
     ];
 
     const fieldKeyToErrorKey = (field: string) => {
@@ -101,14 +104,14 @@ export default function AddEventPanel({
       return field;
     };
 
-    fieldsToCheck.forEach(({ field, error, isFile }) => {
-      const key = field as keyof typeof formData;
-      if (
-        (isFile && formData[key] === null) ||
-        (!isFile && formData[key] === "")
-      ) {
-        errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
-      }
+    fieldsToCheck.forEach(({ field, error, /*isFile*/ }) => {
+      // const key = field as keyof typeof formData;
+      // if (
+      //   (isFile && formData[key] === null) ||
+      //   (!isFile && formData[key] === "")
+      // ) {
+      //   errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
+      // }
     });
 
     return errors;
@@ -161,7 +164,7 @@ export default function AddEventPanel({
 
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
 
     onCreate();
     setFormData(EMPTY_FORM);
@@ -174,16 +177,18 @@ export default function AddEventPanel({
         return;
       }
 
-      if (formData.photo) {
+      if (formData) {
         const fileData = new FormData();
         fileData.append("file", formData.photo);
-
-        const uploadResponse = await axios.post(
-          "api/s3-upload/route",
-          fileData
-        );
-        const uploadResult = uploadResponse.data;
-
+        var imgData=null;
+        if(formData.photo){
+          const uploadResponse = await axios.post(
+            "api/s3-upload/route",
+            fileData
+          );
+          imgData = uploadResponse.data;
+        }
+        
         let address = formData.url || "";
 
         if (!formData.isVirtual) {
@@ -192,14 +197,14 @@ export default function AddEventPanel({
 
         const event: Event = {
           title: formData.title,
-          organization: formData.organization,
+          organization: user.publicMetadata.organization.toString(),
           startDate: stringToDate(formData.startDate, formData.startTime),
           endDate: stringToDate(formData.endDate, formData.endTime),
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
           status: "Pending",
-          imageLink: uploadResult.URL,
+          imageLink: imgData?.URL,
         };
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);
@@ -215,7 +220,8 @@ export default function AddEventPanel({
           }));
         }
       } else {
-        setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+        // setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+
       }
     } catch (error) {
       console.error("Error:", error);
@@ -251,17 +257,6 @@ export default function AddEventPanel({
         value={formData.title}
         disabled={isLoading}
         required
-      />
-      <h4 style={styles.inputTitle}>Organization</h4>
-      <input
-        type="text"
-        style={styles.input}
-        onChange={(e) =>
-          setFormData({ ...formData, organization: e.target.value })
-        }
-        value={formData.organization}
-        required
-        disabled={isLoading}
       />
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -586,3 +581,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
   },
 };
+
+
