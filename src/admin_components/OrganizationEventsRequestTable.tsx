@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
+import { useRouter } from "next/router";
+
 type AdminProps = {
   events: {
     organization: string;
@@ -98,6 +100,7 @@ const DeletePopup: React.FC<PopupProps> = ({
 };
 
 export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentEvents, setCurrentEvents] = useState(events);
   // Delete popup
@@ -247,7 +250,17 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
               .map((event) => (
                 <>
                   <tr key={event._id} style={{ border: "1px solid #f7f7f7" }}>
-                    <td style={{ ...styles.name, padding: "5px 50px" }}>
+                    <td 
+                    style={{ ...styles.name, padding: "5px 50px" }}
+                    onClick={function (info) {
+                      router.push({
+                        pathname: "/eventDetails",
+                        query: {
+                          eventId: event._id,
+                        },
+                      });
+                    }}
+                    >
                       {event.title}
                     </td>
                     <td style={{ ...styles.email, padding: "5px 50px" }}>

@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -16,6 +16,26 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
     const { isLoaded, signIn, setActive } = useSignIn();
     const { session } = useSession();
+    const [sessionSet, setSessionSet] = useState(false);
+
+    // This necessary so we can get the role from the newly logged-in session while also avoiding race conditions with setActive.
+    useEffect(() => {
+        if (sessionSet && session) {
+            const role = session?.user?.publicMetadata?.role;
+
+            if (role === "pending") {
+	    	// Doesnt make sense for the user to be logged in if pending.
+	        session.end();
+                router.push("/confirmation-page");
+            } else if (role === "admin" || role === "approved") {
+                router.push("/calendar");
+            } else if (role === "declined") {
+	    	// Doesnt make sense for the user to be logged in if declined.
+		session.end();
+                router.push("/declined");
+            }
+        }
+    }, [sessionSet, session, router]);
 
     if (!isLoaded) {
         return null;
@@ -32,29 +52,25 @@ export default function LoginPage() {
             alert("Please enter a valid email address.");
             return;
         }
+
+
         try {
-            //delete previous session if user was alread logged in
             if (session) {
                 await session.end();
             }
 
-            //sign in to clerk
             const result = await signIn.create({
                 identifier: email,
                 password,
             });
 
-            //create session
+
             if (result.status === "complete") {
                 await setActive({
                     session: result.createdSessionId,
                 });
-                //redirect based on role
-                const role = session?.user?.publicMetadata?.role;
-                if (role === "pending") router.push("/confirmation-page");
-                else if (role === "admin" || role === "approved")
-                    router.push("/calendar");
-                else if (role === "declined") router.push("/declined");
+		setSessionSet(true);
+
             } else {
                 console.log(result);
             }

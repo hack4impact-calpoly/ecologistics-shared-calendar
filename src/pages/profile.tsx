@@ -8,7 +8,6 @@ import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import Navbar from "../components/navbar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -71,7 +70,6 @@ export default function ProfilePage() {
   return (
     <Layout>
       <div style={{ padding: "50px" }}>
-        <Navbar />
         <Box style={styles.boxStyle} sx={{ border: "2px solid grey" }}>
           <Grid
             container
