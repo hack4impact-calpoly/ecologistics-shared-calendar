@@ -249,7 +249,8 @@ export default function AddEventPanel({
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
-      <h4 style={styles.inputTitle}>Title</h4>
+      <h4 style={styles.inputTitle}>Title<span style={{color:"red"}}> *</span></h4>
+
       <input
         type="text"
         style={styles.input}
@@ -258,9 +259,10 @@ export default function AddEventPanel({
         disabled={isLoading}
         required
       />
+    
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
-          <h4 style={styles.inputTitle}>Start Date</h4>
+          <h4 style={styles.inputTitle}>Start Date<span style={{color:"red"}}> *</span></h4>
           <input
             type="date"
             style={{
@@ -275,7 +277,9 @@ export default function AddEventPanel({
             value={formData.startDate}
             required
           />
-          <h4 style={styles.inputTitle}>Start Time</h4>
+        
+          
+          <h4 style={styles.inputTitle}>Start Time<span style={{color:"red"}}> *</span></h4>
           <input
             type="time"
             style={{
@@ -291,7 +295,7 @@ export default function AddEventPanel({
           />
         </div>
         <div style={styles.inputContainer}>
-          <h4 style={styles.inputTitle}>End Date</h4>
+          <h4 style={styles.inputTitle}>End Date<span style={{color:"red"}}> *</span></h4>
           <input
             type="date"
             style={{
@@ -307,7 +311,7 @@ export default function AddEventPanel({
             required
           />
 
-          <h4 style={styles.inputTitle}>End Time</h4>
+          <h4 style={styles.inputTitle}>End Time<span style={{color:"red"}}> *</span></h4>
           <input
             type="time"
             style={{
@@ -345,7 +349,7 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <h4 style={styles.inputTitle}>Location</h4>
+      <h4 style={styles.inputTitle}>Location<span style={{color:"red"}}> *</span></h4>
       <div style={styles.radioContainer}>
         <label>
           <input
@@ -379,7 +383,7 @@ export default function AddEventPanel({
 
       {!formData.isVirtual ? (
         <>
-          <h4 style={styles.inputTitle}>Street</h4>
+          <h4 style={styles.inputTitle}>Street<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
             style={styles.input}
@@ -390,7 +394,7 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>City</h4>
+          <h4 style={styles.inputTitle}>City<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
             style={styles.input}
@@ -399,7 +403,7 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>State</h4>
+          <h4 style={styles.inputTitle}>State<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
             style={styles.input}
@@ -410,7 +414,7 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>Postal Code</h4>
+          <h4 style={styles.inputTitle}>Postal Code<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
             style={styles.input}
@@ -424,7 +428,7 @@ export default function AddEventPanel({
         </>
       ) : (
         <>
-          <h4 style={styles.inputTitle}>Link</h4>
+          <h4 style={styles.inputTitle}>Link<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
             style={styles.input}
