@@ -94,9 +94,9 @@ export default function AddEventPanel({
       { field: "dates", error: "Start time is required." },
       { field: "dates", error: "End date is required." },
       { field: "dates", error: "End time is required." },
-      { field: "description", error: "Description is required." },
+      //{ field: "description", error: "Description is required." },
       { field: "location", error: "Link or address is required." },
-    //{ field: "photo",isFile: true }, // 
+    //{ field: "photo",isFile: true },
     ];
 
     const fieldKeyToErrorKey = (field: string) => {
@@ -179,16 +179,17 @@ export default function AddEventPanel({
 
       if (formData) {
         const fileData = new FormData();
-        fileData.append("file", formData.photo);
-        var imgData=null;
+        var uploadResult=null;
         if(formData.photo){
+          fileData.append("file", formData.photo);
           const uploadResponse = await axios.post(
             "api/s3-upload/route",
             fileData
           );
-          imgData = uploadResponse.data;
+          uploadResult = uploadResponse.data;
         }
-        
+       
+
         let address = formData.url || "";
 
         if (!formData.isVirtual) {
@@ -204,7 +205,7 @@ export default function AddEventPanel({
           isVirtual: formData.isVirtual,
           location: address,
           status: "Pending",
-          imageLink: imgData?.URL,
+          imageLink: uploadResult?.URL,
         };
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);
@@ -220,8 +221,7 @@ export default function AddEventPanel({
           }));
         }
       } else {
-        // setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
-
+        //setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
     } catch (error) {
       console.error("Error:", error);
@@ -337,7 +337,6 @@ export default function AddEventPanel({
           setFormData({ ...formData, description: e.target.value });
         }}
         value={formData.description}
-        required
       ></textarea>
 
       {formErrors.description && (
@@ -581,5 +580,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
   },
 };
+
+
 
 
