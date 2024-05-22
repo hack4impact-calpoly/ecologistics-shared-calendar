@@ -116,6 +116,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         flexDirection: "column",
         height: "100%",
         width: "75%",
+        marginTop: "2%",
       }}
     >
       <div
@@ -134,6 +135,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
             width: "90%",
             padding: "2% 2%",
             fontSize: "1.3rem",
+            color: "#000",
             borderRadius: "1rem",
             border: "0.1rem solid #ccc",
             outline: "none",
