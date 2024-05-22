@@ -196,9 +196,11 @@ export default function AddEventPanel({
           address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
         }
 
+
+
         const event: Event = {
           title: formData.title,
-          organization: user.publicMetadata.organization.toString(),
+          organization: (user?.publicMetadata.organization as string) ?? '',
           startDate: stringToDate(formData.startDate, formData.startTime),
           endDate: stringToDate(formData.endDate, formData.endTime),
           description: formData.description,
@@ -351,6 +353,7 @@ export default function AddEventPanel({
 
       <h4 style={styles.inputTitle}>Location<span style={{color:"red"}}> *</span></h4>
       <div style={styles.radioContainer}>
+         
         <label>
           <input
             type="radio"
