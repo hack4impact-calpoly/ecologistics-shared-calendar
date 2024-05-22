@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { useSignIn, useSession } from "@clerk/nextjs";
 import styles from "./style/login.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 // Icons
 import PersonIcon from "@mui/icons-material/Person";
@@ -33,7 +32,7 @@ export default function LoginPage() {
                 router.push("/calendar");
             } else if (role === "declined") {
                 // Doesnt make sense for the user to be logged in if declined.
-                session.end();
+                //session.end();
                 router.push("/declined");
             }
         }

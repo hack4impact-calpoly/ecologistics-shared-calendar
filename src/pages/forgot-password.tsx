@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
-//import EmailIcon from "@mui/icons-material/Email";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useSignIn, useAuth } from "@clerk/nextjs";
 import { useSession } from "@clerk/nextjs";

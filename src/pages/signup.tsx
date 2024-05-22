@@ -5,7 +5,6 @@ import { useSignUp, useSession } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function SignUp() {
     const router = useRouter();
