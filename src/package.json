@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node --stack-size=10000 node_modules/.bin/next build",
     "start": "next start",
     "lint": "next lint",
     "clean": "rm -rf .next"
