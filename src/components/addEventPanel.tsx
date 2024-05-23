@@ -370,7 +370,7 @@ export default function AddEventPanel({
       )}
 
       <h4 style={styles.inputTitle}>Location<span style={{color:"red"}}> *</span></h4>
-      <div>
+      {/* <div>
       <Select
         labelId="location-select-label"
         id="location-select"
@@ -380,9 +380,9 @@ export default function AddEventPanel({
         <MenuItem value="in-person">In Person</MenuItem>
         <MenuItem value="virtual">Virtual</MenuItem>
       </Select>
-      </div>
+      </div> */}
       
-      {/* <div style={styles.radioContainer}>
+      <div style={styles.radioContainer}>
          
         <label>
           <input
@@ -390,9 +390,7 @@ export default function AddEventPanel({
             name="location"
             value="virtual"
             style={styles.radioButton}
-            onChange={(e) =>
-              e.target.checked && setFormData({ ...formData, isVirtual: true })
-            }
+            onChange={handleClick}
             required
             disabled={isLoading}
           />
@@ -404,15 +402,14 @@ export default function AddEventPanel({
             name="location"
             value="in-person"
             style={styles.radioButton}
-            onChange={(e) =>
-              e.target.checked && setFormData({ ...formData, isVirtual: false })
+            onChange={handleClick
             }
             required
             disabled={isLoading}
           />
           In Person
         </label>
-      </div> */}
+      </div> 
 
       {(mode== "in-person")? (
         <>
