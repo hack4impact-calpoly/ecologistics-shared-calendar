@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
-
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 interface AddEventForm {
   //organization: string;
@@ -15,6 +15,7 @@ interface AddEventForm {
   endTime: string;
   description: string;
   isVirtual: boolean;
+  mode: string;
   url: string | null;
   photo: File | null;
   city: string;
@@ -40,6 +41,7 @@ const EMPTY_FORM = {
   startTime: "",
   endTime: "",
   description: "",
+  mode: "",
   isVirtual: false,
   url: null,
   photo: null,
@@ -84,6 +86,7 @@ export default function AddEventPanel({
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [mode, setMode] = useState('');
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -118,7 +121,7 @@ export default function AddEventPanel({
   };
 
   const addLocationErrors = async (errors: Partial<FormErrors>) => {
-    if (formData.isVirtual) return;
+    if (formData.mode=="virtual") return;
 
     const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
 
@@ -192,7 +195,7 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (!formData.isVirtual) {
+        if (formData.mode=="in-person") {
           address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
         }
 
@@ -246,6 +249,21 @@ export default function AddEventPanel({
       setImagePreviewUrl(URL.createObjectURL(file as Blob));
     },
   });
+
+
+  const handleClick = (event) => {
+    setMode(event.target.value);
+    setFormData({ ...formData, mode: event.target.value });
+    console.log(formData.mode);
+    if(event.target.value=="in-person"){
+      setFormData({ ...formData, isVirtual: false });
+      
+    } else{
+      setFormData({ ...formData, isVirtual: true });
+    }
+  };
+
+
 
   return (
     <form style={styles.container} onSubmit={onEventAdd}>
@@ -352,7 +370,19 @@ export default function AddEventPanel({
       )}
 
       <h4 style={styles.inputTitle}>Location<span style={{color:"red"}}> *</span></h4>
-      <div style={styles.radioContainer}>
+      <div>
+      <Select
+        labelId="location-select-label"
+        id="location-select"
+        value={mode}
+        onChange={handleClick}
+      >
+        <MenuItem value="in-person">In Person</MenuItem>
+        <MenuItem value="virtual">Virtual</MenuItem>
+      </Select>
+      </div>
+      
+      {/* <div style={styles.radioContainer}>
          
         <label>
           <input
@@ -382,9 +412,9 @@ export default function AddEventPanel({
           />
           In Person
         </label>
-      </div>
+      </div> */}
 
-      {!formData.isVirtual ? (
+      {(mode== "in-person")? (
         <>
           <h4 style={styles.inputTitle}>Street<span style={{color:"red"}}> *</span></h4>
           <input
@@ -429,7 +459,7 @@ export default function AddEventPanel({
             disabled={isLoading}
           />
         </>
-      ) : (
+      ) : mode=="virtual" ?(
         <>
           <h4 style={styles.inputTitle}>Link<span style={{color:"red"}}> *</span></h4>
           <input
@@ -441,7 +471,7 @@ export default function AddEventPanel({
             disabled={isLoading}
           />
         </>
-      )}
+      ):null}
 
       {formErrors.location && (
         <div style={styles.errorBox}>
