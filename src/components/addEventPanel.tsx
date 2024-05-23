@@ -199,6 +199,7 @@ export default function AddEventPanel({
 
         if (mode=="in-person") {
           address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
+
         }
 
 

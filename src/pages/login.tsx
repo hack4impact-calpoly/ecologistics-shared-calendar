@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSignIn, useSession } from "@clerk/nextjs";
 import styles from "./style/login.module.css"; // Make sure the path is correct
+import { toast } from "react-toastify";
 
 // Icons
 import PersonIcon from "@mui/icons-material/Person";
@@ -24,14 +25,14 @@ export default function LoginPage() {
             const role = session?.user?.publicMetadata?.role;
 
             if (role === "pending") {
-	    	// Doesnt make sense for the user to be logged in if pending.
-	        session.end();
+                // Doesnt make sense for the user to be logged in if pending.
+                session.end();
                 router.push("/confirmation-page");
             } else if (role === "admin" || role === "approved") {
                 router.push("/calendar");
             } else if (role === "declined") {
-	    	// Doesnt make sense for the user to be logged in if declined.
-		session.end();
+                // Doesnt make sense for the user to be logged in if declined.
+                //session.end();
                 router.push("/declined");
             }
         }
@@ -53,7 +54,6 @@ export default function LoginPage() {
             return;
         }
 
-
         try {
             if (session) {
                 await session.end();
@@ -64,18 +64,28 @@ export default function LoginPage() {
                 password,
             });
 
-
             if (result.status === "complete") {
                 await setActive({
                     session: result.createdSessionId,
                 });
-		setSessionSet(true);
-
+                setSessionSet(true);
             } else {
                 console.log(result);
             }
         } catch (err: any) {
-            console.error(err);
+            if (
+                err.errors[0].code === "form_password_incorrect" ||
+                err.errors[0].code === "form_identifier_not_found"
+            ) {
+                toast.error("Your email or password is invalid.", {
+                    position: "top-center", // Center the toast at the top
+                    className: "custom-toast", // Apply custom CSS class
+                    style: {
+                        backgroundColor: "white", // Green background color
+                        color: "#red", // White text color
+                    },
+                });
+            }
         }
     };
 
