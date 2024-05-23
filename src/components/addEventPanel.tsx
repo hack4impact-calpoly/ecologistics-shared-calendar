@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactEventHandler, useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
@@ -252,7 +252,7 @@ export default function AddEventPanel({
   });
 
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.ChangeEvent<{value:string}>) => {
     setMode(event.target.value);
     setFormData({ ...formData, mode: event.target.value });
     console.log(formData.mode);
