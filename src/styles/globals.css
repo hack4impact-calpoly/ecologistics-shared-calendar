@@ -5,11 +5,15 @@ html {
   font-size: 14px;
 }
 
-.navbar {
-  display: flex;
-  background-color: #ccc;
-  margin-bottom: 1em;
+
+
+/* This is so we can have a navbar take up the full width. */
+/* Removes the default margin and padding. */
+html, body {
+    margin:0;
+    padding:0;
 }
+
 
 .navbar > * {
   padding: 0.5em;
@@ -19,6 +23,7 @@ html {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  padding-left: 2.5%;
 }
 
 /* Colors */
@@ -59,6 +64,7 @@ body {
   font-family: "DM Sans", sans-serif;
   font-weight: 400;
   font-size: 16px;
+  
 }
 
 /* Button text style */

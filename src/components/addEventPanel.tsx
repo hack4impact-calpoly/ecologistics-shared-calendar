@@ -187,7 +187,7 @@ export default function AddEventPanel({
         let address = formData.url || "";
 
         if (!formData.isVirtual) {
-          address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
+          address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
         }
 
         const event: Event = {
