@@ -5,6 +5,7 @@ import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { stat } from "fs";
 
 interface AddEventForm {
   //organization: string;
@@ -121,7 +122,7 @@ export default function AddEventPanel({
   };
 
   const addLocationErrors = async (errors: Partial<FormErrors>) => {
-    if (formData.mode=="virtual") return;
+    if (mode=="virtual") return;
 
     const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
 
@@ -181,6 +182,7 @@ export default function AddEventPanel({
       }
 
       if (formData) {
+        console.log(formData.state);
         const fileData = new FormData();
         var uploadResult=null;
         if(formData.photo){
@@ -195,10 +197,9 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (formData.mode=="in-person") {
+        if (mode=="in-person") {
           address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
         }
-
 
 
         const event: Event = {
@@ -262,6 +263,14 @@ export default function AddEventPanel({
       setFormData({ ...formData, isVirtual: true });
     }
   };
+
+  const states = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  ];
 
 
 
@@ -370,17 +379,6 @@ export default function AddEventPanel({
       )}
 
       <h4 style={styles.inputTitle}>Location<span style={{color:"red"}}> *</span></h4>
-      {/* <div>
-      <Select
-        labelId="location-select-label"
-        id="location-select"
-        value={mode}
-        onChange={handleClick}
-      >
-        <MenuItem value="in-person">In Person</MenuItem>
-        <MenuItem value="virtual">Virtual</MenuItem>
-      </Select>
-      </div> */}
       
       <div style={styles.radioContainer}>
          
@@ -402,8 +400,7 @@ export default function AddEventPanel({
             name="location"
             value="in-person"
             style={styles.radioButton}
-            onChange={handleClick
-            }
+            onChange={handleClick}
             required
             disabled={isLoading}
           />
@@ -434,7 +431,22 @@ export default function AddEventPanel({
             disabled={isLoading}
           />
           <h4 style={styles.inputTitle}>State<span style={{color:"red"}}> *</span></h4>
-          <input
+          <Select
+          labelId="state-select-label"
+          id="state-select"
+          value={formData.state}
+          label="Select a state"
+          onChange={(e) =>
+            setFormData({ ...formData, state: e.target.value })}
+        >
+          <MenuItem value="">
+            <em>Select...</em>
+          </MenuItem>
+          {states.map((stateAbbr, index) => (
+            <MenuItem key={index} value={stateAbbr}>{stateAbbr}</MenuItem>
+          ))}
+        </Select>
+          {/* <input
             type="text"
             style={styles.input}
             onChange={(e) =>
@@ -443,7 +455,7 @@ export default function AddEventPanel({
             value={formData.state}
             required
             disabled={isLoading}
-          />
+          /> */}
           <h4 style={styles.inputTitle}>Postal Code<span style={{color:"red"}}> *</span></h4>
           <input
             type="text"
