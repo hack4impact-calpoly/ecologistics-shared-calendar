@@ -94,7 +94,8 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
   const [filteredEvents, setFilteredEvents] = useState<EventDocument[]>(
     events || []
   );
-  
+
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
@@ -104,18 +105,22 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
       );
       setFilteredEvents(filtered);
     } else {
-      setFilteredEvents(filterFutureEvents(events));
+      setFilteredEvents(events);
     }
   };
 
   useEffect(() => {
-    setFilteredEvents(filterFutureEvents(events || []));
+    setFilteredEvents(events || []);
   }, [events]);
 
-  const filterFutureEvents = (events: EventDocument[]) => {
-    const now = new Date();
-    return events.filter(event => new Date(event.startDate) >= now);
-  };
+  // const filterFutureEvents = (events: EventDocument[]) => {
+  //   const now = new Date();
+  //   console.log(now)
+  //   return events.filter(event => (new Date(event.startDate) >= now )&& (new Date(event.startDate).getTime >= now.getTime)).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+  // };
+  
+
+      
 
   return (
     <div
