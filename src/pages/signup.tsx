@@ -383,6 +383,7 @@ export default function SignUp() {
                         </button>
                     </form>
                 )}
+
                 {pendingVerification && (
                     /*<div>
                         <form>
