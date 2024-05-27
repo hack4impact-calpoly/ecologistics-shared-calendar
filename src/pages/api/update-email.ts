@@ -50,12 +50,15 @@ export default async function handler(
 
                 //store verification code in private metadata with expiration date
                 const verification_code = generateSixDigitNumber();
-                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
-                    privateMetadata: {
-                        verification_code: verification_code,
-                        expiration_date: getExpirationDate(),
-                    },
-                });
+                await clerkClient.users.updateUserMetadata(
+                    clerkId?.toString() || "",
+                    {
+                        privateMetadata: {
+                            verification_code: verification_code,
+                            expiration_date: getExpirationDate(),
+                        },
+                    }
+                );
 
                 //Send email using Resend library
                 const { data, error } = await resend.emails.send({
@@ -94,17 +97,14 @@ export default async function handler(
 
                 //get user and parse metadata
                 const user = await clerkClient.users.getUser(
-                    clerkId.toString()
+                    clerkId?.toString() || ""
                 );
                 const { expiration_date, verification_code } =
                     user.privateMetadata;
                 const previousEmailAddressId = user.primaryEmailAddressId;
 
                 //check for valid verification code
-                if (
-                    code !== verification_code ||
-                    expiration_date > new Date()
-                ) {
+                if (code !== verification_code) {
                     res.status(401).json({
                         success: false,
                         message: "Invalid Code",
@@ -112,14 +112,17 @@ export default async function handler(
                 }
 
                 //clear private metadata
-                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
-                    privateMetadata: {},
-                });
+                await clerkClient.users.updateUserMetadata(
+                    clerkId?.toString() || "",
+                    {
+                        privateMetadata: {},
+                    }
+                );
 
                 //create new email
                 const email_object =
                     await clerkClient.emailAddresses.createEmailAddress({
-                        userId: clerkId,
+                        userId: clerkId || "",
                         emailAddress: email,
                         verified: true,
                         primary: true,
@@ -127,7 +130,7 @@ export default async function handler(
 
                 //delete previous email
                 await clerkClient.emailAddresses.deleteEmailAddress(
-                    previousEmailAddressId
+                    previousEmailAddressId || ""
                 );
 
                 //update email in MongoDB

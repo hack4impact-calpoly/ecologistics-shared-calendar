@@ -26,7 +26,7 @@ export default function EditProfilePage() {
     const [open, setOpen] = useState(false);
     const router = useRouter();
 
-    const handleProfileSubmit = async (e) => {
+    const handleProfileSubmit = async (e: any) => {
         e.preventDefault();
 
         try {
@@ -44,7 +44,7 @@ export default function EditProfilePage() {
         }
     };
 
-    const handleVerifyEmail = async (verificationCode) => {
+    const handleVerifyEmail = async (verificationCode: String) => {
         try {
             setShowConfirmEmail(false);
             setOpen(false);
@@ -59,7 +59,7 @@ export default function EditProfilePage() {
         }
     };
 
-    const handleEmailSubmit = async (e) => {
+    const handleEmailSubmit = async (e: any) => {
         e.preventDefault();
 
         if (confirmEmail !== email) {
@@ -113,7 +113,7 @@ export default function EditProfilePage() {
         fetchData();
     }, [uid]);
 
-    const handleEmailChange = (e) => {
+    const handleEmailChange = (e: any) => {
         setEmail(e.target.value);
         setShowConfirmEmail(true);
     };

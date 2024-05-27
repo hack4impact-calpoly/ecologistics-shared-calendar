@@ -51,11 +51,14 @@ export default async function handler(
                 } = req.body;
 
                 //add role to clerk user
-                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
-                    publicMetadata: {
-                        role: "pending",
-                    },
-                });
+                await clerkClient.users.updateUserMetadata(
+                    clerkId?.toString() || "",
+                    {
+                        publicMetadata: {
+                            role: "pending",
+                        },
+                    }
+                );
 
                 //create user in mongodb
                 const user = await User.create({
@@ -94,7 +97,7 @@ export default async function handler(
                 } = req.body;
 
                 //fname/lname on clerk
-                await clerkClient.users.updateUser(clerkId.toString(), {
+                await clerkClient.users.updateUser(clerkId?.toString() || "", {
                     firstName: firstName,
                     lastName: lastName,
                 });
