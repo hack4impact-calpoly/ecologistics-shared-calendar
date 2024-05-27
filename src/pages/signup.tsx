@@ -124,14 +124,14 @@ export default function SignUp() {
     e.preventDefault();
 
     try {
-      await signUp.create({
-        emailAddress: email,
-        password: password,
-        firstName: fName,
-        lastName: lName,
-      });
+      // await signUp.create({
+      //   emailAddress: email,
+      //   password: password,
+      //   firstName: fName,
+      //   lastName: lName,
+      // });
 
-      //delete previous session if user was alread logged in
+      //delete previous session if user was already logged in
       if (session) {
         await session.end();
       }
@@ -143,87 +143,31 @@ export default function SignUp() {
         lastName: lName,
       });
 
-      // send the confirmation email.
-      await fetch("/api/sendGrid/orgRoutes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailAddress: email,
-          firstName: fName,
-          orgName: organization,
-          templateId: "d-d1407cdb0ce14e33957c5b15a7189c0f",
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
+      // send the verification email
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+
+      // change the UI to our pending section.
+      setPendingVerification(true);
+    } catch (err: any) {
+      if (err.errors[0].code === "form_identifier_exists") {
+        toast.error(
+          "This email is already in use, please use a different email.",
+          {
+            position: "top-center", // Center the toast at the top
+            className: "custom-toast", // Apply custom CSS class
+            style: {
+              backgroundColor: "white", // Green background color
+              color: "#red", // White text color
+            },
           }
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data); // Handle success response
-        })
-        .catch((error) => {
-          console.error("Error:", error); // Handle error
-        });
-      // send email notif to admin
-      // get admin email first
-      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
-      if (!admin_response.ok) {
-        throw new Error("Network response was not ok");
+        );
       }
-      const admin = await admin_response.json();
-      const admin_email = admin.data.email;
-      await fetch("/api/sendGrid/orgRoutes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailAddress: admin_email,
-          firstName: fName,
-          orgName: organization,
-          templateId: "d-6b5fb63a4d5f41d5aa552e74be1bf3c1",
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data); // Handle success response
-        })
-        .catch((error) => {
-          console.error("Error:", error); // Handle error
-        });
+    }
+  };
 
-            // change the UI to our pending section.
-            setPendingVerification(true);
-        } catch (err: any) {
-            if (err.errors[0].code === "form_identifier_exists") {
-                toast.error(
-                    "This email is already in use, please use a different email.",
-                    {
-                        position: "top-center", // Center the toast at the top
-                        className: "custom-toast", // Apply custom CSS class
-                        style: {
-                            backgroundColor: "white", // Green background color
-                            color: "#red", // White text color
-                        },
-                    }
-                );
-            }
-        }
-    };
-
-  const onPressVerify = async (e: any) => {
-    /*
-        Verifies confirmation code
-        */
+  const onPressVerify = async (code: string) => {
     if (!isLoaded) {
       return;
     }
@@ -234,14 +178,12 @@ export default function SignUp() {
       });
       if (completeSignUp.status !== "complete") {
         console.log(JSON.stringify(completeSignUp, null, 2));
+        return;
       }
 
-      //if successfully created clerk user, create in local db
       if (completeSignUp.status === "complete") {
-        await setActive({
-          session: completeSignUp.createdSessionId,
-        });
-        //create user in DB
+        await setActive({ session: completeSignUp.createdSessionId });
+
         await axios.post("/api/userRoutes", {
           email: email,
           organization: organization,
@@ -251,12 +193,74 @@ export default function SignUp() {
           position: position,
         });
 
-        await router.push("/confirmation-page");
+        // send the confirmation email to organization
+        await fetch("/api/sendGrid/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: email,
+            firstName: fName,
+            orgName: organization,
+            templateId: "d-d1407cdb0ce14e33957c5b15a7189c0f",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+
+        // send email notif to admin
+        const admin_response = await fetch(
+          "/api/admins/userRoutes/?role=admin" // get admin email first
+        );
+        if (!admin_response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const admin = await admin_response.json();
+        const admin_email = admin.data.email;
+        await fetch("/api/sendGrid/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: admin_email,
+            firstName: fName,
+            orgName: organization,
+            templateId: "d-6b5fb63a4d5f41d5aa552e74be1bf3c1",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+
+        console.log("User has been created");
+        router.push("/confirmation-page");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(JSON.stringify(err, null, 2));
     }
   };
+
   return (
     <Layout>
       <style jsx>{`
