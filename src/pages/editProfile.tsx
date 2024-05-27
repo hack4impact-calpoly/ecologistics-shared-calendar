@@ -5,6 +5,11 @@ import Grid from "@mui/material/Grid";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import VerifyEmail from "../components/verifyEmail";
+import { toast } from "react-toastify";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export default function EditProfilePage() {
     const { user } = useUser();
@@ -18,13 +23,14 @@ export default function EditProfilePage() {
     const [fname, setFName] = useState("");
     const [lname, setLName] = useState("");
     const [role, setRole] = useState("");
+    const [open, setOpen] = useState(false);
     const router = useRouter();
 
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            await axios.put("/api/userRoutes?clerkId=" + uid, {
+            await axios.patch("/api/userRoutes", {
                 organization: orgName,
                 phoneNumber: phone,
                 lastName: lname,
@@ -38,18 +44,42 @@ export default function EditProfilePage() {
         }
     };
 
+    const handleVerifyEmail = async (verificationCode) => {
+        try {
+            // Implement your verification logic here using the verificationCode
+            //   await axios.put("/api/userRoutes?clerkId=" + uid, {
+            //     email: email,
+            //   });
+            setShowConfirmEmail(false);
+            setOpen(false);
+            alert("Email updated successfully");
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     const handleEmailSubmit = async (e) => {
         e.preventDefault();
 
         if (confirmEmail !== email) {
-            alert("Emails must match");
+            toast.error("Emails must match.", {
+                position: "top-center", // Center the toast at the top
+                className: "custom-toast", // Apply custom CSS class
+                style: {
+                    backgroundColor: "white", // Green background color
+                    color: "#red", // White text color
+                },
+            });
         } else {
             try {
-                await axios.put("/api/userRoutes?clerkId=" + uid, {
+                // await axios.put("/api/userRoutes?clerkId=" + uid, {
+                //     email: email,
+                // });
+                setOpen(true);
+                setShowConfirmEmail(false);
+                axios.post("api/update-email", {
                     email: email,
                 });
-                setShowConfirmEmail(false);
-                alert("Email updated successfully");
             } catch (error) {
                 console.error("Error:", error);
             }
@@ -220,6 +250,12 @@ export default function EditProfilePage() {
                     </Grid>
                 </Box>
             </div>
+            <Dialog open={open} onClose={() => setOpen(false)}>
+                <DialogTitle>Verify your email address</DialogTitle>
+                <DialogContent>
+                    <VerifyEmail onVerify={handleVerifyEmail} />
+                </DialogContent>
+            </Dialog>
         </Layout>
     );
 }

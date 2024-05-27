@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs/server";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
@@ -93,21 +93,13 @@ export default async function handler(
                     role,
                 } = req.body;
 
-                //get User
-                let user = await User.findOne({ clerkId });
-                if (!user) {
-                    res.status(400).json({
-                        success: false,
-                        message: "User not found",
-                    });
-                }
                 //fname/lname on clerk
                 await clerkClient.users.updateUser(clerkId.toString(), {
                     firstName: firstName,
                     lastName: lastName,
                 });
 
-                user = await User.findOneAndUpdate(
+                const user = await User.findOneAndUpdate(
                     { clerkId: clerkId },
                     {
                         organization: organization,
