@@ -270,15 +270,6 @@ export default function CalendarPage() {
 	    eventBackgroundColor="#F7AB74"
           />
         </div>
-        {windowWidth < 786 && (
-          <button
-            className={style1.addButton}
-            style={{ display: "block", margin: "20px auto 0" }}
-            onClick={() => setIsAddingEvent((prev) => !prev)}
-          >
-            Add Event
-          </button>
-        )}
         {!isAddingEvent ? (
           <EventBar
             events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents}

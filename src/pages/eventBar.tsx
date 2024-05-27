@@ -128,7 +128,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        width: "75%",
+        width: windowWidth && windowWidth > 786 ? "75%" : "100%",
         marginTop: "2%",
       }}
     >
