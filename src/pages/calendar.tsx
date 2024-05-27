@@ -32,6 +32,7 @@ export interface Event {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventDocument[]>([]);
+  const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<FullCalenderRecurringEvent[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>([]);
   const [resize, setResize] = useState(false);
@@ -50,7 +51,9 @@ export default function CalendarPage() {
     setWindowWidth(window.innerWidth);
   };
 
-
+  useEffect(() => {
+    setFutureEvents(filterFutureEvents(events))
+  }, [events])
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -86,6 +89,7 @@ useEffect(() => {
 
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
+    console.log(clickedDate)
   
     const filteredEvents: EventDocument[] = events.filter((event: EventDocument) => {
       const eventStart = DateTime.fromISO(event.startDate.toISOString(), { zone: 'UTC' })
@@ -96,19 +100,32 @@ useEffect(() => {
         .toISODate();
   
       if (!eventStart || !eventEnd) {
+        console.log("False")
         return false;
       }
   
       return clickedDate >= new Date(eventStart) && clickedDate <= new Date(eventEnd);
     });
+    console.log(filteredEvents)
   
     setSelectedDateEvents(filteredEvents);
   };
   
 
+  const filterFutureEvents = (events: EventDocument[]) => {
+    const now = new Date();
+    return events
+      .filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = new Date(event.endDate);
+        return (eventStart <= now && eventEnd >= now) || eventStart >= now;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  };
+
   const handleOutsideClick = (event: MouseEvent) => {
     if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
-      setSelectedDateEvents([]);
+      setSelectedDateEvents(filterFutureEvents(events));
     }
   };
 
@@ -117,7 +134,7 @@ useEffect(() => {
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, []);
+  }, [events]);
 
   const addEvent = (event: Event) => {};
 
@@ -248,7 +265,7 @@ useEffect(() => {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : events} />
+          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}

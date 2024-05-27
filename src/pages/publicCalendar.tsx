@@ -37,6 +37,7 @@ export default function CalendarPage() {
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
   >([]);
+  const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
     []
   );
@@ -57,6 +58,21 @@ export default function CalendarPage() {
      router.push("/calendar");
   }
   }, [clerk.user]);
+
+  useEffect(() => {
+    setFutureEvents(filterFutureEvents(events))
+  }, [events])
+
+  const filterFutureEvents = (events: EventDocument[]) => {
+    const now = new Date();
+    return events
+      .filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = new Date(event.endDate);
+        return (eventStart <= now && eventEnd >= now) || eventStart >= now;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  };
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -265,7 +281,7 @@ export default function CalendarPage() {
         )}
         {!isAddingEvent ? (
           <EventBar
-            events={selectedDateEvents.length > 0 ? selectedDateEvents : events}
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents}
           />
         ) : (
           <AddEventPanel
