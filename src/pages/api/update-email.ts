@@ -27,7 +27,7 @@ function generateSixDigitNumber(): String {
 function getExpirationDate() {
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + 10);
-    return expirationDate.toISOString();
+    return expirationDate;
 }
 
 export default async function handler(
@@ -40,8 +40,13 @@ export default async function handler(
         case "POST":
             try {
                 //parse session and request body
-                const { userId: clerkId, sessionClaims } = getAuth(req);
+                const { userId: clerkId } = getAuth(req);
                 const { email } = req.body;
+
+                res.status(200).json({
+                    success: true,
+                    message: "Verification email sent successfully",
+                });
 
                 //store verification code in private metadata with expiration date
                 const verification_code = generateSixDigitNumber();
@@ -52,7 +57,7 @@ export default async function handler(
                     },
                 });
 
-                // Send email using Resend library
+                //Send email using Resend library
                 const { data, error } = await resend.emails.send({
                     from: "Acme <onboarding@resend.dev>",
                     to: [email],
@@ -69,6 +74,11 @@ export default async function handler(
                         .status(400)
                         .json({ error: "Error sending email" });
                 }
+
+                res.status(200).json({
+                    success: true,
+                    message: "Sent verification code",
+                });
             } catch (error) {
                 res.status(400).json({
                     success: false,
@@ -78,9 +88,35 @@ export default async function handler(
 
         case "PATCH":
             try {
-                const { userId: clerkId, sessionClaims } = getAuth(req);
-                const { email } = req.body;
+                //parse session and request body
+                const { userId: clerkId } = getAuth(req);
+                const { code, email } = req.body;
 
+                //get user and parse metadata
+                const user = await clerkClient.users.getUser(
+                    clerkId.toString()
+                );
+                const { expiration_date, verification_code } =
+                    user.privateMetadata;
+                const previousEmailAddressId = user.primaryEmailAddressId;
+
+                //check for valid verification code
+                if (
+                    code !== verification_code ||
+                    expiration_date > new Date()
+                ) {
+                    res.status(401).json({
+                        success: false,
+                        message: "Invalid Code",
+                    });
+                }
+
+                //clear private metadata
+                await clerkClient.users.updateUserMetadata(clerkId.toString(), {
+                    privateMetadata: {},
+                });
+
+                //create new email
                 const email_object =
                     await clerkClient.emailAddresses.createEmailAddress({
                         userId: clerkId,
@@ -89,11 +125,24 @@ export default async function handler(
                         primary: true,
                     });
 
+                //delete previous email
+                await clerkClient.emailAddresses.deleteEmailAddress(
+                    previousEmailAddressId
+                );
+
+                //update email in MongoDB
                 await User.findOneAndUpdate(
                     { clerkId: clerkId },
                     { email: email }
                 );
-            } catch (error) {}
+                res.status(200).json({
+                    success: true,
+                    message: "Change email successfully",
+                });
+            } catch (error) {
+                res.status(500);
+            }
+            break;
 
         default:
             break;

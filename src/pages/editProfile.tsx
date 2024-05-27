@@ -46,12 +46,13 @@ export default function EditProfilePage() {
 
     const handleVerifyEmail = async (verificationCode) => {
         try {
-            // Implement your verification logic here using the verificationCode
-            //   await axios.put("/api/userRoutes?clerkId=" + uid, {
-            //     email: email,
-            //   });
             setShowConfirmEmail(false);
             setOpen(false);
+            console.log("CODE: ", verificationCode);
+            await axios.patch("/api/update-email", {
+                email: email,
+                code: verificationCode,
+            });
             alert("Email updated successfully");
         } catch (error) {
             console.error("Error:", error);
@@ -72,9 +73,6 @@ export default function EditProfilePage() {
             });
         } else {
             try {
-                // await axios.put("/api/userRoutes?clerkId=" + uid, {
-                //     email: email,
-                // });
                 setOpen(true);
                 setShowConfirmEmail(false);
                 axios.post("api/update-email", {
@@ -253,7 +251,7 @@ export default function EditProfilePage() {
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Verify your email address</DialogTitle>
                 <DialogContent>
-                    <VerifyEmail onVerify={handleVerifyEmail} />
+                    <VerifyEmail email={email} onVerify={handleVerifyEmail} />
                 </DialogContent>
             </Dialog>
         </Layout>
