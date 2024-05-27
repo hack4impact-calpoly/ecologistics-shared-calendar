@@ -5,15 +5,12 @@ import Grid from "@mui/material/Grid";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import VerifyEmail from "../components/verifyEmail";
 
 export default function EditProfilePage() {
   const { user } = useUser();
   const [orgName, setOrg] = useState("");
   const [uid, setUID] = useState("");
   const [email, setEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [showConfirmEmail, setShowConfirmEmail] = useState(false);
   const [phone, setPhone] = useState("");
   const [position, setPosition] = useState("");
   const [fname, setFName] = useState("");
@@ -21,57 +18,40 @@ export default function EditProfilePage() {
   const [role, setRole] = useState("");
   const router = useRouter();
 
-  const handleProfileSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
-    try {
-      await axios.put("/api/userRoutes?clerkId=" + uid, {
+    axios
+      .put("/api/userRoutes?clerkId=" + uid, {
         organization: orgName,
+        email: email,
         phoneNumber: phone,
         lastName: lname,
         firstName: fname,
         position: position,
         role: role,
-      });
-      router.push("/profile");
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const handleEmailSubmit = async (e) => {
-    e.preventDefault();
-
-    if (confirmEmail !== email) {
-      alert("Emails must match");
-    } else {
-      try {
-        await axios.put("/api/userRoutes?clerkId=" + uid, {
-          email: email,
-        });
-        setShowConfirmEmail(false);
-        alert("Email updated successfully");
-      } catch (error) {
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
         console.error("Error:", error);
-      }
-    }
-  };
+      });
 
-  useEffect(() => {
-    if (uid === "" && user) {
-      setUID(user.id);
-    }
-  }, [uid, user]);
+    router.push("/profile");
+  };
+  if (uid == "" && user) {
+    setUID(user.id);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!uid) return;
       try {
         const response = await fetch("/api/userRoutes?clerkId=" + uid);
         if (!response.ok) {
-          throw new Error("Network response failed");
+          throw new Error("Network response fail");
         }
         const responseData = await response.json();
+        console.log(responseData);
         setOrg(responseData.data.organization);
         setEmail(responseData.data.email);
         setPosition(responseData.data.position);
@@ -79,17 +59,10 @@ export default function EditProfilePage() {
         setFName(responseData.data.firstName);
         setLName(responseData.data.lastName);
         setRole(responseData.data.role);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+      } catch (error) {}
     };
     fetchData();
   }, [uid]);
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    setShowConfirmEmail(true);
-  };
 
   return (
     <Layout>
@@ -110,50 +83,11 @@ export default function EditProfilePage() {
             justifyContent="left"
             alignItems="left"
           >
-            <h3>Account Information</h3>
+            <h3>Account Information </h3>
 
-            <form onSubmit={handleEmailSubmit}>
+            <form onSubmit={handleSubmit}>
               <Grid item>
-                <h4>Email Address</h4>
-                <input
-                  type="text"
-                  id="email"
-                  style={{ width: "300px" }}
-                  value={email}
-                  onChange={handleEmailChange}
-                />
-                {showConfirmEmail && (
-                  <>
-                    <p>Confirm Email Address</p>
-                    <input
-                      type="text"
-                      id="confirmEmail"
-                      style={{ width: "300px" }}
-                      value={confirmEmail}
-                      onChange={(e) => setConfirmEmail(e.target.value)}
-                    />
-                    <br></br>
-                    <button
-                      style={{
-                        marginTop: "10px",
-                        backgroundColor: "#ef7f2d",
-                        color: "black",
-                        borderRadius: "1rem",
-                      }}
-                      type="submit"
-                    >
-                      Update Email
-                    </button>
-                  </>
-                )}
-              </Grid>
-            </form>
-
-            <br></br>
-
-            <form onSubmit={handleProfileSubmit}>
-              <Grid item>
-                <h4>Change Organization Name</h4>
+                <p>Change Organization Name</p>
                 <input
                   type="text"
                   id="orgName"
@@ -162,10 +96,12 @@ export default function EditProfilePage() {
                 />
               </Grid>
               <br></br>
-              <h4>Personal Information</h4>
+              <h3>Personal Information</h3>
               <Grid container spacing={2}>
                 <Grid item xs={1.5}>
-                  <p>First Name</p>
+                  <p>
+                    <b>First Name</b>
+                  </p>
                   <input
                     type="text"
                     id="fname"
@@ -174,7 +110,9 @@ export default function EditProfilePage() {
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <p>Last Name</p>
+                  <p>
+                    <b>Last Name</b>
+                  </p>
                   <input
                     type="text"
                     id="lname"
@@ -183,14 +121,31 @@ export default function EditProfilePage() {
                   />
                 </Grid>
               </Grid>
-              <p>Position in Organization</p>
+              <p>
+                <b>Position in Organization</b>
+              </p>
+              <br></br>
               <input
                 type="text"
                 style={{ width: "300px" }}
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
               />
-              <p>Phone number</p>
+
+              <h3>Organization Information</h3>
+              <p>
+                <b>Email Address</b>
+              </p>
+              <input
+                type="text"
+                id="email"
+                style={{ width: "300px" }}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <p>
+                <b>Phone number</b>
+              </p>
               <input
                 type="text"
                 id="phone"
@@ -214,7 +169,6 @@ export default function EditProfilePage() {
             </form>
           </Grid>
         </Box>
-        <VerifyEmail email={email}/>
       </div>
     </Layout>
   );
