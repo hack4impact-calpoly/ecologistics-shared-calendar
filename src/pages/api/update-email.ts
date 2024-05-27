@@ -54,15 +54,17 @@ export default async function handler(
                     clerkId?.toString() || "",
                     {
                         privateMetadata: {
+                            pending_email: email,
                             verification_code: verification_code,
                             expiration_date: getExpirationDate(),
                         },
                     }
                 );
+                console.log("code", verification_code);
 
                 //Send email using Resend library
                 const { data, error } = await resend.emails.send({
-                    from: "Acme <onboarding@resend.dev>",
+                    from: "Acme <noreply@resend.dev>",
                     to: [email],
                     subject: "Update Email Verification Code",
                     react: EmailTemplate({
@@ -93,18 +95,25 @@ export default async function handler(
             try {
                 //parse session and request body
                 const { userId: clerkId } = getAuth(req);
-                const { code, email } = req.body;
+                const { code } = req.body;
 
                 //get user and parse metadata
                 const user = await clerkClient.users.getUser(
                     clerkId?.toString() || ""
                 );
-                const { expiration_date, verification_code } =
-                    user.privateMetadata;
                 const previousEmailAddressId = user.primaryEmailAddressId;
+                const {
+                    pending_email: email,
+                    expiration_date,
+                    verification_code,
+                } = user.privateMetadata;
 
                 //check for valid verification code
-                if (code !== verification_code) {
+                const current_date = new Date();
+                if (
+                    code !== verification_code ||
+                    current_date > new Date(expiration_date as string)
+                ) {
                     res.status(401).json({
                         success: false,
                         message: "Invalid Code",
@@ -115,7 +124,11 @@ export default async function handler(
                 await clerkClient.users.updateUserMetadata(
                     clerkId?.toString() || "",
                     {
-                        privateMetadata: {},
+                        privateMetadata: {
+                            pending_email: null,
+                            verification_code: null,
+                            expiration_date: null,
+                        },
                     }
                 );
 
@@ -123,7 +136,7 @@ export default async function handler(
                 const email_object =
                     await clerkClient.emailAddresses.createEmailAddress({
                         userId: clerkId || "",
-                        emailAddress: email,
+                        emailAddress: email as string,
                         verified: true,
                         primary: true,
                     });
