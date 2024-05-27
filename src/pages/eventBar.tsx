@@ -66,8 +66,7 @@ function Event(event: EventDocument) {
         {/* If you have an image URL you can use an <img> tag here */}
         <img
           src={
-            event.imageLink ||
-            "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-26+at+5.53.03%E2%80%AFPM.png"
+            event.imageLink || "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
           }
           alt="Event Image"
           style={{ height: "100%", width: "100%", objectFit: "cover" }}
