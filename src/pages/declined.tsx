@@ -4,7 +4,7 @@ import { UserDocument } from "../database/userSchema";
 
 const ConfirmationPage: React.FC = () => {
     const handleReturn = () => {
-        window.location.href = "/";
+        window.location.href = "/"; 
     };
 
     const [user, setUser] = useState<UserDocument>();

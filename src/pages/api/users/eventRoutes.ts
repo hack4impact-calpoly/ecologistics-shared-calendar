@@ -16,6 +16,23 @@ interface QueryParams {
   createdBy: mongoose.Types.ObjectId;
 }
 
+async function deleteImage(imageUrl: String) {
+  console.log("IN DELETE IMAGE");
+  const response = await axios.delete("http://localhost:3000/api/s3-upload/route", {
+    data: { url: imageUrl },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 200) {
+    console.log("Image deleted successfully:", response.data);
+  } else {
+    console.log("FAILED IN DELETE IMAGE");
+    console.error("Failed to delete image:", response.data);
+  }
+}
+
 const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
   let queryObject: Partial<QueryParams> = {};
 
@@ -91,8 +108,13 @@ export default async function handler(
   } else if (req.method === "DELETE") {
     try {
       const { id } = req.body;
+      const event = await Event.findByIdAndRemove(id.toString().trim());
+      // console.log("USER DELETE EVENT: ", event);
+      // console.log("DELETING IMAGE LINK: ", event.imageLink);
 
-      await Event.findByIdAndRemove(id.toString().trim());
+      if (event?.imageLink) {
+        await deleteImage(event.imageLink);
+      }
       res.status(200).json({ message: "Deleted event.", data: null });
     } catch (err) {
       res.status(404).json({ message: "DELETE Failed.", data: err });
