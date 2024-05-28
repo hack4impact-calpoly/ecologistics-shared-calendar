@@ -1,6 +1,6 @@
 import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { EventDocument } from "../database/eventSchema";
 
@@ -34,16 +34,30 @@ export default function AdminRequestTable() {
   const [archived, setArchived] = useState<Event[]>([]);
 
   useEffect(() => {
-    fetch('/api/users/eventRoutes')
-      .then(response => response.json())
+    fetch("/api/users/eventRoutes")
+      .then((response) => response.json())
       .then((response: ApiResponse) => {
-        setPending(response.data.filter(event => event.status === "Pending"));
-        setApproved(response.data.filter(event => (event.status === 'Approved' && new Date(event.endDate) > new Date())));
-        setPostponed(response.data.filter(event => event.status === 'Postponed'));
-        setDeclined(response.data.filter(event => event.status === 'Denied'));
-        setArchived(response.data.filter(event => (event.status === 'Approved' && new Date(event.endDate) < new Date())));
+        setPending(response.data.filter((event) => event.status === "Pending"));
+        setApproved(
+          response.data.filter(
+            (event) =>
+              event.status === "Approved" &&
+              new Date(event.endDate) > new Date()
+          )
+        );
+        setPostponed(
+          response.data.filter((event) => event.status === "Postponed")
+        );
+        setDeclined(response.data.filter((event) => event.status === "Denied"));
+        setArchived(
+          response.data.filter(
+            (event) =>
+              event.status === "Approved" &&
+              new Date(event.endDate) < new Date()
+          )
+        );
       })
-      .catch(error => console.error('Failed to fetch events:', error));
+      .catch((error) => console.error("Failed to fetch events:", error));
   });
 
   const approveEvent = async (id: string) => {
@@ -52,64 +66,138 @@ export default function AdminRequestTable() {
     :param id: user mongo id
     */
     try {
-        //axios patch to update status
-        await axios.patch(`/api/admins/eventRoutes`, {
-            id: id,
-            status: "Approved",
-            declineMessage: "",
-        });
-        console.log("id", id);
-        // Update the status in the user state variable
-        const updatedEvents = events.map((event) => {
-            if (event._id.toHexString() === id) {
-                return { ...event, deniedReason:"",status: "Approved" };
-            }
-            return event;
-        });
-        setEvents(updatedEvents);
-    } catch (err) {
-        console.error(err);
-    }
-};
+      //axios patch to update status
+      const response = await axios.patch(`/api/admins/eventRoutes`, {
+        id: id,
+        status: "Approved",
+        declineMessage: "",
+      });
 
-const declineEvent = async (id: string, message: string) => {
+      // Update the status in the user state variable
+      const updatedEvents = events.map((event) => {
+        if (event._id.toHexString() === id) {
+          return { ...event, deniedReason: "", status: "Approved" };
+        }
+        return event;
+      });
+      setEvents(updatedEvents);
+
+      // send event accepted email to org
+      const eventToAccept = response.data;
+      // get org that created event
+      const uid_response = await fetch(
+        "/api/userRoutes/?createdBy=" + eventToAccept.data.createdBy
+      );
+      if (!uid_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const user = await uid_response.json();
+      //send email
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: user?.data?.email,
+          firstName: user?.data?.firstName,
+          orgName: user?.data?.organization,
+          eventTitle: eventToAccept.data.title,
+          templateId: "d-f0ca1f5da3e8469a9359853739363f75",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const declineEvent = async (id: string, message: string) => {
     /*
     Approves user in clerk/mongodb and updates state
     :param id: user mongo id
     */
-   console.log("The message :", message);
+    console.log("The message :", message);
     try {
-        //axios patch to update status
-        await axios.patch(`/api/admins/eventRoutes`, {
-            id: id,
-            status: "Denied",
-            deniedReason: message,
-        });
-        // Update the status in the user state variable
-        const updatedEvents = events.map((event) => {
-            if (event._id.toHexString() === id) {
-                return { ...event, deniedReason: message ,status: "Denied" };
-            }
-            return event;
-        });
-        setEvents(updatedEvents);
-    } catch (err) {
-        console.error(err);
-    }
-};
+      //axios patch to update status
+      const response = await axios.patch(`/api/admins/eventRoutes`, {
+        id: id,
+        status: "Denied",
+        deniedReason: message,
+      });
+      // Update the status in the user state variable
+      const updatedEvents = events.map((event) => {
+        if (event._id.toHexString() === id) {
+          return { ...event, deniedReason: message, status: "Denied" };
+        }
+        return event;
+      });
+      setEvents(updatedEvents);
 
-const deleteEvent = async (id: string) => {
-  /*
+      // send event accepted email to org
+      const eventToAccept = response.data;
+      // get org that created event
+      const uid_response = await fetch(
+        "/api/userRoutes/?createdBy=" + eventToAccept.data.createdBy
+      );
+      if (!uid_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const user = await uid_response.json();
+      //send email
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: user?.data?.email,
+          firstName: user?.data?.firstName,
+          orgName: user?.data?.organization,
+          eventTitle: eventToAccept.data.title,
+          deniedReason: message,
+          templateId: "d-aa8f449a19a740109402259795a246e9",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteEvent = async (id: string) => {
+    /*
   Deletes user rom mongo and clerk if trash button clicked
   :param id: user to delete's mongo _id
   */
-  try {
-    await axios.delete(`/api/admins/eventRoutes`, { data: { id } });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
+    try {
+      await axios.delete(`/api/admins/eventRoutes`, { data: { id } });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Layout>
@@ -119,12 +207,12 @@ const deleteEvent = async (id: string) => {
           <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
           <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
           <h3>Requested Events</h3>
-          <EventsTable 
-              approveEvent={approveEvent}
-              declineEvent={declineEvent}
-              deleteEvent={deleteEvent}
-              ITEMS_PER_PAGE={4} 
-              events={pending} 
+          <EventsTable
+            approveEvent={approveEvent}
+            declineEvent={declineEvent}
+            deleteEvent={deleteEvent}
+            ITEMS_PER_PAGE={4}
+            events={pending}
           />
         </div>
         {/* Approved Events */}
@@ -137,12 +225,12 @@ const deleteEvent = async (id: string) => {
             }}
           ></div>
           <h3>Approved Events</h3>
-          <EventsTable 
-              approveEvent={approveEvent}
-              declineEvent={declineEvent}
-              deleteEvent={deleteEvent}
-              ITEMS_PER_PAGE={4} 
-              events={approved} 
+          <EventsTable
+            approveEvent={approveEvent}
+            declineEvent={declineEvent}
+            deleteEvent={deleteEvent}
+            ITEMS_PER_PAGE={4}
+            events={approved}
           />
         </div>
 
@@ -160,12 +248,12 @@ const deleteEvent = async (id: string) => {
         {/* Declined Events */}
         <div>
           <h3>Declined Events</h3>
-          <EventsTable 
-              approveEvent={approveEvent}
-              declineEvent={declineEvent}
-              deleteEvent={deleteEvent}
-              ITEMS_PER_PAGE={4} 
-              events={declined} 
+          <EventsTable
+            approveEvent={approveEvent}
+            declineEvent={declineEvent}
+            deleteEvent={deleteEvent}
+            ITEMS_PER_PAGE={4}
+            events={declined}
           />
         </div>
         {/* Past Events */}
@@ -178,12 +266,12 @@ const deleteEvent = async (id: string) => {
             }}
           ></div>
           <h3>Archived</h3>
-          <EventsTable 
-              approveEvent={approveEvent}
-              declineEvent={declineEvent}
-              deleteEvent={deleteEvent}
-              ITEMS_PER_PAGE={4} 
-              events={archived} 
+          <EventsTable
+            approveEvent={approveEvent}
+            declineEvent={declineEvent}
+            deleteEvent={deleteEvent}
+            ITEMS_PER_PAGE={4}
+            events={archived}
           />
         </div>
       </div>

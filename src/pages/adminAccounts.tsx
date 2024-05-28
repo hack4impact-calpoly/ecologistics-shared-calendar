@@ -48,9 +48,7 @@ export default function AdminRequestTable() {
       setUsers(updatedUsers);
 
       const user = users.find((user) => user._id === id);
-
       if (user) {
-        console.log("approved", user);
         // send email telling org they've been approved
         await fetch("/api/sendGrid/orgRoutes", {
           method: "POST",
@@ -61,7 +59,7 @@ export default function AdminRequestTable() {
             emailAddress: user?.email,
             firstName: user?.firstName,
             orgName: user?.organization,
-            templateId: "d-d1407cdb0ce14e33957c5b15a7189c0f",
+            templateId: "d-47bfcca8bafb4eeda0408372ca72084a",
           }),
         })
           .then((response) => {
@@ -100,6 +98,36 @@ export default function AdminRequestTable() {
         return user;
       });
       setUsers(updatedUsers);
+
+      const user = users.find((user) => user._id === id);
+      if (user) {
+        // send email telling org they've been denied
+        await fetch("/api/sendGrid/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: user?.email,
+            firstName: user?.firstName,
+            orgName: user?.organization,
+            deniedReason: message,
+            templateId: "d-d62f3913815740519a71dee0084f6cfc",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+      }
     } catch (err) {
       console.error(err);
     }

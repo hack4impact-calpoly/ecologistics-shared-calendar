@@ -11,7 +11,14 @@ export default async function handler(
     return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  const { emailAddress, firstName, orgName, eventTitle, templateId } = req.body;
+  const {
+    emailAddress,
+    firstName,
+    orgName,
+    deniedReason,
+    eventTitle,
+    templateId,
+  } = req.body;
 
   if (!emailAddress || !firstName || !templateId) {
     return res.status(400).json({
@@ -25,17 +32,18 @@ export default async function handler(
       emailAddress,
       firstName,
       orgName,
+      deniedReason,
       eventTitle,
       templateId
     );
     return res
       .status(200)
-      .json({ success: true, message: "Welcome email sent successfully" });
+      .json({ success: true, message: "Email sent successfully" });
   } catch (error) {
-    console.error("Error sending welcome email:", error);
+    console.error("Error sending email:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Failed to send welcome email" });
+      .json({ success: false, message: "Failed to send email" });
   }
 }
 
@@ -43,6 +51,7 @@ async function sendDynamicEmail(
   emailAddress: string,
   firstName: string,
   orgName: string,
+  deniedReason: string,
   eventTitle: string,
   templateId: string
 ) {
@@ -54,6 +63,7 @@ async function sendDynamicEmail(
       first_name: firstName,
       unique_name: orgName,
       eventTitle: eventTitle,
+      deniedReason: deniedReason,
     },
   };
 

@@ -1,7 +1,7 @@
 import Layout from "../components/layout";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSignUp, useSession } from "@clerk/nextjs";
+import { useSignUp, useSession, useSignIn } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
@@ -21,6 +21,7 @@ export default function SignUp() {
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [phone, setPhone] = useState("");
+
   const [position, setPosition] = useState("");
 
   interface InputRef {
@@ -253,7 +254,6 @@ export default function SignUp() {
             console.error("Error:", error); // Handle error
           });
 
-        console.log("User has been created");
         router.push("/confirmation-page");
       }
     } catch (err) {
