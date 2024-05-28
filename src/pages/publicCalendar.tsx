@@ -16,7 +16,6 @@ import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
-import Navbar from "../components/navbar";
 import { DateTime } from 'luxon';
 
 
@@ -38,6 +37,7 @@ export default function CalendarPage() {
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
   >([]);
+  const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
     []
   );
@@ -47,7 +47,32 @@ export default function CalendarPage() {
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
+  const clerk = useClerk();
   const calendarRef = useRef<HTMLDivElement>(null);
+
+
+  // if the user is logged in, redirect to the calendar page.
+
+  useEffect(() => {
+  if(clerk.user){
+     router.push("/calendar");
+  }
+  }, [clerk.user]);
+
+  useEffect(() => {
+    setFutureEvents(filterFutureEvents(events))
+  }, [events])
+
+  const filterFutureEvents = (events: EventDocument[]) => {
+    const now = new Date();
+    return events
+      .filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = new Date(event.endDate);
+        return (eventStart <= now && eventEnd >= now) || eventStart >= now;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  };
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -202,7 +227,6 @@ export default function CalendarPage() {
       {isShowingEventPopUp && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
-      <Navbar />
       <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
@@ -246,18 +270,9 @@ export default function CalendarPage() {
 	    eventBackgroundColor="#F7AB74"
           />
         </div>
-        {windowWidth < 786 && (
-          <button
-            className={style1.addButton}
-            style={{ display: "block", margin: "20px auto 0" }}
-            onClick={() => setIsAddingEvent((prev) => !prev)}
-          >
-            Add Event
-          </button>
-        )}
         {!isAddingEvent ? (
           <EventBar
-            events={selectedDateEvents.length > 0 ? selectedDateEvents : events}
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents}
           />
         ) : (
           <AddEventPanel
