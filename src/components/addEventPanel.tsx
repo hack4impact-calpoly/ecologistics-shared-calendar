@@ -224,6 +224,8 @@ export default function AddEventPanel({
             photo: "Failed to create event",
           }));
         }
+        
+        console.log("CREATED EVENT: ", eventResponse);
       } else {
         //setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
