@@ -5,6 +5,7 @@ import { useSignUp, useSession } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export default function SignUp() {
     const router = useRouter();
@@ -383,6 +384,7 @@ export default function SignUp() {
                         </button>
                     </form>
                 )}
+
                 {pendingVerification && (
                     /*<div>
                         <form>

@@ -178,7 +178,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
           display: "flex",
           justifyContent: "left",
           boxSizing: "border-box",
-          width: "90rem",
+          width: "100%",
         }}
       >
         <table
@@ -187,6 +187,7 @@ export default function AdminPage({ events, ITEMS_PER_PAGE }: AdminProps) {
             borderCollapse: "collapse",
             borderSpacing: 0,
             borderBottom: "2px solid #f7f7f7",
+            width: "100%",
           }}
         >
           <thead>

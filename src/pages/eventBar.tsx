@@ -97,19 +97,32 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
     events || []
   );
 
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    const filtered = (events || []).filter((event) =>
-      event.title.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setFilteredEvents(filtered);
+    if (value) {
+      const filtered = (events || []).filter((event) =>
+        event.title.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(events);
+    }
   };
 
   useEffect(() => {
     setFilteredEvents(events || []);
   }, [events]);
+
+  // const filterFutureEvents = (events: EventDocument[]) => {
+  //   const now = new Date();
+  //   console.log(now)
+  //   return events.filter(event => (new Date(event.startDate) >= now )&& (new Date(event.startDate).getTime >= now.getTime)).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+  // };
+  
+
+      
 
   return (
     <div
@@ -117,7 +130,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        width: "75%",
+        width: windowWidth && windowWidth > 786 ? "75%" : "100%",
         marginTop: "2%",
       }}
     >
