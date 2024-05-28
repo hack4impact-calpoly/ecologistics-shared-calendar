@@ -65,7 +65,9 @@ function Event(event: EventDocument) {
         {/* Image placeholder */}
         {/* If you have an image URL you can use an <img> tag here */}
         <img
-          src={event.imageLink}
+          src={
+            event.imageLink || "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
+          }
           alt="Event Image"
           style={{ height: "100%", width: "100%", objectFit: "cover" }}
         />
@@ -210,7 +212,7 @@ function useEventBarStyles() {
       alignItems: "center", //change
       flexWrap: "wrap",
       height: "10%",
-      marginBottom: "1rem"
+      marginBottom: "1rem",
     },
     eventTag: {
       marginRight: "1.5rem",
