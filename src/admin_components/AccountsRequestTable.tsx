@@ -543,7 +543,7 @@ export default function AdminPage({
                                             }}
                                         >
                                             {(request.role === "approved" &&
-                                                "approved") ||
+                                                "Approved") ||
                                                 (request.role === "declined" &&
                                                     "Declined") ||
                                                 (request.role === "pending" &&
