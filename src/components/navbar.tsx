@@ -19,8 +19,6 @@ const Navbar: React.FC = () => {
 
   const DONT_SHOW_LOGIN_PATHS = ["/login", "/signup", "/forgot-password"];
 
-  let orgsPath: string;
-  
   var eventsPath: string;
   if (role === "admin") {
     eventsPath = "/adminEvents";
