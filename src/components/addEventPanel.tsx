@@ -81,6 +81,8 @@ export default function AddEventPanel({
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [titleCharsTyped, setTitleCharsTyped] = useState(0);
+  const [desCharsTyped, setDesCharsTyped] = useState(0);
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -239,19 +241,31 @@ export default function AddEventPanel({
     },
   });
 
+  
+
   return (
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
       <h4 style={styles.inputTitle}>Title</h4>
+      
       <input
         type="text"
         style={styles.input}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        onChange={(e) => {
+          
+          const currLength = e.target.value.length;
+          if(currLength <= 45) {
+            setTitleCharsTyped(currLength);
+            setFormData({ ...formData, title: e.target.value });
+          }
+          
+        }}
         value={formData.title}
         disabled={isLoading}
         required
       />
+      <p>Characters Typed: {titleCharsTyped}/45</p>
       <h4 style={styles.inputTitle}>Organization</h4>
       <input
         type="text"
@@ -339,12 +353,16 @@ export default function AddEventPanel({
       <textarea
         style={styles.textarea}
         onChange={(e) => {
-          setFormData({ ...formData, description: e.target.value });
+          const currLength = e.target.value.length;
+          if(currLength <= 1500) {
+            setDesCharsTyped(currLength);
+            setFormData({ ...formData, description: e.target.value });
+          }
         }}
         value={formData.description}
         required
       ></textarea>
-
+      <p>Characters Typed: {desCharsTyped}/1500</p>
       {formErrors.description && (
         <div style={styles.errorBox}>
           <p style={styles.error}>{formErrors.description}</p>

@@ -22,6 +22,7 @@ export default function SignUp() {
     const [lName, setLName] = useState("");
     const [phone, setPhone] = useState("");
     const [position, setPosition] = useState("");
+    const [organizationLen, setOrganizationLen] = useState(0);
 
     interface InputRef {
         current: HTMLInputElement | null;
@@ -237,10 +238,17 @@ export default function SignUp() {
                                     className={styles.input}
                                     value={organization}
                                     onChange={(e) =>
-                                        setOrganization(e.target.value)
-                                    }
+                                    {                                        
+                                        const currLength = e.target.value.length;
+                                        if(currLength <= 32) {
+                                            setOrganizationLen(currLength)
+                                            setOrganization(e.target.value)
+                                        }
+                                        
+                                    }}
                                     required
                                 />
+                                <p>Characters Typed: {organizationLen}/32</p>
                             </div>
                         </div>
 
