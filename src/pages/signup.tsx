@@ -128,6 +128,17 @@ export default function SignUp() {
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
 
+        // Password validation
+        const passwordRegex = /^(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            setPasswordValidation(
+                "Password must be at least 8 characters long and include a number."
+            );
+            return;
+        } else {
+            setPasswordValidation(""); // Clear any previous validation messages
+        }
+
         try {
             await signUp.create({
                 emailAddress: email,
@@ -386,22 +397,6 @@ export default function SignUp() {
                 )}
 
                 {pendingVerification && (
-                    /*<div>
-                        <form>
-                            <input
-                                value={code}
-                                placeholder="Code..."
-                                onChange={(e) => setCode(e.target.value)}
-                            />
-                            <button onClick={onPressVerify}>
-                                Verify Email
-                            </button>
-                        </form>
-                        <p>
-                            Enter 6 digit code sent to email address: {email}.
-                        </p>
-                    </div>*/
-
                     <div className={`${styles.mainContainer}`}>
                         <h3>Verify your email address</h3>
                         <p>

@@ -69,11 +69,15 @@ export default function ForgotPassword() {
         setPasswordValidation("");
 
         // Password length validation
-        if (password.length < 8) {
+        // Password validation
+        const passwordRegex = /^(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(password)) {
             setPasswordValidation(
-                "Password must be at least 8 characters long."
+                "Password must be at least 8 characters long and include a number."
             );
             return;
+        } else {
+            setPasswordValidation(""); // Clear any previous validation messages
         }
 
         await signIn
