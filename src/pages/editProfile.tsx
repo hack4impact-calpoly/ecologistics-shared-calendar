@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Typography from "@mui/material/Typography";
 import VerifyEmail from "../components/verifyEmail";
 import { toast } from "react-toastify";
 import Dialog from "@mui/material/Dialog";
@@ -44,7 +45,7 @@ export default function EditProfilePage() {
         }
     };
 
-    const handleVerifyEmail = async (verificationCode: String) => {
+    const handleVerifyEmail = async (verificationCode: string) => {
         try {
             setShowConfirmEmail(false);
             setOpen(false);
@@ -64,11 +65,11 @@ export default function EditProfilePage() {
 
         if (confirmEmail !== email) {
             toast.error("Emails must match.", {
-                position: "top-center", // Center the toast at the top
-                className: "custom-toast", // Apply custom CSS class
+                position: "top-center", 
+                className: "custom-toast",
                 style: {
-                    backgroundColor: "white", // Green background color
-                    color: "#red", // White text color
+                    backgroundColor: "white", 
+                    color: "red", 
                 },
             });
         } else {
@@ -120,54 +121,78 @@ export default function EditProfilePage() {
 
     return (
         <Layout>
-            <div style={{ padding: "50px" }}>
+            <Box sx={{ padding: { xs: 2, md: 5 } }}>
                 <Box
-                    display="flex"
-                    justifyContent="left"
-                    borderRadius={3}
-                    width="80%"
-                    paddingLeft="200px"
-                    paddingTop="50px"
-                    paddingBottom="20%"
-                    sx={{ border: "2px solid grey" }}
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        borderRadius: 3,
+                        width: "80%",
+                        padding: { xs: 2, md: 5 },
+                        border: "2px solid grey",
+                        mx: "auto",
+                    }}
                 >
-                    <Grid
-                        container
-                        direction="column"
-                        justifyContent="left"
-                        alignItems="left"
-                    >
-                        <h3>Account Information</h3>
+                    <Grid container direction="column" spacing={3} alignItems="center">
+                        <Typography
+                            variant="h3"
+                            textAlign="center"
+                            marginTop="20px"
+                            sx={{ mb: 3 }}
+                        >
+                            Account Information
+                        </Typography>
 
-                        <form onSubmit={handleEmailSubmit}>
-                            <Grid item>
-                                <h4>Email Address</h4>
+                        <form onSubmit={handleEmailSubmit} style={{ width: "100%" }}>
+                            <Grid item xs={12} sx={{ mb: 2 }}>
+                                <Typography variant="h5" textAlign="center" sx={{ mb: 1 }}>
+                                    Email Address
+                                </Typography>
                                 <input
                                     type="text"
                                     id="email"
-                                    style={{ width: "300px" }}
                                     value={email}
                                     onChange={handleEmailChange}
+                                    style={{
+                                        width: "80%",
+                                        padding: "10px",
+                                        borderRadius: "5px",
+                                        border: "1px solid grey",
+                                        margin: "0 auto",
+                                        display: "block",
+                                    }}
                                 />
                                 {showConfirmEmail && (
                                     <>
-                                        <p>Confirm Email Address</p>
+                                        <Typography variant="h6" textAlign="center" sx={{ mb: 1 }}>
+                                            Confirm Email Address
+                                        </Typography>
                                         <input
                                             type="text"
                                             id="confirmEmail"
-                                            style={{ width: "300px" }}
                                             value={confirmEmail}
-                                            onChange={(e) =>
-                                                setConfirmEmail(e.target.value)
-                                            }
+                                            onChange={(e) => setConfirmEmail(e.target.value)}
+                                            style={{
+                                                width: "80%",
+                                                padding: "10px",
+                                                borderRadius: "5px",
+                                                border: "1px solid grey",
+                                                margin: "0 auto",
+                                                display: "block",
+                                                marginBottom: "10px",
+                                            }}
                                         />
-                                        <br></br>
                                         <button
                                             style={{
                                                 marginTop: "10px",
                                                 backgroundColor: "#ef7f2d",
                                                 color: "black",
                                                 borderRadius: "1rem",
+                                                padding: "10px 20px",
+                                                border: "none",
+                                                display: "block",
+                                                margin: "0 auto",
                                             }}
                                             type="submit"
                                         >
@@ -178,67 +203,121 @@ export default function EditProfilePage() {
                             </Grid>
                         </form>
 
-                        <br></br>
-
-                        <form onSubmit={handleProfileSubmit}>
-                            <Grid item>
-                                <h4>Change Organization Name</h4>
+                        <form onSubmit={handleProfileSubmit} style={{ width: "100%" }}>
+                            <Grid item xs={12} sx={{ mb: 2 }}>
+                                <Typography variant="h5" textAlign="center" sx={{ mb: 1 }}>
+                                    Change Organization Name
+                                </Typography>
                                 <input
                                     type="text"
                                     id="orgName"
                                     value={orgName}
                                     onChange={(e) => setOrg(e.target.value)}
+                                    style={{
+                                        width: "80%",
+                                        padding: "10px",
+                                        borderRadius: "5px",
+                                        border: "1px solid grey",
+                                        margin: "0 auto",
+                                        display: "block",
+                                    }}
                                 />
                             </Grid>
-                            <br></br>
-                            <h4>Personal Information</h4>
-                            <Grid container spacing={2}>
-                                <Grid item xs={1.5}>
-                                    <p>First Name</p>
+
+                            <Typography variant="h5" textAlign="center" sx={{ mt: 3 }}>
+                                Personal Information
+                            </Typography>
+
+                            <Grid container spacing={2} sx={{ mt: 1 }} justifyContent="center">
+                                <Grid item xs={12} sm={6} md={4} sx={{ textAlign: "center" }}>
+                                    <Typography variant="body1">
+                                        <b>First Name</b>
+                                    </Typography>
                                     <input
                                         type="text"
                                         id="fname"
                                         value={fname}
-                                        onChange={(e) =>
-                                            setFName(e.target.value)
-                                        }
+                                        onChange={(e) => setFName(e.target.value)}
+                                        style={{
+                                            width: "80%",
+                                            padding: "10px",
+                                            borderRadius: "5px",
+                                            border: "1px solid grey",
+                                            margin: "0 auto",
+                                            display: "block",
+                                        }}
                                     />
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <p>Last Name</p>
+                                <Grid item xs={12} sm={6} md={4} sx={{ textAlign: "center" }}>
+                                    <Typography variant="body1">
+                                        <b>Last Name</b>
+                                    </Typography>
                                     <input
                                         type="text"
                                         id="lname"
                                         value={lname}
-                                        onChange={(e) =>
-                                            setLName(e.target.value)
-                                        }
+                                        onChange={(e) => setLName(e.target.value)}
+                                        style={{
+                                            width: "80%",
+                                            padding: "10px",
+                                            borderRadius: "5px",
+                                            border: "1px solid grey",
+                                            margin: "0 auto",
+                                            display: "block",
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
-                            <p>Position in Organization</p>
+
+                            <Typography variant="body1" sx={{ mt: 3, textAlign: "center" }}>
+                                <b>Position in Organization</b>
+                            </Typography>
                             <input
                                 type="text"
-                                style={{ width: "300px" }}
                                 value={position}
                                 onChange={(e) => setPosition(e.target.value)}
+                                style={{
+                                    width: "80%",
+                                    padding: "10px",
+                                    borderRadius: "5px",
+                                    border: "1px solid grey",
+                                    margin: "0 auto",
+                                    display: "block",
+                                    marginTop: "10px",
+                                }}
                             />
-                            <p>Phone number</p>
+
+                            <Typography variant="body1" sx={{ mt: 3, textAlign: "center" }}>
+                                <b>Phone number</b>
+                            </Typography>
                             <input
                                 type="text"
                                 id="phone"
-                                style={{ width: "300px" }}
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
+                                style={{
+                                    width: "80%",
+                                    padding: "10px",
+                                    borderRadius: "5px",
+                                    border: "1px solid grey",
+                                    margin: "0 auto",
+                                    display: "block",
+                                    marginTop: "10px",
+                                    marginBottom: "20px",
+                                }}
                             />
-                            <br></br>
-                            <br></br>
+
                             <button
                                 style={{
-                                    width: "50px",
+                                    width: "30%",
                                     backgroundColor: "#ef7f2d",
                                     color: "black",
                                     borderRadius: "1rem",
+                                    padding: "10px",
+                                    marginTop: "20px",
+                                    border: "none",
+                                    margin: "0 auto",
+                                    display: "block",
                                 }}
                                 type="submit"
                             >
@@ -247,7 +326,7 @@ export default function EditProfilePage() {
                         </form>
                     </Grid>
                 </Box>
-            </div>
+            </Box>
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Verify your email address</DialogTitle>
                 <DialogContent>

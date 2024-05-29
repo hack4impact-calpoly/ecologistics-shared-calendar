@@ -25,6 +25,12 @@ html, body {
   margin: 0 auto;
 }
 
+@media (min-aspect-ratio: 1/1) {
+  .calendar-container {
+    padding-left: 2.5%;
+  }
+}
+
 /* Colors */
 :root {
   --eco-green: #335543;

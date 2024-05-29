@@ -166,6 +166,7 @@ const DenyPopup: React.FC<DenyProps> = ({
     message,
     setMessage,
 }) => {
+    const [descriptionLen, setDescriptionLen] = useState(0);
     if (!isOpen) return null;
     return (
         <>
@@ -188,10 +189,16 @@ const DenyPopup: React.FC<DenyProps> = ({
                             }}
                             placeholder="State reason for denying account (optional)"
                             onChange={(e) => {
-                                setMessage(e.target.value);
+                                const currentLen = e.target.value.length;
+                                if(currentLen <= 1500) {
+                                    setDescriptionLen(currentLen);
+                                    setMessage(e.target.value);
+                                }
+                                
                             }}
                         />
                     </label>
+                    <p>Characters Typed: {descriptionLen}/1500</p>
                     <div
                         style={{
                             display: "flex",
