@@ -1,14 +1,17 @@
 import React from "react";
 
 type EmailTemplateProps = {
-  firstName: string;
+    verification_code: String;
 };
 
-const EmailTemplate = ({ firstName }: EmailTemplateProps) => (
-  <div>
-    <h1>Welcome, {firstName}!</h1>
-    <p>Instructions to reset your password.</p>
-  </div>
+const EmailTemplate = ({ verification_code }: EmailTemplateProps) => (
+    <div>
+        <h1>Ecologistics Calendar Verfication Code</h1>
+        <p>
+            Here is your verification code: <b>{verification_code}</b>
+        </p>
+        <p>This code expires in 10 minutes.</p>
+    </div>
 );
 
 export default EmailTemplate;

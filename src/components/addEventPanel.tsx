@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { ReactEventHandler, useState } from "react";
 import { MdOutlineFileUpload, MdClose } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
+import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { stat } from "fs";
 
 interface AddEventForm {
-  organization: string;
+  //organization: string;
   title: string;
   startDate: string;
   endDate: string;
@@ -13,6 +16,7 @@ interface AddEventForm {
   endTime: string;
   description: string;
   isVirtual: boolean;
+  mode: string;
   url: string | null;
   photo: File | null;
   city: string;
@@ -32,12 +36,13 @@ interface FormErrors {
 
 const EMPTY_FORM = {
   title: "",
-  organization: "",
+  // organization: "",
   startDate: "",
   endDate: "",
   startTime: "",
   endTime: "",
   description: "",
+  mode: "",
   isVirtual: false,
   url: null,
   photo: null,
@@ -49,7 +54,7 @@ const EMPTY_FORM = {
 
 interface Event {
   title: string;
-  organization: string;
+  // organization: string;
   startDate: Date;
   endDate: Date;
   description: string;
@@ -77,12 +82,14 @@ export default function AddEventPanel({
   onCreate,
   addEvent,
 }: AddEventPanelProps) {
+  const { user } = useUser();
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [titleCharsTyped, setTitleCharsTyped] = useState(0);
   const [desCharsTyped, setDesCharsTyped] = useState(0);
+  const [mode, setMode] = useState("");
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -93,9 +100,9 @@ export default function AddEventPanel({
       { field: "dates", error: "Start time is required." },
       { field: "dates", error: "End date is required." },
       { field: "dates", error: "End time is required." },
-      { field: "description", error: "Description is required." },
+      //{ field: "description", error: "Description is required." },
       { field: "location", error: "Link or address is required." },
-      { field: "photo", error: "Photo is required.", isFile: true },
+      //{ field: "photo",isFile: true },
     ];
 
     const fieldKeyToErrorKey = (field: string) => {
@@ -103,21 +110,21 @@ export default function AddEventPanel({
       return field;
     };
 
-    fieldsToCheck.forEach(({ field, error, isFile }) => {
-      const key = field as keyof typeof formData;
-      if (
-        (isFile && formData[key] === null) ||
-        (!isFile && formData[key] === "")
-      ) {
-        errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
-      }
+    fieldsToCheck.forEach(({ field, error /*isFile*/ }) => {
+      // const key = field as keyof typeof formData;
+      // if (
+      //   (isFile && formData[key] === null) ||
+      //   (!isFile && formData[key] === "")
+      // ) {
+      //   errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
+      // }
     });
 
     return errors;
   };
 
   const addLocationErrors = async (errors: Partial<FormErrors>) => {
-    if (formData.isVirtual) return;
+    if (mode == "virtual") return;
 
     const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
 
@@ -164,7 +171,6 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -176,32 +182,35 @@ export default function AddEventPanel({
         return;
       }
 
-      if (formData.photo) {
+      if (formData) {
+        console.log(formData.state);
         const fileData = new FormData();
-        fileData.append("file", formData.photo);
-
-        const uploadResponse = await axios.post(
-          "api/s3-upload/route",
-          fileData
-        );
-        const uploadResult = uploadResponse.data;
+        var uploadResult = null;
+        if (formData.photo) {
+          fileData.append("file", formData.photo);
+          const uploadResponse = await axios.post(
+            "api/s3-upload/route",
+            fileData
+          );
+          uploadResult = uploadResponse.data;
+        }
 
         let address = formData.url || "";
 
-        if (!formData.isVirtual) {
-          address = `${formData.street},${formData.city},${formData.state},${formData.postalCode}`;
+        if (mode == "in-person") {
+          address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
         }
 
         const event: Event = {
           title: formData.title,
-          organization: formData.organization,
+          // organization: (user.publicMetadata.organization as string) ?? "",
           startDate: stringToDate(formData.startDate, formData.startTime),
           endDate: stringToDate(formData.endDate, formData.endTime),
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
           status: "Pending",
-          imageLink: uploadResult.URL,
+          imageLink: uploadResult?.URL,
         };
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);
@@ -210,14 +219,17 @@ export default function AddEventPanel({
           onCreate();
           setFormData(EMPTY_FORM);
           setImagePreviewUrl(null);
+          console.log("CREATED EVENT");
         } else {
           setFormErrors((prev) => ({
             ...prev,
             photo: "Failed to create event",
           }));
         }
+        
+        console.log("CREATED EVENT: ", eventResponse);
       } else {
-        setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
+        //setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
     } catch (error) {
       console.error("Error:", error);
@@ -241,14 +253,78 @@ export default function AddEventPanel({
     },
   });
 
-  
+  const handleClick = (event: React.ChangeEvent<{ value: string }>) => {
+    setMode(event.target.value);
+    setFormData({ ...formData, mode: event.target.value });
+    console.log(formData.mode);
+    if (event.target.value == "in-person") {
+      setFormData({ ...formData, isVirtual: false });
+    } else {
+      setFormData({ ...formData, isVirtual: true });
+    }
+  };
+
+  const states = [
+    "AL",
+    "AK",
+    "AZ",
+    "AR",
+    "CA",
+    "CO",
+    "CT",
+    "DE",
+    "FL",
+    "GA",
+    "HI",
+    "ID",
+    "IL",
+    "IN",
+    "IA",
+    "KS",
+    "KY",
+    "LA",
+    "ME",
+    "MD",
+    "MA",
+    "MI",
+    "MN",
+    "MS",
+    "MO",
+    "MT",
+    "NE",
+    "NV",
+    "NH",
+    "NJ",
+    "NM",
+    "NY",
+    "NC",
+    "ND",
+    "OH",
+    "OK",
+    "OR",
+    "PA",
+    "RI",
+    "SC",
+    "SD",
+    "TN",
+    "TX",
+    "UT",
+    "VT",
+    "VA",
+    "WA",
+    "WV",
+    "WI",
+    "WY",
+  ];
 
   return (
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
-      <h4 style={styles.inputTitle}>Title</h4>
-      
+      <h4 style={styles.inputTitle}>
+        Title<span style={{ color: "red" }}> *</span>
+      </h4>
+
       <input
         type="text"
         style={styles.input}
@@ -266,20 +342,12 @@ export default function AddEventPanel({
         required
       />
       <p style = {styles.characterCount}>Characters Typed: {titleCharsTyped}/45</p>
-      <h4 style={styles.inputTitle}>Organization</h4>
-      <input
-        type="text"
-        style={styles.input}
-        onChange={(e) =>
-          setFormData({ ...formData, organization: e.target.value })
-        }
-        value={formData.organization}
-        required
-        disabled={isLoading}
-      />
+
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
-          <h4 style={styles.inputTitle}>Start Date</h4>
+          <h4 style={styles.inputTitle}>
+            Start Date<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="date"
             style={{
@@ -294,7 +362,10 @@ export default function AddEventPanel({
             value={formData.startDate}
             required
           />
-          <h4 style={styles.inputTitle}>Start Time</h4>
+
+          <h4 style={styles.inputTitle}>
+            Start Time<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="time"
             style={{
@@ -310,7 +381,9 @@ export default function AddEventPanel({
           />
         </div>
         <div style={styles.inputContainer}>
-          <h4 style={styles.inputTitle}>End Date</h4>
+          <h4 style={styles.inputTitle}>
+            End Date<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="date"
             style={{
@@ -326,7 +399,9 @@ export default function AddEventPanel({
             required
           />
 
-          <h4 style={styles.inputTitle}>End Time</h4>
+          <h4 style={styles.inputTitle}>
+            End Time<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="time"
             style={{
@@ -360,7 +435,6 @@ export default function AddEventPanel({
           }
         }}
         value={formData.description}
-        required
       ></textarea>
       <p style = {styles.characterCount}>Characters Typed: {desCharsTyped}/1500</p>
       {formErrors.description && (
@@ -369,7 +443,10 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <h4 style={styles.inputTitle}>Location</h4>
+      <h4 style={styles.inputTitle}>
+        Location<span style={{ color: "red" }}> *</span>
+      </h4>
+
       <div style={styles.radioContainer}>
         <label>
           <input
@@ -377,9 +454,7 @@ export default function AddEventPanel({
             name="location"
             value="virtual"
             style={styles.radioButton}
-            onChange={(e) =>
-              e.target.checked && setFormData({ ...formData, isVirtual: true })
-            }
+            onChange={handleClick}
             required
             disabled={isLoading}
           />
@@ -391,9 +466,7 @@ export default function AddEventPanel({
             name="location"
             value="in-person"
             style={styles.radioButton}
-            onChange={(e) =>
-              e.target.checked && setFormData({ ...formData, isVirtual: false })
-            }
+            onChange={handleClick}
             required
             disabled={isLoading}
           />
@@ -401,9 +474,11 @@ export default function AddEventPanel({
         </label>
       </div>
 
-      {!formData.isVirtual ? (
+      {mode == "in-person" ? (
         <>
-          <h4 style={styles.inputTitle}>Street</h4>
+          <h4 style={styles.inputTitle}>
+            Street<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="text"
             style={styles.input}
@@ -414,7 +489,9 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>City</h4>
+          <h4 style={styles.inputTitle}>
+            City<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="text"
             style={styles.input}
@@ -423,8 +500,28 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>State</h4>
-          <input
+          <h4 style={styles.inputTitle}>
+            State<span style={{ color: "red" }}> *</span>
+          </h4>
+          <Select
+            labelId="state-select-label"
+            id="state-select"
+            value={formData.state}
+            label="Select a state"
+            onChange={(e) =>
+              setFormData({ ...formData, state: e.target.value })
+            }
+          >
+            <MenuItem value="">
+              <em>Select...</em>
+            </MenuItem>
+            {states.map((stateAbbr, index) => (
+              <MenuItem key={index} value={stateAbbr}>
+                {stateAbbr}
+              </MenuItem>
+            ))}
+          </Select>
+          {/* <input
             type="text"
             style={styles.input}
             onChange={(e) =>
@@ -433,8 +530,10 @@ export default function AddEventPanel({
             value={formData.state}
             required
             disabled={isLoading}
-          />
-          <h4 style={styles.inputTitle}>Postal Code</h4>
+          /> */}
+          <h4 style={styles.inputTitle}>
+            Postal Code<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="text"
             style={styles.input}
@@ -446,9 +545,11 @@ export default function AddEventPanel({
             disabled={isLoading}
           />
         </>
-      ) : (
+      ) : mode == "virtual" ? (
         <>
-          <h4 style={styles.inputTitle}>Link</h4>
+          <h4 style={styles.inputTitle}>
+            Link<span style={{ color: "red" }}> *</span>
+          </h4>
           <input
             type="text"
             style={styles.input}
@@ -458,7 +559,7 @@ export default function AddEventPanel({
             disabled={isLoading}
           />
         </>
-      )}
+      ) : null}
 
       {formErrors.location && (
         <div style={styles.errorBox}>

@@ -115,20 +115,21 @@ const deleteEvent = async (id: string) => {
     <Layout>
       {/* Requested Events */}
       <div style={styles.container}>
-        <div>
+        <div style={{ width: "90%" }}>
           <h1 style={{ alignSelf: "flex-start" }}>Inbox</h1>
           <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
           <h3>Requested Events</h3>
+          {pending.length == 0 ? <p style={{textAlign: "center"}}>No Event Requests Yet</p> :
           <EventsTable 
               approveEvent={approveEvent}
               declineEvent={declineEvent}
               deleteEvent={deleteEvent}
               ITEMS_PER_PAGE={4} 
               events={pending} 
-          />
+          />}
         </div>
         {/* Approved Events */}
-        <div>
+        <div style={{ width: "90%" }}> 
           <h1 style={{ alignSelf: "flex-start" }}>Active events</h1>
           <div
             style={{
@@ -137,13 +138,14 @@ const deleteEvent = async (id: string) => {
             }}
           ></div>
           <h3>Approved Events</h3>
+          {approved.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> :
           <EventsTable 
               approveEvent={approveEvent}
               declineEvent={declineEvent}
               deleteEvent={deleteEvent}
               ITEMS_PER_PAGE={4} 
               events={approved} 
-          />
+          />}
         </div>
 
         {/* Postponed Events
@@ -158,18 +160,20 @@ const deleteEvent = async (id: string) => {
           />
         </div> */}
         {/* Declined Events */}
-        <div>
+        <div style={{ width: "90%" }}>
           <h3>Declined Events</h3>
+          {declined.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> :
           <EventsTable 
               approveEvent={approveEvent}
               declineEvent={declineEvent}
               deleteEvent={deleteEvent}
               ITEMS_PER_PAGE={4} 
               events={declined} 
-          />
+          />}
+          
         </div>
         {/* Past Events */}
-        <div>
+        <div style={{ width: "90%" }}>
           <h1 style={{ textAlign: "left" }}>Past events</h1>
           <div
             style={{
@@ -178,13 +182,14 @@ const deleteEvent = async (id: string) => {
             }}
           ></div>
           <h3>Archived</h3>
+          {archived.length == 0 ? <p style={{textAlign: "center"}}>No Past Events Yet</p> :
           <EventsTable 
               approveEvent={approveEvent}
               declineEvent={declineEvent}
               deleteEvent={deleteEvent}
               ITEMS_PER_PAGE={4} 
               events={archived} 
-          />
+          />}
         </div>
       </div>
     </Layout>
