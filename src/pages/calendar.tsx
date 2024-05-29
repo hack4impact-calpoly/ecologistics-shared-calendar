@@ -86,6 +86,19 @@ useEffect(() => {
         console.error("Error fetching events:", error);
       });
   }, []);
+  // useEffect(() => {
+  //   fetch("/api/users/eventRoutes?status=Approved")
+  //     .then((res) => res.json())
+  //     .then((res) => {
+  //       convertEventDatesToDates(res.data as EventDocument[]);
+  //       setEvents(res.data as EventDocument[]);
+  //       setFutureEvents(filterFutureEvents(res.data as EventDocument[]));
+  //       setSelectedDateEvents(filterFutureEvents(res.data as EventDocument[])); // Initialize selectedDateEvents with future events
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching events:", error);
+  //     });
+  // }, []);
 
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
@@ -265,7 +278,8 @@ useEffect(() => {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} />
+          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} totalEvents ={events} />
+          
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}

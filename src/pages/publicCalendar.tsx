@@ -281,7 +281,7 @@ export default function CalendarPage() {
         )}
         {!isAddingEvent ? (
           <EventBar
-            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents}
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} totalEvents= {events}
           />
         ) : (
           <AddEventPanel
