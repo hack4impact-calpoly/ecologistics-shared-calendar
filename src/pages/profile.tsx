@@ -68,7 +68,7 @@ export default function ProfilePage() {
   return (
     <Layout>
       <Box sx={{ padding: { xs: "20px", md: "50px" } }}>
-        <Navbar />
+        {/* <Navbar /> */}
         <Box
           sx={{
             ...styles.boxStyle,

@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import React, { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
+
 type eventType = {
   organization: string;
   title: string;
@@ -89,14 +90,19 @@ export default function OrganizationEvents() {
     <Layout>
       {/* Requested Events */}
       <div style={styles.container}>
-        <div>
+        <div style={{ width: "90%"}}>
           <h1 style={{ alignSelf: "flex-start" }}>Outgoing Event Requests</h1>
           <div style={{ height: "0.35714rem", background: "#F07F2D" }}></div>
           <h3>Requested Events</h3>
-          <EventsTable ITEMS_PER_PAGE={4} events={pendingEvents} />
+          {pendingEvents.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> : 
+          <EventsTable 
+            ITEMS_PER_PAGE={4}
+            events={pendingEvents} 
+          />}
         </div>
+
         {/* Approved Events */}
-        <div>
+        <div style={{ width: "90%"}}>
           <h2 style={{ alignSelf: "flex-start" }}>Active events</h2>
           <div
             style={{
@@ -105,16 +111,25 @@ export default function OrganizationEvents() {
             }}
           ></div>
           <h3>Approved Events</h3>
-          <EventsTable ITEMS_PER_PAGE={1} events={approvedEvents} />
+          {approvedEvents.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> : 
+          <EventsTable 
+            ITEMS_PER_PAGE={3}
+            events={approvedEvents} 
+          />}
         </div>
 
         {/* Declined Events */}
-        <div>
+        <div style={{ width: "90%"}}>
           <h3>Declined Events</h3>
-          <EventsTable ITEMS_PER_PAGE={1} events={deniedEvents} />
+          {deniedEvents.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> : 
+          <EventsTable 
+            ITEMS_PER_PAGE={3}
+            events={deniedEvents} 
+          />}
         </div>
+
         {/* Past Events */}
-        <div>
+        <div style={{ width: "90%"}}>
           <h2 style={{ textAlign: "left" }}>Past events</h2>
           <div
             style={{
@@ -123,7 +138,11 @@ export default function OrganizationEvents() {
             }}
           ></div>
           <h3>Archived</h3>
-          <EventsTable ITEMS_PER_PAGE={3} events={pastEvents} />
+          {pastEvents.length == 0 ? <p style={{textAlign: "center"}}>No Events Yet</p> : 
+          <EventsTable 
+            ITEMS_PER_PAGE={3}
+            events={pastEvents} 
+          />}
         </div>
       </div>
     </Layout>

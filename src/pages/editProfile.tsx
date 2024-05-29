@@ -8,16 +8,19 @@ import { useRouter } from "next/router";
 import Typography from "@mui/material/Typography";
 
 export default function EditProfilePage() {
-  const { user } = useUser();
-  const [orgName, setOrg] = useState("");
-  const [uid, setUID] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [position, setPosition] = useState("");
-  const [fname, setFName] = useState("");
-  const [lname, setLName] = useState("");
-  const [role, setRole] = useState("");
-  const router = useRouter();
+    const { user } = useUser();
+    const [orgName, setOrg] = useState("");
+    const [uid, setUID] = useState("");
+    const [email, setEmail] = useState("");
+    const [confirmEmail, setConfirmEmail] = useState("");
+    const [showConfirmEmail, setShowConfirmEmail] = useState(false);
+    const [phone, setPhone] = useState("");
+    const [position, setPosition] = useState("");
+    const [fname, setFName] = useState("");
+    const [lname, setLName] = useState("");
+    const [role, setRole] = useState("");
+    const [open, setOpen] = useState(false);
+    const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

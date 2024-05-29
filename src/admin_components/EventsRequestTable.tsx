@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { DeleteOutline } from "@mui/icons-material";
+import { useRouter } from "next/router";
 
 type AdminProps = {
   events: {
@@ -255,6 +256,7 @@ export default function AdminPage({
 }: AdminProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
+  const router = useRouter();
   
 
   // Delete popup
@@ -347,7 +349,7 @@ export default function AdminPage({
           display: "flex",
           justifyContent: "left",
           boxSizing: "border-box",
-          width: "90rem",
+          width: "100%",
         }}
       >
         <table
@@ -356,6 +358,7 @@ export default function AdminPage({
             borderCollapse: "collapse",
             borderSpacing: 0,
             borderBottom: "2px solid #f7f7f7",
+            width: "100%"
           }}
         >
           <thead>
@@ -418,7 +421,17 @@ export default function AdminPage({
               .slice(calculateRange().startIndex, calculateRange().endIndex)
               .map((request) => (
                 <tr key={request._id} style={{ border: "1px solid #f7f7f7" }}>
-                  <td style={{ ...styles.name, padding: "5px 50px" }}>
+                  <td 
+                  style={{ ...styles.name, padding: "5px 50px" }}
+                  onClick={function (info) {
+                    router.push({
+                      pathname: "/eventDetails",
+                      query: {
+                        eventId: request._id,
+                      },
+                    });
+                  }}
+                  >
                     {request.title}
                   </td>
                   <td style={{ ...styles.email, padding: "5px 50px" }}>

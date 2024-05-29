@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import User from "../../database/userSchema";
 import connectDB from "../../database/db";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient } from "@clerk/nextjs/server";
 import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 interface UserMetadata {
     role: string;
-    organization: string;
 }
 
 export default async function handler(
@@ -40,9 +39,8 @@ export default async function handler(
 
         case "POST":
             try {
-                const { userId } = getAuth(req);
-
-                console.log("users");
+                //parse session and request body
+                const { userId: clerkId } = getAuth(req);
                 const {
                     organization,
                     email,
@@ -52,23 +50,19 @@ export default async function handler(
                     position,
                 } = req.body;
 
-                await axios.patch(
-                    `https://api.clerk.com/v1/users/${userId}/metadata`,
+                //add role to clerk user
+                await clerkClient.users.updateUserMetadata(
+                    clerkId?.toString() || "",
                     {
-                        public_metadata: {
+                        publicMetadata: {
                             role: "pending",
-                        },
-                        private_metadata: {},
-                        unsafe_metadata: {},
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
                         },
                     }
                 );
+
+                //create user in mongodb
                 const user = await User.create({
-                    clerkId: userId,
+                    clerkId: clerkId,
                     organization: organization,
                     email: email,
                     phoneNumber: phoneNumber,
@@ -77,6 +71,7 @@ export default async function handler(
                     lastName: lastName,
                     role: "pending",
                 });
+
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
                 res.status(400).json({
@@ -85,10 +80,12 @@ export default async function handler(
                 });
             }
             break;
-
-        case "PUT":
+        case "PATCH":
             try {
-                const { userId } = getAuth(req);
+                // parse clerk session
+                const { userId: clerkId } = getAuth(req);
+
+                //parse request body
                 const {
                     organization,
                     email,
@@ -96,38 +93,32 @@ export default async function handler(
                     lastName,
                     firstName,
                     position,
-                    role
+                    role,
                 } = req.body;
-                
-                const {clerkId}=req.query;
-                
-                try{
-                    let uid=clerkId!
-                    await clerkClient.users.updateUserMetadata(uid.toString(), {
-                        publicMetadata: {
-                        organization: organization
-                        }
-                    })
-                } catch(e){}
-                const user = await User.findOneAndUpdate({clerkId:clerkId}, {
-                    clerkId: userId,
-                    organization: organization,
-                    email: email,
-                    phoneNumber: phoneNumber,
-                    position: position,
+
+                //fname/lname on clerk
+                await clerkClient.users.updateUser(clerkId?.toString() || "", {
                     firstName: firstName,
                     lastName: lastName,
-                    role: role
                 });
+
+                const user = await User.findOneAndUpdate(
+                    { clerkId: clerkId },
+                    {
+                        organization: organization,
+                        email: email,
+                        phoneNumber: phoneNumber,
+                        position: position,
+                        firstName: firstName,
+                        lastName: lastName,
+                        role: role,
+                    }
+                );
                 res.status(201).json({ success: true, data: user });
             } catch (error) {
-                res.status(400).json({
-                    success: false,
-                    message: error,
-                });
+                res.status(400).json({ success: false, message: error });
             }
             break;
-
         case "DELETE":
             try {
                 const { id } = req.body;
