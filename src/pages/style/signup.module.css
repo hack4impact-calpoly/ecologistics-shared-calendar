@@ -15,6 +15,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-bottom: 8vh;
 }
 
 .title {
@@ -56,7 +57,7 @@
 .inputContainer {
   position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -413,4 +414,8 @@
 .mainContainer h3 {
   margin: 0;
   padding: 0;
+}
+
+.characterCount {
+  color: gray;
 }
