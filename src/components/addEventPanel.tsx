@@ -265,7 +265,7 @@ export default function AddEventPanel({
         disabled={isLoading}
         required
       />
-      <p>Characters Typed: {titleCharsTyped}/45</p>
+      <p style = {styles.characterCount}>Characters Typed: {titleCharsTyped}/45</p>
       <h4 style={styles.inputTitle}>Organization</h4>
       <input
         type="text"
@@ -362,7 +362,7 @@ export default function AddEventPanel({
         value={formData.description}
         required
       ></textarea>
-      <p>Characters Typed: {desCharsTyped}/1500</p>
+      <p style = {styles.characterCount}>Characters Typed: {desCharsTyped}/1500</p>
       {formErrors.description && (
         <div style={styles.errorBox}>
           <p style={styles.error}>{formErrors.description}</p>
@@ -603,4 +603,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
   },
+  characterCount:{
+    color: "grey",
+  }
 };
