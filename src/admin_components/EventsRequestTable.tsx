@@ -40,14 +40,14 @@ function parseCommentDate(date: Date) {
   */
   // Convert to Los Angeles time
   const losAngelesDate = new Date(
-      date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+    date.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
   );
 
   // Format the date as desired
   const formattedDate = losAngelesDate.toLocaleString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
   });
   return formattedDate;
 }
@@ -60,26 +60,26 @@ function parseCommentTime(startDate: Date, endDate: Date) {
   */
   // Convert to Los Angeles time
   const losAngelesStartDate = new Date(
-      startDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
+    startDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
   );
   const losAngelesEndDate = new Date(
     endDate.toLocaleString("en-US", { timeZone: "America/Los_Angeles" })
-);
+  );
 
   // Format the date as desired
   const formattedStartDate = losAngelesStartDate.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
 
-    // Format the date as desired
-    const formattedEndDate = losAngelesEndDate.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
+  // Format the date as desired
+  const formattedEndDate = losAngelesEndDate.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
-  return (formattedStartDate + " - " + formattedEndDate);
+  return formattedStartDate + " - " + formattedEndDate;
 }
 
 const DeletePopup: React.FC<PopupProps> = ({
@@ -158,8 +158,8 @@ const DenyPopup: React.FC<PopupProps> = ({
   isOpen,
   onClose,
   handleAction,
-  message="",
-  setMessage= ()  => {},
+  message = "",
+  setMessage = () => {},
   requestID,
 }) => {
   if (!isOpen) return null;
@@ -247,7 +247,7 @@ const DenyPopup: React.FC<PopupProps> = ({
   );
 };
 
-export default function AdminPage({ 
+export default function AdminPage({
   events,
   ITEMS_PER_PAGE,
   approveEvent,
@@ -257,7 +257,6 @@ export default function AdminPage({
   const [currentPage, setCurrentPage] = useState(1);
   const profileImage = require("../images/profileImage.webp");
   const router = useRouter();
-  
 
   // Delete popup
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -276,7 +275,6 @@ export default function AdminPage({
     startIndex + ITEMS_PER_PAGE,
     accountRequests.length
   );
-
 
   // Slice the accountRequests array to display only the items for the current page
   const currentRequests = accountRequests.slice(startIndex, endIndex);
@@ -322,11 +320,11 @@ export default function AdminPage({
         return request;
          });
         */
-        if (action === "accepted") {
-          approveEvent(requestId);
-        } else if (action === "deny") {
-          declineEvent(requestId, message);
-        }
+      if (action === "accepted") {
+        approveEvent(requestId);
+      } else if (action === "deny") {
+        declineEvent(requestId, message);
+      }
 
       // I would assume that when an event is approved or denied, it is updated on the
       // the backend, and is then rerendered on the new list
@@ -340,7 +338,7 @@ export default function AdminPage({
   };
   useEffect(() => {
     setAccountRequests(events);
-}, [events]);
+  }, [events]);
 
   return (
     <div>
@@ -358,7 +356,7 @@ export default function AdminPage({
             borderCollapse: "collapse",
             borderSpacing: 0,
             borderBottom: "2px solid #f7f7f7",
-            width: "100%"
+            width: "100%",
           }}
         >
           <thead>
@@ -380,7 +378,7 @@ export default function AdminPage({
                   border: "1px solid #f7f7f7",
                 }}
               >
-                Email
+                Name
               </th>
               <th
                 style={{
@@ -421,16 +419,16 @@ export default function AdminPage({
               .slice(calculateRange().startIndex, calculateRange().endIndex)
               .map((request) => (
                 <tr key={request._id} style={{ border: "1px solid #f7f7f7" }}>
-                  <td 
-                  style={{ ...styles.name, padding: "5px 50px" }}
-                  onClick={function (info) {
-                    router.push({
-                      pathname: "/eventDetails",
-                      query: {
-                        eventId: request._id,
-                      },
-                    });
-                  }}
+                  <td
+                    style={{ ...styles.name, padding: "5px 50px" }}
+                    onClick={function (info) {
+                      router.push({
+                        pathname: "/eventDetails",
+                        query: {
+                          eventId: request._id,
+                        },
+                      });
+                    }}
                   >
                     {request.title}
                   </td>
@@ -483,7 +481,10 @@ export default function AdminPage({
                         display: "block",
                       }}
                     >
-                      {parseCommentTime(new Date(request.startDate), new Date(request.endDate))}
+                      {parseCommentTime(
+                        new Date(request.startDate),
+                        new Date(request.endDate)
+                      )}
                     </span>
                   </td>
                   <td style={{ ...styles.description, padding: "5px 50px" }}>
