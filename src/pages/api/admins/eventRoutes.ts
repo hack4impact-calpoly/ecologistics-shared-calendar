@@ -1,12 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import connectDB from "../../../database/db"
 import Event from "../../../database/eventSchema"
+import axios from "axios";
 
 
- 
 type ResponseData = {
   message: string,
   data: any
+}
+
+async function deleteImage(imageUrl: String) {
+  console.log("IN DELETE IMAGE");
+  const response = await axios.delete("http://localhost:3000/api/s3-upload/route", {
+    data: { url: imageUrl },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export default async function handler(
@@ -32,14 +42,20 @@ export default async function handler(
           res.status(400).json({message:"POST Failed.", data:err})
         }
     }
-    else if(req.method==="DELETE"){
-        try{
-          const {id}=await req.body;
-          await Event.findByIdAndDelete({_id: id});
-          res.status(200).json({ message: 'Deleted event.', data:null})
-        } catch (err){
-          res.status(404).json({message:"DELETE Failed.", data:err})
+    else if (req.method === "DELETE") {
+      try {
+        const { id } = req.body;
+        const event = await Event.findByIdAndRemove(id.toString().trim());
+        console.log("USER DELETE EVENT: ", event);
+        console.log("DELETING IMAGE LINK: ", event.imageLink);
+  
+        if (event?.imageLink) {
+          await deleteImage(event.imageLink);
         }
+        res.status(200).json({ message: "Deleted event.", data: null });
+      } catch (err) {
+        res.status(404).json({ message: "DELETE Failed.", data: err });
+      }
     } else if (req.method === "PATCH") {
       try {
         const { id, status, deniedReason } = await req.body;

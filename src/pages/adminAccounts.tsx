@@ -100,14 +100,17 @@ export default function AdminRequestTable() {
                         style={{ height: "0.35714rem", background: "#F07F2D" }}
                     ></div>
                     <h3>Requested Accounts</h3>
+
+                    {pendingUsers.length == 0 ? <p style={{textAlign: "center"}}>No Requests Yet</p> : 
                     <AccountsTable
                         ITEMS_PER_PAGE={4}
                         events={pendingUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
                         deleteUser={deleteUser}
-                    />
+                    />} 
                 </div>
+
                 {/* Approved Accounts */}
                 <div style={{ width: "90%" }}>
                     <h1 style={{ alignSelf: "flex-start" }}>Active Accounts</h1>
@@ -118,26 +121,31 @@ export default function AdminRequestTable() {
                         }}
                     ></div>
                     <h3>Approved Accounts</h3>
+
+                    {approvedUsers.length == 0 ? <p style={{textAlign: "center"}}>No Accounts Yet</p> : 
                     <AccountsTable
                         ITEMS_PER_PAGE={1}
                         events={approvedUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
                         deleteUser={deleteUser}
-                    />
+                    />}
+                    
                 </div>
 
                 {/* Declined Accounts */}
                 <div style={{ width: "90%" }}>
                     <h3>Declined Accounts</h3>
+                    
 
+                    {declinedUsers.length == 0 ? <p style={{textAlign: "center"}}>No Accounts Yet</p> : 
                     <AccountsTable
                         ITEMS_PER_PAGE={1}
                         events={declinedUsers}
                         approveUser={approveUser}
                         declineUser={declineUser}
                         deleteUser={deleteUser}
-                    />
+                    />}
                 </div>
             </div>
         </Layout>

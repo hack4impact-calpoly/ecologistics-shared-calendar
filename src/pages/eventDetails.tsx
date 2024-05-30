@@ -57,6 +57,8 @@ export default function EventPage() {
     }
   }, [event]);
 
+  console.log("EVENT: ", event);
+
   return (
     <Layout>
       {event && (
@@ -78,7 +80,9 @@ export default function EventPage() {
             </p>
             <div style={styles.imagePlaceholder}>
               <img
-                src={event.imageLink}
+                src={
+                  event.imageLink || "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
+                }
                 alt="Event Image"
                 style={{ height: "100%", width: "100%", objectFit: "cover" }}
               />
