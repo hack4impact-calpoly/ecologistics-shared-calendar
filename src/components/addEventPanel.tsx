@@ -169,6 +169,8 @@ export default function AddEventPanel({
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
     setIsLoading(true);
+    setDesCharsTyped(0);
+    setTitleCharsTyped(0);
     try {
       const errors = await getFormErrors();
       if (Object.keys(errors).length !== 0) {
@@ -496,7 +498,7 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <button style={styles.button} type="submit" disabled={isLoading}>
+      <button style={styles.button} type="submit" disabled={isLoading} >
         {isLoading ? "Loading..." : "Add Event"}
       </button>
     </form>
