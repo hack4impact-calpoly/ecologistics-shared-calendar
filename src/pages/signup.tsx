@@ -125,25 +125,18 @@ export default function SignUp() {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-        // Password validation
-        const passwordRegex = /^(?=.*\d).{8,}$/;
-        if (!passwordRegex.test(password)) {
-            setPasswordValidation(
-                "Password must be at least 8 characters long and include a number."
-            );
-            return;
-        } else {
-            setPasswordValidation(""); // Clear any previous validation messages
-        }
+    // Password validation
+    const passwordRegex = /^(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordValidation(
+        "Password must be at least 8 characters long and include a number."
+      );
+      return;
+    } else {
+      setPasswordValidation(""); // Clear any previous validation messages
+    }
 
     try {
-      await signUp.create({
-        emailAddress: email,
-        password: password,
-        firstName: fName,
-        lastName: lName,
-      });
-
       //delete previous session if user was alread logged in
       if (session) {
         await session.end();
@@ -380,42 +373,42 @@ export default function SignUp() {
               Already Have an Account? Login Here!
             </div>
 
-                        <button
-                            type="submit"
-                            className={`${styles.button} ${styles.buttonSent}`}
-                            onClick={goToLogin}
-                        >
-                            {"Login"}
-                        </button>
-                    </form>
-                )}
+            <button
+              type="submit"
+              className={`${styles.button} ${styles.buttonSent}`}
+              onClick={goToLogin}
+            >
+              {"Login"}
+            </button>
+          </form>
+        )}
 
-                {pendingVerification && (
-                    <div className={`${styles.mainContainer}`}>
-                        <h3>Verify your email address</h3>
-                        <p>
-                            We emailed you a 6-digit code to {email}. Enter the
-                            code below to confirm your email address
-                        </p>
-                        <div className={`${styles.verificationContainer}`}>
-                            {[0, 1, 2, 3, 4, 5].map((index) => (
-                                <input
-                                    className={`${styles.verificationButton}`}
-                                    key={index}
-                                    type="text"
-                                    maxLength={1}
-                                    onChange={(e) => handleInput(e, index)}
-                                    ref={inputRefs[index]}
-                                    autoFocus={index === 0}
-                                    onFocus={handleFocus}
-                                    onKeyDown={(e) => handleKeyDown(e, index)}
-                                    onPaste={handlePaste}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+        {pendingVerification && (
+          <div className={`${styles.mainContainer}`}>
+            <h3>Verify your email address</h3>
+            <p>
+              We emailed you a 6-digit code to {email}. Enter the code below to
+              confirm your email address
+            </p>
+            <div className={`${styles.verificationContainer}`}>
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  className={`${styles.verificationButton}`}
+                  key={index}
+                  type="text"
+                  maxLength={1}
+                  onChange={(e) => handleInput(e, index)}
+                  ref={inputRefs[index]}
+                  autoFocus={index === 0}
+                  onFocus={handleFocus}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onPaste={handlePaste}
+                />
+              ))}
             </div>
-        </Layout>
-    );
+          </div>
+        )}
+      </div>
+    </Layout>
+  );
 }
