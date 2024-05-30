@@ -77,7 +77,7 @@ function Event(event: EventDocument) {
 }
 
 // Main EventBar Component
-export default function EventBar({ events }: { events: EventDocument[] }) {
+export default function EventBar({ events, totalEvents }: { events: EventDocument[], totalEvents: EventDocument[] }) {
   const styles = useEventBarStyles();
   const [windowHeight, setWindowHeight] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
@@ -102,7 +102,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
     const value = event.target.value;
     setSearchTerm(value);
     if (value) {
-      const filtered = (events || []).filter((event) =>
+      const filtered = (totalEvents || []).filter((event) =>
         event.title.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredEvents(filtered);
@@ -114,12 +114,6 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
   useEffect(() => {
     setFilteredEvents(events || []);
   }, [events]);
-
-  // const filterFutureEvents = (events: EventDocument[]) => {
-  //   const now = new Date();
-  //   console.log(now)
-  //   return events.filter(event => (new Date(event.startDate) >= now )&& (new Date(event.startDate).getTime >= now.getTime)).sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-  // };
   
 
       

@@ -272,7 +272,7 @@ export default function CalendarPage() {
         </div>
         {!isAddingEvent ? (
           <EventBar
-            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents}
+            events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} totalEvents= {events}
           />
         ) : (
           <AddEventPanel
