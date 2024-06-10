@@ -6,9 +6,7 @@ const ConfirmationPage: React.FC = () => {
     const { signOut } = useClerk();
     const router = useRouter();
     const handleReturn = async () => {
-        await signOut();
-        router.push("/login");
-        //window.location.href = "/";
+        router.push("/");
     };
 
     return (

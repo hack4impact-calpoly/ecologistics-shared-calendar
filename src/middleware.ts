@@ -25,7 +25,6 @@ export default authMiddleware({
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
             "/adminEvents": ["admin"],
-            // "/eventDetails": ["admin", "approved"],
             "/eventBar": ["admin", "approved"],
             "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
@@ -39,7 +38,7 @@ export default authMiddleware({
         // Check if the user is authenticated
         if (!auth.userId && !isPublicRoute) {
             // Redirect unauthenticated users to sign-in page
-            const url = new URL("/login", req.url);
+            const url = new URL("/", req.url);
             return NextResponse.redirect(url);
         }
 
@@ -49,7 +48,7 @@ export default authMiddleware({
         const role = metadata?.role || "pending";
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage
-            const url = new URL("/login", req.url);
+            const url = new URL("/", req.url);
             return NextResponse.redirect(url);
         }
 

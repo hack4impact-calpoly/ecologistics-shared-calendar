@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { UserDocument } from "../database/userSchema";
+import { useClerk } from "@clerk/clerk-react";
+import { useRouter } from "next/router";
 
 const ConfirmationPage: React.FC = () => {
-    const handleReturn = () => {
-        window.location.href = "/"; 
+    const { signOut } = useClerk();
+    const router = useRouter();
+    const handleReturn = async () => {
+        router.push("/");
     };
 
     const [user, setUser] = useState<UserDocument>();
