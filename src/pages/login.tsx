@@ -26,7 +26,7 @@ export default function LoginPage() {
 
             if (role === "pending") {
                 // Doesnt make sense for the user to be logged in if pending.
-                session.end();
+                //session.end();
                 router.push("/confirmation-page");
             } else if (role === "admin" || role === "approved") {
                 router.push("/calendar");

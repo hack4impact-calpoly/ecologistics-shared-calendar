@@ -7,19 +7,19 @@ interface UserMetadata {
 
 export default authMiddleware({
     async afterAuth(auth, req: NextRequest) {
-    // Define public routes
-      const publicRoutes = [
-        "/",
-        "/login",
-        "/signup",
-        "/forgot-password",
-        "/api/s3-upload/route",
-        "/api/test",
-        "/api/users/eventRoutes",
-        "/api/s3-upload/test",
-        "/publicCalendar",
-        "/eventDetails",
-      ];
+        // Define public routes
+        const publicRoutes = [
+            "/",
+            "/login",
+            "/signup",
+            "/forgot-password",
+            "/api/s3-upload/route",
+            "/api/test",
+            "/api/users/eventRoutes",
+            "/api/s3-upload/test",
+            "/publicCalendar",
+            "/eventDetails",
+        ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
@@ -28,7 +28,7 @@ export default authMiddleware({
             // "/eventDetails": ["admin", "approved"],
             "/eventBar": ["admin", "approved"],
             "/calendar": ["admin", "approved"],
-            "/confirmation-page": ["pending"],
+            "/confirmation-page": ["pending", undefined],
             "/adminAccounts": ["admin"],
             "/declined": ["declined"],
         };
@@ -47,6 +47,9 @@ export default authMiddleware({
         const requiredRoles = routePermissions[req.nextUrl.pathname];
         const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
         const role = metadata?.role;
+        console.log(
+            `Required Roles: ${requiredRoles}\t Role: ${role}\t Url: ${req.nextUrl.pathname}`
+        );
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage
             const url = new URL("/login", req.url);
