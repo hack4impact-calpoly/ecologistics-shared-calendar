@@ -28,7 +28,7 @@ export default authMiddleware({
             // "/eventDetails": ["admin", "approved"],
             "/eventBar": ["admin", "approved"],
             "/calendar": ["admin", "approved"],
-            "/confirmation-page": ["pending", undefined],
+            "/confirmation-page": ["pending"],
             "/adminAccounts": ["admin"],
             "/declined": ["declined"],
         };
@@ -46,10 +46,7 @@ export default authMiddleware({
         // Check if the user has access to the current route
         const requiredRoles = routePermissions[req.nextUrl.pathname];
         const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
-        const role = metadata?.role;
-        console.log(
-            `Required Roles: ${requiredRoles}\t Role: ${role}\t Url: ${req.nextUrl.pathname}`
-        );
+        const role = metadata?.role || "pending";
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage
             const url = new URL("/login", req.url);
