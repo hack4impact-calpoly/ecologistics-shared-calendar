@@ -7,25 +7,24 @@ interface UserMetadata {
 
 export default authMiddleware({
     async afterAuth(auth, req: NextRequest) {
-    // Define public routes
-      const publicRoutes = [
-        "/",
-        "/login",
-        "/signup",
-        "/forgot-password",
-        "/api/s3-upload/route",
-        "/api/test",
-        "/api/users/eventRoutes",
-        "/api/s3-upload/test",
-        "/publicCalendar",
-        "/eventDetails",
-      ];
+        // Define public routes
+        const publicRoutes = [
+            "/",
+            "/login",
+            "/signup",
+            "/forgot-password",
+            "/api/s3-upload/route",
+            "/api/test",
+            "/api/users/eventRoutes",
+            "/api/s3-upload/test",
+            "/publicCalendar",
+            "/eventDetails",
+        ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
             "/admin": ["admin"],
             "/adminEvents": ["admin"],
-            // "/eventDetails": ["admin", "approved"],
             "/eventBar": ["admin", "approved"],
             "/calendar": ["admin", "approved"],
             "/confirmation-page": ["pending"],
@@ -39,17 +38,17 @@ export default authMiddleware({
         // Check if the user is authenticated
         if (!auth.userId && !isPublicRoute) {
             // Redirect unauthenticated users to sign-in page
-            const url = new URL("/login", req.url);
+            const url = new URL("/", req.url);
             return NextResponse.redirect(url);
         }
 
         // Check if the user has access to the current route
         const requiredRoles = routePermissions[req.nextUrl.pathname];
         const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
-        const role = metadata?.role;
+        const role = metadata?.role || "pending";
         if (requiredRoles && !requiredRoles.includes(role)) {
             // Redirect users without the required role to a forbidden page or homepage
-            const url = new URL("/login", req.url);
+            const url = new URL("/", req.url);
             return NextResponse.redirect(url);
         }
 
