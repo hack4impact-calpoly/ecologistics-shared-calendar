@@ -16,7 +16,7 @@ function Event(event: EventDocument) {
   const navigateToEventDetails = () => {
     router.push("/eventDetails/?eventId=" + event._id);
   };
-
+  
   useEffect(() => {
     const truncateText = (text: string, maxLength: number) => {
       if (text.length <= maxLength) {
@@ -24,10 +24,14 @@ function Event(event: EventDocument) {
       }
       return text.substring(0, maxLength) + "...";
     };
-
-    setTruncatedDescription(truncateText(event.description, 400));
-    console.log(truncatedDescription)
-  }, [event.description]);
+  
+    if (event?.description) {
+      setTruncatedDescription(truncateText(event.description, 400));
+    }
+  
+    console.log(truncatedDescription);
+  }, [event?.description]);
+  
 
   return (
     <div

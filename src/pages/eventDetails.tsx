@@ -59,8 +59,8 @@ export default function EventPage() {
   }, [event]);
 
   useEffect(() => {
-    if (event) {
-      const truncateText = (text, maxLength) => {
+    if (event && event.description) {
+      const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) {
           return text;
         }
