@@ -1,13 +1,12 @@
 import Layout from "../components/layout";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Button, useIsFocusVisible } from "@mui/material";
-import { Paper, Typography } from "@mui/material";
+import { Button, Paper, Typography } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useUser } from "@clerk/clerk-react";
-import { useEffect } from "react";
+import Navbar from "../components/navbar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -26,9 +25,10 @@ export default function ProfilePage() {
   const [fname, setFName] = useState("");
   const [lname, setLName] = useState("");
   const [userOrAdmin, setUserOrAdmin] = useState("user");
-  let tagColor="#497cb0";
-  let tagColor2="#d4e9ff";
-  if(uid=="" && user){
+
+  let tagColor = "#497cb0";
+  let tagColor2 = "#d4e9ff";
+  if (uid == "" && user) {
     setUID(user.id);
   }
 
@@ -40,18 +40,16 @@ export default function ProfilePage() {
           throw new Error("Network response was not ok");
         }
         const responseData = await response.json();
-        console.log(responseData);
         setEmail(responseData.data.email);
-        setPosition(responseData.data.position)
-        setPhone(responseData.data.phoneNumber)
-        setFName(responseData.data.firstName)
-        setLName(responseData.data.lastName)
-        setUserOrAdmin(responseData.data.role)
-        if(responseData.data.role=="approved"){
+        setPosition(responseData.data.position);
+        setPhone(responseData.data.phoneNumber);
+        setFName(responseData.data.firstName);
+        setLName(responseData.data.lastName);
+        setUserOrAdmin(responseData.data.role);
+        if (responseData.data.role == "approved") {
           setUserOrAdmin("user");
         }
-        setOrg(responseData.data.organization)
-        
+        setOrg(responseData.data.organization);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -59,41 +57,48 @@ export default function ProfilePage() {
     fetchData();
   }, [uid]);
 
-  if(userOrAdmin==="admin"){
-    tagColor="#497cb0"
-    tagColor2="#d4e9ff"
-  } else{
-    tagColor="#b76c00"
-    tagColor2="orange"
+  if (userOrAdmin === "admin") {
+    tagColor = "#497cb0";
+    tagColor2 = "#d4e9ff";
+  } else {
+    tagColor = "#b76c00";
+    tagColor2 = "orange";
   }
 
   return (
     <Layout>
-      <div style={{ padding: "50px" }}>
-        <Box style={styles.boxStyle} sx={{ border: "2px solid grey" }}>
-          <Grid
-            container
-            direction="column"
-            justifyContent="left"
-            alignItems="left"
-          >
-            <Grid container spacing={4}>
-              <Grid item>
-                <h2>{orgName}</h2>
+      <Box sx={{ padding: { xs: "20px", md: "50px" } }}>
+        {/* <Navbar /> */}
+        <Box
+          sx={{
+            ...styles.boxStyle,
+            border: "2px solid grey",
+            padding: { xs: "20px", sm: "50px", md: "100px" },
+          }}
+        >
+          <Grid container direction="column">
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm="auto">
+                <Typography variant="h2" sx={{ fontWeight: "bold" }}>
+                  {orgName}
+                </Typography>
               </Grid>
-              <Grid item xs={1.1}>
-                <Paper elevation={0} style={{
+              <Grid item xs={12} sm="auto">
+                <Paper
+                  elevation={0}
+                  sx={{
                     backgroundColor: tagColor2,
                     borderRadius: "1rem",
-                    paddingLeft: "17px",
-                    paddingRight: "17px",
-                    marginTop: "38px",
-                    textAlign: "center"
-              }}>
-                  <p style={{ color: tagColor }}>{userOrAdmin}</p>
+                    padding: "8px 17px",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography sx={{ color: tagColor }}>
+                    {userOrAdmin}
+                  </Typography>
                 </Paper>
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={12} sm="auto" sx={{ ml: "auto" }}>
                 <Button
                   onClick={handleEdit}
                   variant="outlined"
@@ -101,42 +106,46 @@ export default function ProfilePage() {
                   style={styles.buttonStyle}
                 >
                   Edit
-                  <FaEdit size={15} style={{ marginLeft: "8px" }}></FaEdit>
+                  <FaEdit size={15} style={{ marginLeft: "8px" }} />
                 </Button>
               </Grid>
             </Grid>
 
-            <h3>Personal Information</h3>
+            <Typography variant="h5" sx={{ mt: 3, fontWeight: "bold" }}>
+              Personal Information
+            </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={1.5}>
-                <p>
+              <Grid item xs={12} sm={4}>
+                <Typography sx={{ mt: 3 }}>
                   <b>First Name</b>
-                </p>
-                <p>{fname}</p>
+                </Typography>
+                <Typography>{fname}</Typography>
               </Grid>
-              <Grid item xs={2}>
-                <p>
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ mt: 3 }}>
                   <b>Last Name</b>
-                </p>
-                <p>{lname}</p>
+                </Typography>
+                <Typography>{lname}</Typography>
               </Grid>
             </Grid>
-            <p>
+            <Typography sx={{ mt: 3 }}>
               <b>Position in Organization</b>
-            </p>
-            <p>{position}</p>
-            <h3>Organization Information</h3>
-            <p>
+            </Typography>
+            <Typography>{position}</Typography>
+            <Typography variant="h5" sx={{ mt: 3, fontWeight: "bold" }}>
+              Organization Information
+            </Typography>
+            <Typography sx={{ mt: 3 }}>
               <b>Email Address</b>
-            </p>
-            <p>{email}</p>
-            <p>
+            </Typography>
+            <Typography>{email}</Typography>
+            <Typography sx={{ mt: 3 }}>
               <b>Phone number</b>
-            </p>
-            <p>{phone}</p>
+            </Typography>
+            <Typography>{phone}</Typography>
           </Grid>
         </Box>
-      </div>
+      </Box>
     </Layout>
   );
 }
@@ -145,12 +154,11 @@ function useProfileStyles() {
   const styles: { [key: string]: React.CSSProperties } = {
     boxStyle: {
       display: "flex",
-      justifyContent: "left",
+      flexDirection: "column",
+      justifyContent: "flex-start",
       borderRadius: 3,
-      width: "80%",
-      paddingLeft: "200px",
-      paddingTop: "50px",
-      paddingBottom: "20%",
+      width: "85%",
+      // padding: { xs: "20px", sm: "50px", md: "100px" },
     },
     labelStyle: {
       backgroundColor: "#d4e9ff",
@@ -159,7 +167,7 @@ function useProfileStyles() {
       paddingRight: "17px",
       marginTop: "38px",
     },
-    buttonStyle: { marginTop: "30px", marginLeft: "500px", color: "#bfbfbf" },
+    buttonStyle: { marginTop: "30px", marginLeft: "auto", color: "#bfbfbf" },
 
     buttonSX: {
       borderColor: "#bfbfbf",

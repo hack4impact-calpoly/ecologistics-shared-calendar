@@ -65,7 +65,9 @@ function Event(event: EventDocument) {
         {/* Image placeholder */}
         {/* If you have an image URL you can use an <img> tag here */}
         <img
-          src={event.imageLink}
+          src={
+            event.imageLink || "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
+          }
           alt="Event Image"
           style={{ height: "100%", width: "100%", objectFit: "cover" }}
         />
@@ -75,7 +77,7 @@ function Event(event: EventDocument) {
 }
 
 // Main EventBar Component
-export default function EventBar({ events }: { events: EventDocument[] }) {
+export default function EventBar({ events, totalEvents }: { events: EventDocument[], totalEvents: EventDocument[] }) {
   const styles = useEventBarStyles();
   const [windowHeight, setWindowHeight] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
@@ -95,19 +97,26 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
     events || []
   );
 
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    const filtered = (events || []).filter((event) =>
-      event.title.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setFilteredEvents(filtered);
+    if (value) {
+      const filtered = (totalEvents || []).filter((event) =>
+        event.title.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(events);
+    }
   };
 
   useEffect(() => {
     setFilteredEvents(events || []);
   }, [events]);
+  
+
+      
 
   return (
     <div
@@ -115,7 +124,7 @@ export default function EventBar({ events }: { events: EventDocument[] }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        width: "75%",
+        width: windowWidth && windowWidth > 786 ? "75%" : "100%",
         marginTop: "2%",
       }}
     >
@@ -197,7 +206,7 @@ function useEventBarStyles() {
       alignItems: "center", //change
       flexWrap: "wrap",
       height: "10%",
-      marginBottom: "1rem"
+      marginBottom: "1rem",
     },
     eventTag: {
       marginRight: "1.5rem",

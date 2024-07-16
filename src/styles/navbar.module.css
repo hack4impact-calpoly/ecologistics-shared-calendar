@@ -13,27 +13,22 @@
 .dropdown, .charityLoginButton {
     display: flex;
     align-items: center;
-    height: auto; /* Remove fixed height for more flexibility */
+    max-height: 40px;
     margin: 0.25em;
 }
 
-.dropdown {
-    padding: 0.25em; /* Increase padding for more spacing */
-    position: relative; 
-}
 
 .logo {
-    height: auto; 
     max-height: 30px; 
     padding: 0.25em; 
     margin: 0.25em;
 }
 
 .charityLoginButton button {
-    background-color: #F07F2D; /* matching the orange color from the image */
+    background-color: #F07F2D;
     color: black;
     border: none;
-    padding: 0.75em 1.5em; /* Increase padding for more spacing */
+    padding: 0.75em 1.5em; 
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
@@ -42,6 +37,6 @@
 }
 
 .charityLoginButton button:hover {
-    background-color: #a8572a; /* darker shade of the button color */
+    background-color: #a8572a; 
 }
 

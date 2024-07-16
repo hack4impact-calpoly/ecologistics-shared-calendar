@@ -159,90 +159,109 @@ const DenyPopup: React.FC<DenyProps> = ({
   message,
   setMessage,
 }) => {
-  if (!isOpen) return null;
-  return (
-    <>
-      <div style={styles.transparentBackground} />
-      <div style={{ ...styles.popupContainer, height: "400px" }}>
-        <h2 style={{ textAlign: "center", margin: "0" }}>
-          Are you sure you want to deny this account?
-        </h2>
-        <form style={{ textAlign: "center" }}>
-          <label style={{ textAlign: "center" }}>
-            <textarea
-              name="postContent"
-              rows={8}
-              cols={63}
-              style={{
-                borderRadius: "12px",
-                fontStyle: "italic",
-                padding: "10px",
-                margin: "10px",
-              }}
-              placeholder="State reason for denying account (optional)"
-              onChange={(e) => {
-                setMessage(e.target.value);
-              }}
-            />
-          </label>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <button
-              style={{
-                ...styles.buttons,
-                width: "122px",
-                height: "37.6px",
-                padding: "7.526px 10.752p",
-                fontSize: "17px",
-                margin: "0 4px 0 0",
-              }}
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#e69153")
-              }
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#f7ab74")
-              }
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              style={{
-                ...styles.buttons,
-                width: "122px",
-                height: "37.6px",
-                //padding: "10px 39px",
-                fontSize: "17px",
-                margin: "0 0 0 4px",
-              }}
-              onMouseOver={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#e69153")
-              }
-              onMouseOut={(e: React.MouseEvent<HTMLButtonElement>) =>
-                ((e.target as HTMLButtonElement).style.backgroundColor =
-                  "#f7ab74")
-              }
-              onClick={() => {
-                console.log(message);
-                handleAction(requestID, "deny");
-                onClose();
-              }}
-            >
-              Confirm
-            </button>
-          </div>
-        </form>
-      </div>
-    </>
-  );
+    const [descriptionLen, setDescriptionLen] = useState(0);
+    if (!isOpen) return null;
+    return (
+        <>
+            <div style={styles.transparentBackground} />
+            <div style={{ ...styles.popupContainer, height: "400px" }}>
+                <h2 style={{ textAlign: "center", margin: "0" }}>
+                    Are you sure you want to deny this account?
+                </h2>
+                <form style={{ textAlign: "center" }}>
+                    <label style={{ textAlign: "center" }}>
+                        <textarea
+                            name="postContent"
+                            rows={8}
+                            cols={63}
+                            style={{
+                                borderRadius: "12px",
+                                fontStyle: "italic",
+                                padding: "10px",
+                                margin: "10px",
+                            }}
+                            placeholder="State reason for denying account (optional)"
+                            onChange={(e) => {
+                                const currentLen = e.target.value.length;
+                                if(currentLen <= 1500) {
+                                    setDescriptionLen(currentLen);
+                                    setMessage(e.target.value);
+                                }
+                                
+                            }}
+                        />
+                    </label>
+                    <p>Characters Typed: {descriptionLen}/1500</p>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <button
+                            style={{
+                                ...styles.buttons,
+                                width: "122px",
+                                height: "37.6px",
+                                padding: "7.526px 10.752p",
+                                fontSize: "17px",
+                                margin: "0 4px 0 0",
+                            }}
+                            onMouseOver={(
+                                e: React.MouseEvent<HTMLButtonElement>
+                            ) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#e69153")
+                            }
+                            onMouseOut={(
+                                e: React.MouseEvent<HTMLButtonElement>
+                            ) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#f7ab74")
+                            }
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            style={{
+                                ...styles.buttons,
+                                width: "122px",
+                                height: "37.6px",
+                                //padding: "10px 39px",
+                                fontSize: "17px",
+                                margin: "0 0 0 4px",
+                            }}
+                            onMouseOver={(
+                                e: React.MouseEvent<HTMLButtonElement>
+                            ) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#e69153")
+                            }
+                            onMouseOut={(
+                                e: React.MouseEvent<HTMLButtonElement>
+                            ) =>
+                                ((
+                                    e.target as HTMLButtonElement
+                                ).style.backgroundColor = "#f7ab74")
+                            }
+                            onClick={() => {
+                                console.log(message);
+                                handleAction(requestID, "deny");
+                                onClose();
+                            }}
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </>
+    );
 };
 
 export default function AdminPage({
@@ -501,16 +520,19 @@ export default function AdminPage({
                             ? "#FADBD8"
                             : "#d4eaff",
 
-                        padding: "5px 10px",
-                        borderRadius: "20px",
-                        fontWeight: "700px",
-                      }}
-                    >
-                      {(request.role === "approved" && "approved") ||
-                        (request.role === "declined" && "Declined") ||
-                        (request.role === "pending" && "Pending")}
-                    </span>
-                  </td>
+                                                padding: "5px 10px",
+                                                borderRadius: "20px",
+                                                fontWeight: "700px",
+                                            }}
+                                        >
+                                            {(request.role === "approved" &&
+                                                "Approved") ||
+                                                (request.role === "declined" &&
+                                                    "Declined") ||
+                                                (request.role === "pending" &&
+                                                    "Pending")}
+                                        </span>
+                                    </td>
 
                   <td
                     style={{

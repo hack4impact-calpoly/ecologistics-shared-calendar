@@ -18,15 +18,12 @@ interface QueryParams {
 
 async function deleteImage(imageUrl: String) {
   console.log("IN DELETE IMAGE");
-  const response = await axios.delete(
-    "http://localhost:3000/api/s3-upload/route",
-    {
-      data: { url: imageUrl },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await axios.delete("http://localhost:3000/api/s3-upload/route", {
+    data: { url: imageUrl },
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (response.status === 200) {
     console.log("Image deleted successfully:", response.data);

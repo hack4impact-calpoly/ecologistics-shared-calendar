@@ -25,14 +25,10 @@ export default function LoginPage() {
             const role = session?.user?.publicMetadata?.role;
 
             if (role === "pending") {
-                // Doesnt make sense for the user to be logged in if pending.
-                session.end();
                 router.push("/confirmation-page");
             } else if (role === "admin" || role === "approved") {
                 router.push("/calendar");
             } else if (role === "declined") {
-                // Doesnt make sense for the user to be logged in if declined.
-                //session.end();
                 router.push("/declined");
             }
         }

@@ -1,6 +1,6 @@
 # :earth_americas: Ecologistics: Shared Calendar
 
-Shared calendar for Ecologistics by H4I.
+Shared calendar for Ecologistics by H4I. Streamlining the process of planning events for Ecologistics using Next.js, MongoDB, Clerk
 
 ## Table of Contents
 

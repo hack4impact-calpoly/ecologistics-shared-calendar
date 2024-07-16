@@ -23,36 +23,36 @@ export default authMiddleware({
       "/eventDetails",
     ];
 
-    // Define route-specific permissions
-    const routePermissions: { [key: string]: string[] } = {
-      "/admin": ["admin"],
-      // "/eventDetails": ["admin", "approved"],
-      "/eventBar": ["admin", "approved"],
-      "/calendar": ["admin", "approved"],
-      "/confirmation-page": ["pending"],
-      "/adminAccounts": ["admin"],
-      "/declined": ["declined"],
-    };
+        // Define route-specific permissions
+        const routePermissions: { [key: string]: string[] } = {
+            "/admin": ["admin"],
+            "/adminEvents": ["admin"],
+            "/eventBar": ["admin", "approved"],
+            "/calendar": ["admin", "approved"],
+            "/confirmation-page": ["pending"],
+            "/adminAccounts": ["admin"],
+            "/declined": ["declined"],
+        };
 
     // Check if the current route is public
     const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
 
-    // Check if the user is authenticated
-    if (!auth.userId && !isPublicRoute) {
-      // Redirect unauthenticated users to sign-in page
-      const url = new URL("/login", req.url);
-      return NextResponse.redirect(url);
-    }
+        // Check if the user is authenticated
+        if (!auth.userId && !isPublicRoute) {
+            // Redirect unauthenticated users to sign-in page
+            const url = new URL("/", req.url);
+            return NextResponse.redirect(url);
+        }
 
-    // Check if the user has access to the current route
-    const requiredRoles = routePermissions[req.nextUrl.pathname];
-    const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
-    const role = metadata?.role;
-    if (requiredRoles && !requiredRoles.includes(role)) {
-      // Redirect users without the required role to a forbidden page or homepage
-      const url = new URL("/login", req.url);
-      return NextResponse.redirect(url);
-    }
+        // Check if the user has access to the current route
+        const requiredRoles = routePermissions[req.nextUrl.pathname];
+        const metadata = auth?.sessionClaims?.public_metadata as UserMetadata;
+        const role = metadata?.role || "pending";
+        if (requiredRoles && !requiredRoles.includes(role)) {
+            // Redirect users without the required role to a forbidden page or homepage
+            const url = new URL("/", req.url);
+            return NextResponse.redirect(url);
+        }
 
     // Allow access to the requested route
     return NextResponse.next();

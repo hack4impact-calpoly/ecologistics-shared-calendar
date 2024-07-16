@@ -5,6 +5,7 @@ import { useSignUp, useSession, useSignIn } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
+import { clerkClient } from "@clerk/nextjs/server";
 import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
 export default function SignUp() {
   const router = useRouter();
@@ -21,8 +22,8 @@ export default function SignUp() {
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [phone, setPhone] = useState("");
-
   const [position, setPosition] = useState("");
+  const [organizationLen, setOrganizationLen] = useState(0);
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -124,15 +125,19 @@ export default function SignUp() {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    try {
-      // await signUp.create({
-      //   emailAddress: email,
-      //   password: password,
-      //   firstName: fName,
-      //   lastName: lName,
-      // });
+    // Password validation
+    const passwordRegex = /^(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordValidation(
+        "Password must be at least 8 characters long and include a number."
+      );
+      return;
+    } else {
+      setPasswordValidation(""); // Clear any previous validation messages
+    }
 
-      //delete previous session if user was already logged in
+    try {
+      //delete previous session if user was alread logged in
       if (session) {
         await session.end();
       }
@@ -168,7 +173,10 @@ export default function SignUp() {
     }
   };
 
-  const onPressVerify = async (code: string) => {
+  const onPressVerify = async (e: any) => {
+    /*
+        Verifies confirmation code
+        */
     if (!isLoaded) {
       return;
     }
@@ -179,12 +187,14 @@ export default function SignUp() {
       });
       if (completeSignUp.status !== "complete") {
         console.log(JSON.stringify(completeSignUp, null, 2));
-        return;
       }
 
+      //if successfully created clerk user, create in local db
       if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
-
+        await setActive({
+          session: completeSignUp.createdSessionId,
+        });
+        //create user in DB
         await axios.post("/api/userRoutes", {
           email: email,
           organization: organization,
@@ -285,9 +295,18 @@ export default function SignUp() {
                   placeholder="Enter Organization Name"
                   className={styles.input}
                   value={organization}
-                  onChange={(e) => setOrganization(e.target.value)}
+                  onChange={(e) => {
+                    const currLength = e.target.value.length;
+                    if (currLength <= 40) {
+                      setOrganizationLen(currLength);
+                      setOrganization(e.target.value);
+                    }
+                  }}
                   required
                 />
+                {/* <p className={styles.characterCount}>
+                  Characters Typed: {organizationLen}/32
+                </p> */}
               </div>
             </div>
 
@@ -424,23 +443,8 @@ export default function SignUp() {
             </button>
           </form>
         )}
-        {pendingVerification && (
-          /*<div>
-                        <form>
-                            <input
-                                value={code}
-                                placeholder="Code..."
-                                onChange={(e) => setCode(e.target.value)}
-                            />
-                            <button onClick={onPressVerify}>
-                                Verify Email
-                            </button>
-                        </form>
-                        <p>
-                            Enter 6 digit code sent to email address: {email}.
-                        </p>
-                    </div>*/
 
+        {pendingVerification && (
           <div className={`${styles.mainContainer}`}>
             <h3>Verify your email address</h3>
             <p>
