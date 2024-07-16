@@ -6,36 +6,45 @@ import { OrganizationInvitation, getAuth } from "@clerk/nextjs/server";
 import axios from "axios";
 
 interface UserMetadata {
-    role: string;
+  role: string;
+  organization: string;
 }
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-    await connectDB();
-    const method = req.method;
+  await connectDB();
+  const method = req.method;
 
-    switch (method) {
-        case "GET":
-            try {
-                const { userId: clerkId } = getAuth(req);
-                console.log(clerkId);
-                if (clerkId) {
-                    const user = await User.findOne({ clerkId });
-                    if (!user) {
-                        return res.status(404).json({ data: "User not found" });
-                    }
-                    res.status(200).json({ success: true, data: user });
-                }
-            } catch (error) {
-                console.log(error);
-                res.status(400).json({
-                    success: false,
-                    message: error,
-                });
+  switch (method) {
+    case "GET":
+      try {
+        const { userId: clerkId } = getAuth(req);
+
+        if (clerkId) {
+          const { createdBy } = req.query;
+          if (createdBy) {
+            const user = await User.findById(createdBy.toString());
+            if (!user) {
+              return res.status(404).json({ data: "User not found" });
             }
-            break;
+            res.status(200).json({ success: true, data: user });
+          }
+          const user = await User.findOne({ clerkId });
+          if (!user) {
+            return res.status(404).json({ data: "User not found" });
+          }
+          res.status(200).json({ success: true, data: user });
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(400).json({
+          success: false,
+          message: error,
+        });
+      }
+      break;
 
         case "POST":
             try {
@@ -142,11 +151,11 @@ export default async function handler(
             }
             break;
 
-        default:
-            res.status(405).json({
-                success: false,
-                message: "METHOD NOT ALLOWED. ONLY (GET, POST, DELETE) ALLOWED",
-            });
-            break;
-    }
+    default:
+      res.status(405).json({
+        success: false,
+        message: "METHOD NOT ALLOWED. ONLY (GET, POST, DELETE) ALLOWED",
+      });
+      break;
+  }
 }

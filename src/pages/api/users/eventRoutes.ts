@@ -89,7 +89,7 @@ export default async function handler(
       const user = await User.findOne({ clerkId });
 
       const event = await Event.create({
-        organization: user['organization'],
+        organization: user["organization"],
         title,
         startDate,
         endDate,

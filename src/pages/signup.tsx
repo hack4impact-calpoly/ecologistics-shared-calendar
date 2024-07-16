@@ -1,12 +1,12 @@
 import Layout from "../components/layout";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useSignUp, useSession } from "@clerk/nextjs";
+import { useSignUp, useSession, useSignIn } from "@clerk/nextjs";
 import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
 import { clerkClient } from "@clerk/nextjs/server";
-
+import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
 export default function SignUp() {
   const router = useRouter();
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -149,7 +149,7 @@ export default function SignUp() {
         lastName: lName,
       });
 
-      // send the email.
+      // send the verification email
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
@@ -204,12 +204,73 @@ export default function SignUp() {
           position: position,
         });
 
-        await router.push("/confirmation-page");
+        // send the confirmation email to organization
+        await fetch("/api/sendGrid/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: email,
+            firstName: fName,
+            orgName: organization,
+            templateId: "d-d1407cdb0ce14e33957c5b15a7189c0f",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+
+        // send email notif to admin
+        const admin_response = await fetch(
+          "/api/admins/userRoutes/?role=admin" // get admin email first
+        );
+        if (!admin_response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const admin = await admin_response.json();
+        const admin_email = admin.data.email;
+        await fetch("/api/sendGrid/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: admin_email,
+            firstName: fName,
+            orgName: organization,
+            templateId: "d-6b5fb63a4d5f41d5aa552e74be1bf3c1",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+
+        router.push("/confirmation-page");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(JSON.stringify(err, null, 2));
     }
   };
+
   return (
     <Layout>
       <style jsx>{`

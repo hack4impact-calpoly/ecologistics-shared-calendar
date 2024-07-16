@@ -2,24 +2,26 @@ import { authMiddleware } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
 interface UserMetadata {
-    role: string;
+  role: string;
 }
 
 export default authMiddleware({
-    async afterAuth(auth, req: NextRequest) {
-        // Define public routes
-        const publicRoutes = [
-            "/",
-            "/login",
-            "/signup",
-            "/forgot-password",
-            "/api/s3-upload/route",
-            "/api/test",
-            "/api/users/eventRoutes",
-            "/api/s3-upload/test",
-            "/publicCalendar",
-            "/eventDetails",
-        ];
+  async afterAuth(auth, req: NextRequest) {
+    // Define public routes
+    const publicRoutes = [
+      "/",
+      "/login",
+      "/signup",
+      "/forgot-password",
+      "/api/s3-upload/route",
+      "/api/test",
+      "/api/users/eventRoutes",
+      "/api/s3-upload/test",
+      "/api/sendGrid/orgRoutes",
+      "/api/admins/userRoutes",
+      "/publicCalendar",
+      "/eventDetails",
+    ];
 
         // Define route-specific permissions
         const routePermissions: { [key: string]: string[] } = {
@@ -32,8 +34,8 @@ export default authMiddleware({
             "/declined": ["declined"],
         };
 
-        // Check if the current route is public
-        const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
+    // Check if the current route is public
+    const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
 
         // Check if the user is authenticated
         if (!auth.userId && !isPublicRoute) {
@@ -52,11 +54,11 @@ export default authMiddleware({
             return NextResponse.redirect(url);
         }
 
-        // Allow access to the requested route
-        return NextResponse.next();
-    },
+    // Allow access to the requested route
+    return NextResponse.next();
+  },
 });
 
 export const config = {
-    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };
