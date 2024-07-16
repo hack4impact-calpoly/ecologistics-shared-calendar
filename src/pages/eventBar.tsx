@@ -8,6 +8,7 @@ import { getFormattedDate } from "../utils/events";
 function Event(event: EventDocument) {
   const { styles } = useEventBarStyles();
   const [isHovered, setIsHovered] = React.useState(false);
+  const [truncatedDescription, setTruncatedDescription] = useState("");
 
   const router = useRouter(); // Create a router instance
 
@@ -15,6 +16,18 @@ function Event(event: EventDocument) {
   const navigateToEventDetails = () => {
     router.push("/eventDetails/?eventId=" + event._id);
   };
+
+  useEffect(() => {
+    const truncateText = (text: string, maxLength: number) => {
+      if (text.length <= maxLength) {
+        return text;
+      }
+      return text.substring(0, maxLength) + "...";
+    };
+
+    setTruncatedDescription(truncateText(event.description, 400));
+    console.log(truncatedDescription)
+  }, [event.description]);
 
   return (
     <div
@@ -50,7 +63,7 @@ function Event(event: EventDocument) {
             {event.organization}
           </div>
         </div>
-        <div style={styles.eventText}>{event.description}</div>
+        <div style={styles.eventText}>{truncatedDescription}</div>
       </div>
       <div
         style={{
@@ -66,7 +79,8 @@ function Event(event: EventDocument) {
         {/* If you have an image URL you can use an <img> tag here */}
         <img
           src={
-            event.imageLink || "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
+            event.imageLink ||
+            "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
           }
           alt="Event Image"
           style={{ height: "100%", width: "100%", objectFit: "cover" }}
@@ -77,7 +91,13 @@ function Event(event: EventDocument) {
 }
 
 // Main EventBar Component
-export default function EventBar({ events, totalEvents }: { events: EventDocument[], totalEvents: EventDocument[] }) {
+export default function EventBar({
+  events,
+  totalEvents,
+}: {
+  events: EventDocument[];
+  totalEvents: EventDocument[];
+}) {
   const styles = useEventBarStyles();
   const [windowHeight, setWindowHeight] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
@@ -97,7 +117,6 @@ export default function EventBar({ events, totalEvents }: { events: EventDocumen
     events || []
   );
 
-
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
@@ -114,9 +133,6 @@ export default function EventBar({ events, totalEvents }: { events: EventDocumen
   useEffect(() => {
     setFilteredEvents(events || []);
   }, [events]);
-  
-
-      
 
   return (
     <div
