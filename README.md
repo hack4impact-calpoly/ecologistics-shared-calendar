@@ -1,6 +1,6 @@
 # :earth_americas: Ecologistics: Shared Calendar
 
-Shared calendar for Ecologistics by H4I.
+Shared calendar for Ecologistics by H4I. Streamlining the process of planning events for Ecologistics using Next.js, MongoDB, Clerk
 
 ## Table of Contents
 
@@ -13,14 +13,16 @@ Shared calendar for Ecologistics by H4I.
 
 ### Purpose
 
-{Short paragraph description of the non-profit mission and the purpose of this project. Who will this project help, why is it necessary. Impact of the project.}
+The environmental community in San Luis Obispo has repeatedly had scheduling conflicts between different organizations that split the possible attendees, and confuse volunteers. We aim to create a centralized place for different charitable groups to post events on a calendar, to create better communication for volunteer-to-organization, and organization-to-organization.
 
 ### Team
 
-The Ecologistics Calendar team consists of {#} Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
+The Ecologistics Calendar team consists of 15 Cal Poly students. Over the course of about 9 months, we worked as a team to deploy this web application. The team members are listed below:
 
-- [Jackson McLaughlin](https://www.linkedin.com/) - Project Manager
-- [First Last](https://www.linkedin.com/) - Designer
+- [Jackson McLaughlin](https://www.linkedin.com/in/jackson-mclaughlin/) - Project Manager
+- [Christine Ha](https://www.linkedin.com/in/christinenha/) - Designer
+- [Davis Morales](https://www.linkedin.com/in/davismoralescs/) - Designer
+- [Emily Yarvis](https://www.linkedin.com/in/emily-yarvis/) - Designer
 - [Hannah Moshtaghi](https://www.linkedin.com/in/hannah-moshtaghi/) - Tech Lead
 - [Muzart Tuman](https://www.linkedin.com/in/muzart-tuman/) - Tech Lead
 - [Wesley Luu](https://www.linkedin.com/in/wesley-luu-067771204/) - Software Developer
