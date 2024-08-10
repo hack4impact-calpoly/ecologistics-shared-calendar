@@ -214,7 +214,7 @@ export default function SignUp() {
             emailAddress: email,
             firstName: fName,
             orgName: organization,
-            templateId: "d-d1407cdb0ce14e33957c5b15a7189c0f",
+            templateId: "d-77a657d34e704e7286fe3badf3868f53", //replaced
           }),
         })
           .then((response) => {
@@ -248,7 +248,7 @@ export default function SignUp() {
             emailAddress: admin_email,
             firstName: fName,
             orgName: organization,
-            templateId: "d-6b5fb63a4d5f41d5aa552e74be1bf3c1",
+            templateId: "d-d-74ef1ec42582458a849fb2a65c7235c0", // replaced
           }),
         })
           .then((response) => {

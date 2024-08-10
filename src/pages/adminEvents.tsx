@@ -103,7 +103,7 @@ export default function AdminRequestTable() {
           firstName: user?.data?.firstName,
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
-          templateId: "d-f0ca1f5da3e8469a9359853739363f75",
+          templateId: "d-d91e07d6440a460eaae6e9d4203a6936", // replaced
         }),
       })
         .then((response) => {
@@ -167,7 +167,7 @@ export default function AdminRequestTable() {
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
           deniedReason: message,
-          templateId: "d-aa8f449a19a740109402259795a246e9",
+          templateId: "d-16d0c9212a1c46ce9d7dd50b623f4e39", // replaced 
         }),
       })
         .then((response) => {

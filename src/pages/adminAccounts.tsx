@@ -59,7 +59,7 @@ export default function AdminRequestTable() {
             emailAddress: user?.email,
             firstName: user?.firstName,
             orgName: user?.organization,
-            templateId: "d-47bfcca8bafb4eeda0408372ca72084a",
+            templateId: "d-ff6ffd8130ce46c99acd82aa60452890", // replaced
           }),
         })
           .then((response) => {
@@ -112,7 +112,7 @@ export default function AdminRequestTable() {
             firstName: user?.firstName,
             orgName: user?.organization,
             deniedReason: message,
-            templateId: "d-d62f3913815740519a71dee0084f6cfc",
+            templateId: "d-d4b7037961ac48d9b1a02bef52494c1d", // replaced
           }),
         })
           .then((response) => {

@@ -252,7 +252,7 @@ export default function AddEventPanel({
           firstName: user?.firstName,
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
-          templateId: "d-617ef75e7ee24ae09d4a63d92bda3db7",
+          templateId: "d-52ab27ece2254b4fa7b6794d2574d04e", //replaced
         }),
       })
         .then((response) => {
@@ -286,7 +286,7 @@ export default function AddEventPanel({
           firstName: user?.firstName || "default",
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
-          templateId: "d-7a164dd16b2546539e71c7ec8ef21342",
+          templateId: "d-f6a46ab1b6264991b690439fccb4e281", //replaced
         }),
       })
         .then((response) => {
