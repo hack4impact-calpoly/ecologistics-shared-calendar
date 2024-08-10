@@ -93,7 +93,7 @@ export default function EventPage() {
               <img
                 src={
                   event.imageLink ||
-                  "https://calendar-image-storage.s3.amazonaws.com/Screenshot+2024-05-27+at+3.27.32%E2%80%AFPM.png"
+                  "https://calendar-image-upload.s3.us-east-2.amazonaws.com/elementor-placeholder-image.webp"
                 }
                 alt="Event Image"
                 style={{ height: "100%", width: "100%", objectFit: "cover" }}
