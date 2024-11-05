@@ -7,7 +7,6 @@ import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
 
-
 interface AddEventForm {
   //organization: string;
   title: string;
@@ -230,7 +229,6 @@ export default function AddEventPanel({
         }
 
         console.log("CREATED EVENT: ", eventResponse);
-        
       } else {
         //setFormErrors((prev) => ({ ...prev, photo: "Photo is required" }));
       }
@@ -392,19 +390,19 @@ export default function AddEventPanel({
         type="text"
         style={styles.input}
         onChange={(e) => {
-          
           const currLength = e.target.value.length;
-          if(currLength <= 45) {
+          if (currLength <= 45) {
             setTitleCharsTyped(currLength);
             setFormData({ ...formData, title: e.target.value });
           }
-          
         }}
         value={formData.title}
         disabled={isLoading}
         required
       />
-      <p style = {styles.characterCount}>Characters Typed: {titleCharsTyped}/45</p>
+      <p style={styles.characterCount}>
+        Characters Typed: {titleCharsTyped}/45
+      </p>
 
       <div style={styles.horizontal}>
         <div style={styles.inputContainer}>
@@ -492,14 +490,16 @@ export default function AddEventPanel({
         style={styles.textarea}
         onChange={(e) => {
           const currLength = e.target.value.length;
-          if(currLength <= 1500) {
+          if (currLength <= 1500) {
             setDesCharsTyped(currLength);
             setFormData({ ...formData, description: e.target.value });
           }
         }}
         value={formData.description}
       ></textarea>
-      <p style = {styles.characterCount}>Characters Typed: {desCharsTyped}/1500</p>
+      <p style={styles.characterCount}>
+        Characters Typed: {desCharsTyped}/1500
+      </p>
       {formErrors.description && (
         <div style={styles.errorBox}>
           <p style={styles.error}>{formErrors.description}</p>
@@ -660,7 +660,7 @@ export default function AddEventPanel({
         </div>
       )}
 
-      <button style={styles.button} type="submit" disabled={isLoading} >
+      <button style={styles.button} type="submit" disabled={isLoading}>
         {isLoading ? "Loading..." : "Add Event"}
       </button>
     </form>
@@ -767,7 +767,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
   },
-  characterCount:{
+  characterCount: {
     color: "grey",
-  }
+  },
 };

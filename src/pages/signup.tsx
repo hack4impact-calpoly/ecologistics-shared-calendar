@@ -248,7 +248,7 @@ export default function SignUp() {
             emailAddress: admin_email,
             firstName: fName,
             orgName: organization,
-            templateId: "d-d-74ef1ec42582458a849fb2a65c7235c0", // replaced
+            templateId: "d-74ef1ec42582458a849fb2a65c7235c0", // replaced
           }),
         })
           .then((response) => {
