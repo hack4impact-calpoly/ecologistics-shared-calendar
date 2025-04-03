@@ -242,7 +242,6 @@ function useEventBarStyles() {
     },
     eventText: {
       textAlign: "center", //change
-      overflow: "scroll",
       fontSize: "0.95rem",
     },
     headerContainer: {
