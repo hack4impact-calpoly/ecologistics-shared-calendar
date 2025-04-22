@@ -297,7 +297,7 @@ export default function SignUp() {
                   value={organization}
                   onChange={(e) => {
                     const currLength = e.target.value.length;
-                    if (currLength <= 40) {
+                    if (currLength <= 150) {
                       setOrganizationLen(currLength);
                       setOrganization(e.target.value);
                     }

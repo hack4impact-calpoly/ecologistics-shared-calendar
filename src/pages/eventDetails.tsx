@@ -28,6 +28,7 @@ export default function EventPage() {
   const [event, setEvent] = React.useState<EventDocument | null>(null);
   const [address, setAddress] = React.useState<Address | null>(null);
   const [truncatedDescription, setTruncatedDescription] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const router = useRouter();
   const eventId = router.query.eventId;
@@ -70,6 +71,10 @@ export default function EventPage() {
     }
   }, [event]);
 
+  const handleToggleExpand = () => {
+    setExpanded(!expanded); // Toggle the expanded state
+  };
+
   return (
     <Layout>
       {event && (
@@ -100,7 +105,25 @@ export default function EventPage() {
               />
             </div>
             <div style={styles.descriptionBox}>
-              <p style={styles.descriptionText}>{truncatedDescription}</p>
+              <p style={styles.descriptionText}>
+              {expanded ? event.description : truncatedDescription}
+              </p>
+              {!expanded && event.description && event.description.length > 600 && (
+                <button
+                  onClick={handleToggleExpand}
+                  style={styles.moreButton}
+                >
+                  more
+                </button>
+              )}
+              {expanded && (
+                <button
+                  onClick={handleToggleExpand}
+                  style={styles.moreButton}
+                >
+                  less
+                </button>
+              )}
             </div>
             <div style={styles.locationAndMapContainer}>
               <div style={styles.locationTypeContainer}>
@@ -193,9 +216,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "left",
     padding: "8px",
     marginBottom: "16px",
+    height: "auto",
   },
   descriptionText: {
-    height: "100px",
     fontFamily: "DM Sans",
     fontSize: "14px",
     margin: "0",
@@ -227,5 +250,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "flex-start", // Changed to align items at the top
     justifyContent: "space-between", // Adjust if you want a different spacing
     width: "100%", // Ensures the container takes up the full width
+  },
+  moreButton: {
+    backgroundColor: "white",
+    color: "#5B5B5B",
+    border: "none",
+    padding: "0px",
+    cursor: "pointer",
+    fontSize: "14px",
+    textAlign: "right",
+    marginTop: "0px",
+    display: "inline"
   },
 };
