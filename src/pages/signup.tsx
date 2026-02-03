@@ -24,6 +24,7 @@ export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [position, setPosition] = useState("");
   const [organizationLen, setOrganizationLen] = useState(0);
+  const [verifying, setVerifying] = useState(false);
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -88,7 +89,7 @@ export default function SignUp() {
   // Handle backspace key
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) {
     const input = e.target as HTMLInputElement;
     const previousInput = inputRefs[index - 1]?.current;
@@ -97,7 +98,7 @@ export default function SignUp() {
     if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
       e.preventDefault();
       setCode(
-        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1)
+        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1),
       );
       if (previousInput) {
         previousInput.focus();
@@ -129,7 +130,7 @@ export default function SignUp() {
     const passwordRegex = /^(?=.*\d).{8,}$/;
     if (!passwordRegex.test(password)) {
       setPasswordValidation(
-        "Password must be at least 8 characters long and include a number."
+        "Password must be at least 8 characters long and include a number.",
       );
       return;
     } else {
@@ -167,7 +168,7 @@ export default function SignUp() {
               backgroundColor: "white", // Green background color
               color: "#red", // White text color
             },
-          }
+          },
         );
       }
     }
@@ -181,10 +182,17 @@ export default function SignUp() {
       return;
     }
 
+    if (verifying) {
+      return;
+    }
+
+    setVerifying(true);
+
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
+
       if (completeSignUp.status !== "complete") {
         console.log(JSON.stringify(completeSignUp, null, 2));
       }
@@ -232,7 +240,7 @@ export default function SignUp() {
 
         // send email notif to admin
         const admin_response = await fetch(
-          "/api/admins/userRoutes/?role=admin" // get admin email first
+          "/api/admins/userRoutes/?role=admin", // get admin email first
         );
         if (!admin_response.ok) {
           throw new Error("Network response was not ok");
@@ -268,6 +276,8 @@ export default function SignUp() {
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -466,6 +476,13 @@ export default function SignUp() {
                   onPaste={handlePaste}
                 />
               ))}
+            </div>
+
+            <div className={styles.loadingSlot} aria-live="polite">
+              <div
+                className={`${styles.loadingCircle} ${verifying ? styles.loadingVisible : ""}`}
+                aria-label="Verifying"
+              />
             </div>
           </div>
         )}
