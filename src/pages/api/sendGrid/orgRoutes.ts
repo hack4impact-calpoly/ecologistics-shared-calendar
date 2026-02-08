@@ -15,7 +15,7 @@ export default async function handler(
     emailAddress,
     firstName,
     orgName,
-    deniedReason,
+    deniedReason, 
     eventTitle,
     templateId,
   } = req.body;

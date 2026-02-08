@@ -93,7 +93,7 @@ export default function AdminRequestTable() {
       }
       const user = await uid_response.json();
       //send email
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,6 @@ export default function AdminRequestTable() {
           firstName: user?.data?.firstName,
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
-          templateId: "d-d91e07d6440a460eaae6e9d4203a6936", // replaced
         }),
       })
         .then((response) => {
@@ -156,7 +155,7 @@ export default function AdminRequestTable() {
       }
       const user = await uid_response.json();
       //send email
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,7 +166,6 @@ export default function AdminRequestTable() {
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
           deniedReason: message,
-          templateId: "d-16d0c9212a1c46ce9d7dd50b623f4e39", // replaced 
         }),
       })
         .then((response) => {

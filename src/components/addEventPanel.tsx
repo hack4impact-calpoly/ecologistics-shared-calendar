@@ -240,7 +240,7 @@ export default function AddEventPanel({
       }));
     } finally {
       // send the confirmation email.
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -250,7 +250,6 @@ export default function AddEventPanel({
           firstName: user?.firstName,
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
-          templateId: "d-52ab27ece2254b4fa7b6794d2574d04e", //replaced
         }),
       })
         .then((response) => {
@@ -274,7 +273,7 @@ export default function AddEventPanel({
       const admin = await admin_response.json();
       const admin_email = admin.data.email;
       console.log(admin_email);
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -284,7 +283,6 @@ export default function AddEventPanel({
           firstName: user?.firstName || "default",
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
-          templateId: "d-f6a46ab1b6264991b690439fccb4e281", //replaced
         }),
       })
         .then((response) => {

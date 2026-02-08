@@ -50,7 +50,7 @@ export default function AdminRequestTable() {
       const user = users.find((user) => user._id === id);
       if (user) {
         // send email telling org they've been approved
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -59,7 +59,6 @@ export default function AdminRequestTable() {
             emailAddress: user?.email,
             firstName: user?.firstName,
             orgName: user?.organization,
-            templateId: "d-ff6ffd8130ce46c99acd82aa60452890", // replaced
           }),
         })
           .then((response) => {
@@ -102,7 +101,7 @@ export default function AdminRequestTable() {
       const user = users.find((user) => user._id === id);
       if (user) {
         // send email telling org they've been denied
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -112,7 +111,6 @@ export default function AdminRequestTable() {
             firstName: user?.firstName,
             orgName: user?.organization,
             deniedReason: message,
-            templateId: "d-d4b7037961ac48d9b1a02bef52494c1d", // replaced
           }),
         })
           .then((response) => {

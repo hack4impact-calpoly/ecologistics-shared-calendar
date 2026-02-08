@@ -205,7 +205,7 @@ export default function SignUp() {
         });
 
         // send the confirmation email to organization
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -214,7 +214,6 @@ export default function SignUp() {
             emailAddress: email,
             firstName: fName,
             orgName: organization,
-            templateId: "d-77a657d34e704e7286fe3badf3868f53", //replaced
           }),
         })
           .then((response) => {
@@ -239,7 +238,7 @@ export default function SignUp() {
         }
         const admin = await admin_response.json();
         const admin_email = admin.data.email;
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -248,7 +247,6 @@ export default function SignUp() {
             emailAddress: admin_email,
             firstName: fName,
             orgName: organization,
-            templateId: "d-74ef1ec42582458a849fb2a65c7235c0", // replaced
           }),
         })
           .then((response) => {
