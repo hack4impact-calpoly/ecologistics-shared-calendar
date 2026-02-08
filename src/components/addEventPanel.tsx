@@ -210,7 +210,7 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
-          status: "Pending",
+          status: user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
         };
 
