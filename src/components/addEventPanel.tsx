@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
 
+
 interface AddEventForm {
   //organization: string;
   title: string;
@@ -210,7 +211,7 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
-          status: user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
+          status: user.publicMetadata.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
         };
 
