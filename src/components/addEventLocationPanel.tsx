@@ -11,10 +11,12 @@ export default function AddEventLocationPanel(){
 
 
     return(
-    <div>
+    <div style={styles.container}>
 
-    <h2>Create New Event</h2>
-    <p>Where will this event take place?</p>
+    <h2 style={styles.header}>Create New Event</h2>
+    <p style={styles.subHeader}>Where will this event take place?</p>
+
+    <div style={styles.toggleContainer}>
 
     <button style={mode === "in-person" ? styles.activeModeButton : styles.modeButton} onClick={() => setMode("in-person")}>
         In Person
@@ -22,11 +24,13 @@ export default function AddEventLocationPanel(){
     <button style={mode === "virtual" ? styles.activeModeButton : styles.modeButton} onClick={() => setMode("virtual")}>
         Virtual
     </button>
+
+    </div>
     
-    <h3>Set Event Location</h3>
+    <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
     {mode == "in-person" && (
-        <div>
+        <div style={styles.methodContainer}>
         <button style={method === "pin" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("pin")}>
             Pin
         </button>
@@ -46,7 +50,32 @@ export default function AddEventLocationPanel(){
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-
+container: {
+    width: "100%",
+    maxWidth: "550px",
+    padding: "20px",
+    background: "#e5e5e5",
+    borderRadius: "12px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  header: {
+    margin: 0,
+  },
+  subHeader: {
+    color: "#333",
+  },
+toggleContainer: {
+    display: "flex",
+    background: "#bdbdbd",
+    borderRadius: "999px",
+    padding: "4px",
+  },
+  methodContainer: {
+    display: "flex",
+    gap: "12px",
+  },
 modeButton: {
     flex: 1,
     border: "none",

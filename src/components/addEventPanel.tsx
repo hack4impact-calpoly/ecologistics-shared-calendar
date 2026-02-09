@@ -384,7 +384,6 @@ export default function AddEventPanel({
 
     
     <form style={styles.container} onSubmit={onEventAdd}>
-      <AddEventLocationPanel />
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
       <h4 style={styles.inputTitle}>
