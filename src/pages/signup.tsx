@@ -182,6 +182,7 @@ export default function SignUp() {
       return;
     }
 
+    // Prevent duplicate verification attempts
     if (verifying) {
       return;
     }
@@ -277,6 +278,7 @@ export default function SignUp() {
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
     } finally {
+      // Reset verifying state, even if verification failed or downstream call threw
       setVerifying(false);
     }
   };
@@ -478,7 +480,9 @@ export default function SignUp() {
               ))}
             </div>
 
+            {/* Keeps dedicated div for loading circle so the screen does not jump */}
             <div className={styles.loadingSlot} aria-live="polite">
+              {/* Conditionally renders loading circle only while verification is running */}
               <div
                 className={`${styles.loadingCircle} ${verifying ? styles.loadingVisible : ""}`}
                 aria-label="Verifying"
