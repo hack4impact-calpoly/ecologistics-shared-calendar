@@ -6,8 +6,8 @@ type InPersonMethod = "pin" | "address" | "search";
 
 export default function AddEventLocationPanel(){
 
-    const [mode, setMode] = useState<LocationMode>("in-person");
-    const [method, setMethod] = useState<InPersonMethod>("pin");
+    const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
+    const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
 
 
     return(
@@ -18,6 +18,7 @@ export default function AddEventLocationPanel(){
 
     <div style={styles.toggleContainer}>
 
+    {/* activates "active" css for button depending on mode*/}
     <button style={mode === "in-person" ? styles.activeModeButton : styles.modeButton} onClick={() => setMode("in-person")}>
         In Person
     </button>
@@ -29,6 +30,7 @@ export default function AddEventLocationPanel(){
     
     <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
+    {/* activates "active" css for button depending on method*/}
     {mode == "in-person" && (
         <div style={styles.methodContainer}>
         <button style={method === "pin" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("pin")}>
