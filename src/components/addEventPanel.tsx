@@ -6,6 +6,7 @@ import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
+import MapPin from "./mapPin";
 
 interface AddEventForm {
   //organization: string;
@@ -130,8 +131,8 @@ export default function AddEventPanel({
 
     const response = await fetch(
       new Request(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`
-      )
+        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`,
+      ),
     );
 
     const data = await response.json();
@@ -191,7 +192,7 @@ export default function AddEventPanel({
           fileData.append("file", formData.photo);
           const uploadResponse = await axios.post(
             "api/s3-upload/route",
-            fileData
+            fileData,
           );
           uploadResult = uploadResponse.data;
         }
@@ -607,6 +608,32 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
+          <div
+            style={{
+              marginTop: "10px",
+              marginBottom: "10px",
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            
+            <MapPin
+              onPickAddress={(addr) => {
+                setFormData({
+                  ...formData,
+                  street: addr.street,
+                  city: addr.city,
+                  state: addr.state,
+                  postalCode: addr.postalCode,
+                });
+              }}
+              street={formData.street}
+              city={formData.city}
+              state={formData.state}
+              postalCode={formData.postalCode}
+            />
+          </div>
         </>
       ) : mode == "virtual" ? (
         <>
