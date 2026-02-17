@@ -1,5 +1,8 @@
 import { Resend } from 'resend';
 import { NextApiRequest, NextApiResponse } from "next";
+import EmailDeniedTemplate from "../../../components/email-denied-template";
+import EmailApprovedTemplate from "../../../components/email-approved-template";
+import { ReactElement } from "react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -39,11 +42,11 @@ export default async function handler(
 
   try {
     await sendDynamicEmail(
-    //   emailAddress,
-    //   firstName,
-    //   orgName,
-    //   deniedReason,
-    //   eventTitle,
+      emailAddress,
+      firstName,
+      orgName,
+      deniedReason,
+      eventTitle,
     );
     return res
       .status(200)
@@ -65,9 +68,6 @@ async function sendDynamicEmail(
 ) {
 
   const now : Date = new Date();
-  const year : number = now.getFullYear();
-  const month : number = now.getMonth() + 1;
-  const day : number = now.getDate();
   
   const time = now.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -86,11 +86,44 @@ async function sendDynamicEmail(
   // date & time in format : HH:mm - MM/DD/YYYY
   const date_string : string = `${time} - ${date}`;
 
+  // if there is a denied reason, this will be true
+  const hasDeniedReason =
+    typeof deniedReason === "string" && deniedReason.trim().length > 0;
+
+  let react_content: ReactElement;
+
+  if(hasDeniedReason) {
+    
+    const templateProps = {
+      firstName,
+      orgName,
+      deniedReason,
+      eventTitle,
+      date_string,
+    };
+
+    react_content = EmailDeniedTemplate ({...templateProps});
+  }
+
+  else {
+
+    const templateProps = {
+      firstName,
+      orgName,
+      deniedReason,
+      eventTitle,
+      date_string,
+    };
+
+    react_content = EmailApprovedTemplate({...templateProps});
+  }
+  
+
   const msg = {
     from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
     to: 'delivered@resend.dev', // emailAddress,
     subject: 'Hello World - Resend Testing',
-    html: '<p>It worked!</p>',
+    react: react_content,
     //reply_to: 'h4ih4h@gmail.com',
   }
 //   {
