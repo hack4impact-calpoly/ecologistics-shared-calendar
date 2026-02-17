@@ -18,24 +18,24 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-//   if (req.method !== "POST") {
-//     return res.status(405).json({ message: "Method Not Allowed" });
-//   }
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
 
-//   const {
-//     emailAddress,
-//     firstName,
-//     orgName,
-//     deniedReason, 
-//     eventTitle,
-//   } = req.body;
+  const {
+    emailAddress,
+    firstName,
+    orgName,
+    deniedReason, 
+    eventTitle,
+  } = req.body;
 
-//   if (!emailAddress || !firstName) {
-//     return res.status(400).json({
-//       message:
-//         "Missing required parameters (emailAddress, firstName)",
-//     });
-//   }
+  if (!emailAddress || !firstName) {
+    return res.status(400).json({
+      message:
+        "Missing required parameters (emailAddress, firstName)",
+    });
+  }
 
   try {
     await sendDynamicEmail(
@@ -57,20 +57,41 @@ export default async function handler(
 }
 
 async function sendDynamicEmail(
-//   emailAddress: string,
-//   firstName: string,
-//   orgName: string,
-//   deniedReason: string,
-//   eventTitle: string,
+  emailAddress: string,
+  firstName: string,
+  orgName: string,
+  deniedReason: string,
+  eventTitle: string,
 ) {
-  const msg = {
-    from: "h4ih4h@gmail.com",
-    to: 'tristanspear17@gmail.com',
-    //to: ['delivered@resend.dev'],
-    subject: 'hello world',
-    html: '<p>it works!</p>',
-    reply_to: 'h4ih4h@gmail.com',
 
+  const now : Date = new Date();
+  const year : number = now.getFullYear();
+  const month : number = now.getMonth() + 1;
+  const day : number = now.getDate();
+  
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "America/Los_Angeles",
+  });
+
+  const date = now.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+    timeZone: "America/Los_Angeles"
+  });
+
+  // date & time in format : HH:mm - MM/DD/YYYY
+  const date_string : string = `${time} - ${date}`;
+
+  const msg = {
+    from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
+    to: 'delivered@resend.dev', // emailAddress,
+    subject: 'Hello World - Resend Testing',
+    html: '<p>It worked!</p>',
+    //reply_to: 'h4ih4h@gmail.com',
   }
 //   {
 //     from: "info@ecologistics.org",
