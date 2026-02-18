@@ -8,6 +8,7 @@ import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
 import MapPin from "./mapPin";
 
+
 interface AddEventForm {
   //organization: string;
   title: string;
@@ -211,7 +212,7 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
-          status: "Pending",
+          status: user.publicMetadata.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
         };
 
