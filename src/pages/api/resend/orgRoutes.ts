@@ -92,6 +92,7 @@ async function sendDynamicEmail(
 
   let react_content: ReactElement;
 
+  // send request denied Email
   if(hasDeniedReason) {
     
     const templateProps = {
@@ -105,6 +106,7 @@ async function sendDynamicEmail(
     react_content = EmailDeniedTemplate ({...templateProps});
   }
 
+  // send request approved email
   else {
 
     const templateProps = {
@@ -121,7 +123,7 @@ async function sendDynamicEmail(
 
   const msg = {
     from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
-    to: 'delivered@resend.dev', // emailAddress,
+    to: 'h4ih4h@gmail.com', // emailAddress,
     subject: 'Hello World - Resend Testing',
     react: react_content,
     //reply_to: 'h4ih4h@gmail.com',
