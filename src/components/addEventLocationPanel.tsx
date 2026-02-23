@@ -2,7 +2,7 @@
 import { useState } from 'react' 
 
 type LocationMode = "in-person" | "virtual";
-type InPersonMethod = "pin" | "address" | "search";
+type InPersonMethod = "pin" | "search";
 
 export default function AddEventLocationPanel(){
 
@@ -35,9 +35,6 @@ export default function AddEventLocationPanel(){
         <div style={styles.methodContainer}>
         <button style={method === "pin" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("pin")}>
             Pin
-        </button>
-        <button style={method === "address" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("address")}>
-            Address
         </button>
         <button style={method === "search" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("search")}>
             Search
