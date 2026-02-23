@@ -12,10 +12,11 @@ import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
-import { EventDocument } from "database/eventSchema";
+import { EventDocument } from "../database/eventSchema";
 import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
 import { DateTime } from "luxon";
+import { useUser } from "@clerk/clerk-react";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -31,6 +32,7 @@ export interface Event {
 }
 
 export default function CalendarPage() {
+  const { user } = useUser();
   const [events, setEvents] = useState<EventDocument[]>([]);
   const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<FullCalenderRecurringEvent[]>([]);
@@ -213,7 +215,7 @@ useEffect(() => {
 
   return (
     <Layout>
-      {isShowingEventPopUp && (
+      {isShowingEventPopUp && user.publicMetadata.role != "admin" &&  (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>

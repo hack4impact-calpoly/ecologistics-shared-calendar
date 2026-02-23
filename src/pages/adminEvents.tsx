@@ -2,7 +2,6 @@ import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { EventDocument } from "../database/eventSchema";
 
 // Interfaces for Event and API responses
 interface Event {
@@ -26,14 +25,13 @@ interface ApiResponse {
 }
 
 export default function AdminRequestTable() {
-  const [events, setEvents] = useState<EventDocument[]>([]);
   const [pending, setPending] = useState<Event[]>([]);
   const [approved, setApproved] = useState<Event[]>([]);
   const [postponed, setPostponed] = useState<Event[]>([]);
   const [declined, setDeclined] = useState<Event[]>([]);
   const [archived, setArchived] = useState<Event[]>([]);
 
-  useEffect(() => {
+  const fetchEvents = () => {
     fetch("/api/users/eventRoutes")
       .then((response) => response.json())
       .then((response: ApiResponse) => {
@@ -58,7 +56,11 @@ export default function AdminRequestTable() {
         );
       })
       .catch((error) => console.error("Failed to fetch events:", error));
-  });
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   const approveEvent = async (id: string) => {
     /*
@@ -72,15 +74,6 @@ export default function AdminRequestTable() {
         status: "Approved",
         declineMessage: "",
       });
-
-      // Update the status in the user state variable
-      const updatedEvents = events.map((event) => {
-        if (event._id.toHexString() === id) {
-          return { ...event, deniedReason: "", status: "Approved" };
-        }
-        return event;
-      });
-      setEvents(updatedEvents);
 
       // send event accepted email to org
       const eventToAccept = response.data;
@@ -118,6 +111,8 @@ export default function AdminRequestTable() {
         .catch((error) => {
           console.error("Error:", error); // Handle error
         });
+
+      fetchEvents();
     } catch (err) {
       console.error(err);
     }
@@ -136,15 +131,6 @@ export default function AdminRequestTable() {
         status: "Denied",
         deniedReason: message,
       });
-      // Update the status in the user state variable
-      const updatedEvents = events.map((event) => {
-        if (event._id.toHexString() === id) {
-          return { ...event, deniedReason: message, status: "Denied" };
-        }
-        return event;
-      });
-      setEvents(updatedEvents);
-
       // send event accepted email to org
       const eventToAccept = response.data;
       // get org that created event
@@ -182,6 +168,8 @@ export default function AdminRequestTable() {
         .catch((error) => {
           console.error("Error:", error); // Handle error
         });
+
+      fetchEvents();
     } catch (err) {
       console.error(err);
     }
@@ -194,6 +182,7 @@ export default function AdminRequestTable() {
   */
     try {
       await axios.delete(`/api/admins/eventRoutes`, { data: { id } });
+      fetchEvents();
     } catch (err) {
       console.error(err);
     }

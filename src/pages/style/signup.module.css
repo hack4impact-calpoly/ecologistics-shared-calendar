@@ -425,3 +425,34 @@
 .characterCount {
   color: gray;
 }
+
+.loadingSlot {
+  margin-top: 2rem;
+  height: 3.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingCircle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 0.25rem solid rgba(0, 0, 0, 0.2);
+  border-top-color: rgba(0, 0, 0, 0.7);
+  animation: loadingSpin 0.8s linear infinite;
+
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loadingVisible {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
