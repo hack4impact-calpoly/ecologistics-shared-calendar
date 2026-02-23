@@ -6,6 +6,7 @@ import { useUser } from "@clerk/clerk-react";
 import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
+import AddEventLocationPanel from "./addEventLocationPanel";
 import MapPin from "./mapPin";
 
 
@@ -381,6 +382,8 @@ export default function AddEventPanel({
   ];
 
   return (
+
+    
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
