@@ -35,8 +35,12 @@ export default function CalendarPage() {
   const { user } = useUser();
   const [events, setEvents] = useState<EventDocument[]>([]);
   const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<FullCalenderRecurringEvent[]>([]);
-  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<
+    FullCalenderRecurringEvent[]
+  >([]);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
+    [],
+  );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
@@ -54,8 +58,8 @@ export default function CalendarPage() {
   };
 
   useEffect(() => {
-    setFutureEvents(filterFutureEvents(events))
-  }, [events])
+    setFutureEvents(filterFutureEvents(events));
+  }, [events]);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -64,17 +68,17 @@ export default function CalendarPage() {
     };
   }, []);
 
-useEffect(() => {
-  if (!events) return;
-  setCalendarEvents(
-    events.map((event) => ({
-      startRecur: event.startDate,
-      endRecur: event.endDate,
-      title: event.title,
-      id: event._id,
-    }))
-  );
-}, [events]);
+  useEffect(() => {
+    if (!events) return;
+    setCalendarEvents(
+      events.map((event) => ({
+        startRecur: event.startDate,
+        endRecur: event.endDate,
+        title: event.title,
+        id: event._id,
+      })),
+    );
+  }, [events]);
 
   // Fetch events from the database
   useEffect(() => {
@@ -104,42 +108,56 @@ useEffect(() => {
 
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
-    console.log(clickedDate)
-  
-    const filteredEvents: EventDocument[] = events.filter((event: EventDocument) => {
-      const eventStart = DateTime.fromISO(event.startDate.toISOString(), { zone: 'UTC' })
-        .setZone('America/Los_Angeles')
-        .toISODate();
-      const eventEnd = DateTime.fromISO(event.endDate.toISOString(), { zone: 'UTC' })
-        .setZone('America/Los_Angeles')
-        .toISODate();
-  
-      if (!eventStart || !eventEnd) {
-        console.log("False")
-        return false;
-      }
-  
-      return clickedDate >= new Date(eventStart) && clickedDate <= new Date(eventEnd);
-    });
-    console.log(filteredEvents)
-  
+    console.log(clickedDate);
+
+    const filteredEvents: EventDocument[] = events.filter(
+      (event: EventDocument) => {
+        const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
+          zone: "UTC",
+        })
+          .setZone("America/Los_Angeles")
+          .toISODate();
+        const eventEnd = DateTime.fromISO(event.endDate.toISOString(), {
+          zone: "UTC",
+        })
+          .setZone("America/Los_Angeles")
+          .toISODate();
+
+        if (!eventStart || !eventEnd) {
+          console.log("False");
+          return false;
+        }
+
+        return (
+          clickedDate >= new Date(eventStart) &&
+          clickedDate <= new Date(eventEnd)
+        );
+      },
+    );
+    console.log(filteredEvents);
+
     setSelectedDateEvents(filteredEvents);
   };
-  
 
   const filterFutureEvents = (events: EventDocument[]) => {
     const now = new Date();
     return events
-      .filter(event => {
+      .filter((event) => {
         const eventStart = new Date(event.startDate);
         const eventEnd = new Date(event.endDate);
         return (eventStart <= now && eventEnd >= now) || eventStart >= now;
       })
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
+      );
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
-    if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+    if (
+      calendarRef.current &&
+      !calendarRef.current.contains(event.target as Node)
+    ) {
       setSelectedDateEvents(filterFutureEvents(events));
     }
   };
@@ -160,12 +178,12 @@ useEffect(() => {
     if (gridCell) {
       const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement;
       const headerCell = document.querySelector(
-        ".fc-col-header-cell"
+        ".fc-col-header-cell",
       ) as HTMLElement;
       const cellWidth = gridCell.offsetWidth * 0.95;
       const cellHeight = headerCell.offsetHeight * 1.5;
       const addButton = document.querySelector(
-        ".fc-AddEvent-button"
+        ".fc-AddEvent-button",
       ) as HTMLElement;
       if (addButton) {
         addButton.style.width = `${cellWidth}px`;
@@ -173,10 +191,10 @@ useEffect(() => {
         addButton.style.fontSize = `${cellWidth * 0.15}px`;
       }
       const prevButton = document.querySelector(
-        ".fc-prev-button"
+        ".fc-prev-button",
       ) as HTMLElement;
       const nextButton = document.querySelector(
-        ".fc-next-button"
+        ".fc-next-button",
       ) as HTMLElement;
       if (prevButton && nextButton) {
         prevButton.style.width = `${cellHeight * 0.9}px`;
@@ -190,7 +208,7 @@ useEffect(() => {
   function setTitleFontSize() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
     const titleElement = document.querySelector(
-      ".fc-toolbar-title"
+      ".fc-toolbar-title",
     ) as HTMLElement;
 
     if (gridCells.length > 0 && titleElement) {
@@ -215,7 +233,7 @@ useEffect(() => {
 
   return (
     <Layout>
-      {isShowingEventPopUp && user.publicMetadata.role != "admin" &&  (
+      {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
@@ -266,8 +284,8 @@ useEffect(() => {
                 },
               });
             }}
-	    eventTextColor="black"
-	    eventBackgroundColor="#F7AB74"
+            eventTextColor="black"
+            eventBackgroundColor="#F7AB74"
           />
         </div>
         {windowWidth < 786 && (
@@ -280,8 +298,12 @@ useEffect(() => {
           </button>
         )}
         {!isAddingEvent ? (
-          <EventBar events={selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents} totalEvents ={events} />
-          
+          <EventBar
+            events={
+              selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents
+            }
+            totalEvents={events}
+          />
         ) : (
           <AddEventPanel
             onClose={() => setIsAddingEvent(false)}

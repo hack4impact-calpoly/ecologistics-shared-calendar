@@ -9,7 +9,6 @@ import { stat } from "fs";
 import AddEventLocationPanel from "./addEventLocationPanel";
 import MapPin from "./mapPin";
 
-
 interface AddEventForm {
   //organization: string;
   title: string;
@@ -213,7 +212,8 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
-          status: user.publicMetadata.role === "admin" ? "Approved" : "Pending",
+          status:
+            user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
         };
 
@@ -382,8 +382,6 @@ export default function AddEventPanel({
   ];
 
   return (
-
-    
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
@@ -621,7 +619,6 @@ export default function AddEventPanel({
               alignItems: "center",
             }}
           >
-            
             <MapPin
               onPickAddress={(addr) => {
                 setFormData({
