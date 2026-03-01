@@ -7,6 +7,7 @@ import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
 import { clerkClient } from "@clerk/nextjs/server";
 import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
+
 export default function SignUp() {
   const router = useRouter();
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -25,6 +26,7 @@ export default function SignUp() {
   const [position, setPosition] = useState("");
   const [organizationLen, setOrganizationLen] = useState(0);
   const [verifying, setVerifying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -42,7 +44,7 @@ export default function SignUp() {
   // Call our callback when code = 6 chars
   useEffect(() => {
     if (code.length === 6) {
-      onPressVerify(code);
+      onPressVerify();
     }
   }, [code]); //eslint-disable-line
   if (!isLoaded) {
@@ -56,17 +58,21 @@ export default function SignUp() {
     const previousInput = inputRefs[index - 1]?.current;
     const nextInput = inputRefs[index + 1]?.current;
 
-    // Update code state with single digit
-    const newCode = [code];
-    // Convert lowercase letters to uppercase
-    if (/^[a-z]+$/.test(input.value)) {
-      const uc = input.value.toUpperCase();
-      newCode[index] = uc;
-      inputRefs[index].current!.value = uc;
-    } else {
-      newCode[index] = input.value;
+    // Treat code as a 6-character string buffer
+    const codeArr = code.split("");
+    while (codeArr.length < 6) {
+      codeArr.push("");
     }
-    setCode(newCode.join(""));
+
+    let val = input.value;
+
+    if (/^[a-z]$/.test(val)) {
+      val = val.toUpperCase();
+      inputRefs[index].current!.value = val;
+    }
+    codeArr[index] = val;
+
+    setCode(codeArr.join(""));
 
     input.select();
 
@@ -97,9 +103,19 @@ export default function SignUp() {
 
     if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
       e.preventDefault();
-      setCode(
-        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1),
-      );
+
+      setCode((prevCode) => {
+        const arr = prevCode.split("");
+
+        // Ensure there are always 6 slots
+        while (arr.length < 6) {
+          arr.push("");
+        }
+        // Clear the current index instead of shrinking the string
+        arr[index] = "";
+        return arr.join("");
+      });
+
       if (previousInput) {
         previousInput.focus();
       }
@@ -158,7 +174,7 @@ export default function SignUp() {
       // change the UI to our pending section.
       setPendingVerification(true);
     } catch (err: any) {
-      if (err.errors[0].code === "form_identifier_exists") {
+      if (err.errors && err.errors[0]?.code === "form_identifier_exists") {
         toast.error(
           "This email is already in use, please use a different email.",
           {
@@ -174,10 +190,12 @@ export default function SignUp() {
     }
   };
 
-  const onPressVerify = async (e: any) => {
+  const MIN_SPINNER_MS = 1000;
+
+  const onPressVerify = async () => {
     /*
         Verifies confirmation code
-        */
+    */
     if (!isLoaded) {
       return;
     }
@@ -187,6 +205,10 @@ export default function SignUp() {
       return;
     }
 
+    // Clear previous error when starting a new attempt
+    setErrorMessage("");
+
+    const start = Date.now();
     setVerifying(true);
 
     try {
@@ -275,8 +297,25 @@ export default function SignUp() {
 
         router.push("/confirmation-page");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
+
+      // Ensure spinner is visible at least MIN_SPINNER_MS
+      const elapsed = Date.now() - start;
+      const remaining = MIN_SPINNER_MS - elapsed;
+      if (remaining > 0) {
+        await new Promise((res) => setTimeout(res, remaining));
+      }
+
+      // Set a simple red error message
+      setErrorMessage("Incorrect code. Please try again.");
+
+      // Fully reset verification UI for another attempt
+      setCode("");
+      inputRefs.forEach((r) => {
+        if (r.current) r.current.value = "";
+      });
+      inputRefs[0]?.current?.focus();
     } finally {
       // Reset verifying state, even if verification failed or downstream call threw
       setVerifying(false);
@@ -316,9 +355,6 @@ export default function SignUp() {
                   }}
                   required
                 />
-                {/* <p className={styles.characterCount}>
-                  Characters Typed: {organizationLen}/32
-                </p> */}
               </div>
             </div>
 
@@ -461,7 +497,7 @@ export default function SignUp() {
             <h3>Verify your email address</h3>
             <p>
               We emailed you a 6-digit code to {email}. Enter the code below to
-              confirm your email address
+              confirm your email address.
             </p>
             <div className={`${styles.verificationContainer}`}>
               {[0, 1, 2, 3, 4, 5].map((index) => (
@@ -476,15 +512,28 @@ export default function SignUp() {
                   onFocus={handleFocus}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   onPaste={handlePaste}
+                  disabled={verifying}
                 />
               ))}
+            </div>
+
+            {/* Reserved message slot to keep page from moving when error appears */}
+            <div className={styles.messageSlot} aria-live="polite">
+              <p
+                className={`${styles.errorMessage} ${errorMessage ? styles.visible : ""}`}
+                role="status"
+              >
+                {errorMessage}
+              </p>
             </div>
 
             {/* Keeps dedicated div for loading circle so the screen does not jump */}
             <div className={styles.loadingSlot} aria-live="polite">
               {/* Conditionally renders loading circle only while verification is running */}
               <div
-                className={`${styles.loadingCircle} ${verifying ? styles.loadingVisible : ""}`}
+                className={`${styles.loadingCircle} ${
+                  verifying ? styles.loadingVisible : ""
+                }`}
                 aria-label="Verifying"
               />
             </div>
