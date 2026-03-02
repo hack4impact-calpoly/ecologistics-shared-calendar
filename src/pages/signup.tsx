@@ -6,7 +6,6 @@ import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
 import { clerkClient } from "@clerk/nextjs/server";
-import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
 export default function SignUp() {
   const router = useRouter();
   const { signUp, isLoaded, setActive } = useSignUp();

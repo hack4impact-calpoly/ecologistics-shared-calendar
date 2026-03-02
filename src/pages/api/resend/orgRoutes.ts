@@ -1,7 +1,5 @@
 import { Resend } from 'resend';
 import { NextApiRequest, NextApiResponse } from "next";
-import EmailDeniedTemplate from "../../../components/email-denied-template";
-import EmailApprovedTemplate from "../../../components/email-approved-template";
 import { ReactElement } from "react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -31,14 +29,20 @@ export default async function handler(
     orgName,
     deniedReason, 
     eventTitle,
+    eventDescription,
+    eventTimeAndDate,
+    templateId
   } = req.body;
 
-  if (!emailAddress || !firstName) {
-    return res.status(400).json({
-      message:
-        "Missing required parameters (emailAddress, firstName)",
-    });
-  }
+
+// I don't think I need this : 
+
+  // if (!emailAddress || !firstName) {
+  //   return res.status(400).json({
+  //     message:
+  //       "Missing required parameters (emailAddress, firstName)",
+  //   });
+  // }
 
   try {
     await sendDynamicEmail(
@@ -47,6 +51,9 @@ export default async function handler(
       orgName,
       deniedReason,
       eventTitle,
+      eventDescription,
+      eventTimeAndDate,
+      templateId
     );
     return res
       .status(200)
@@ -65,76 +72,107 @@ async function sendDynamicEmail(
   orgName: string,
   deniedReason: string,
   eventTitle: string,
+  eventDescription: string,
+  eventTimeAndDate: string,
+  templateId: string,
 ) {
 
-  const now : Date = new Date();
+  // const now : Date = new Date();
   
-  const time = now.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "America/Los_Angeles",
-  });
+  // const time = now.toLocaleTimeString("en-US", {
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  //   hour12: true,
+  //   timeZone: "America/Los_Angeles",
+  // });
 
-  const date = now.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-    timeZone: "America/Los_Angeles"
-  });
+  // const date = now.toLocaleDateString("en-US", {
+  //   month: "2-digit",
+  //   day: "2-digit",
+  //   year: "numeric",
+  //   timeZone: "America/Los_Angeles"
+  // });
 
-  // date & time in format : HH:mm - MM/DD/YYYY
-  const date_string : string = `${time} - ${date}`;
+  // // date & time in format : HH:mm - MM/DD/YYYY
+  // const date_string : string = `${time} - ${date}`;
 
-  // if there is a denied reason, this will be true
-  const hasDeniedReason =
-    typeof deniedReason === "string" && deniedReason.trim().length > 0;
+  // // if there is a denied reason, this will be true
+  // const hasDeniedReason =
+  //   typeof deniedReason === "string" && deniedReason.trim().length > 0;
 
-  let react_content: ReactElement;
+  // let react_content: ReactElement;
 
-  // send request denied Email
-  if(hasDeniedReason) {
+  // // send request denied Email
+  // if(hasDeniedReason) {
     
-    const templateProps = {
-      firstName,
-      orgName,
-      deniedReason,
-      eventTitle,
-      date_string,
-    };
+  //   const templateProps = {
+  //     firstName,
+  //     orgName,
+  //     deniedReason,
+  //     eventTitle,
+  //     date_string,
+  //   };
+  // }
 
-    react_content = EmailDeniedTemplate ({...templateProps});
-  }
+  // // send request approved email
+  // else {
 
-  // send request approved email
-  else {
+  //   const templateProps = {
+  //     firstName,
+  //     orgName,
+  //     deniedReason,
+  //     eventTitle,
+  //     date_string,
+  //   };
 
-    const templateProps = {
-      firstName,
-      orgName,
-      deniedReason,
-      eventTitle,
-      date_string,
-    };
+  //   react_content = EmailApprovedTemplate({...templateProps});
+  // }
 
-    react_content = EmailApprovedTemplate({...templateProps});
+  let template: {};
+
+  switch(templateId) {
+
+    case 'org-registration-pending-client' :
+      template = {
+        id: templateId,
+        variables: {
+          firstName: firstName,
+          orgName: orgName,
+        }
+      }
+      break;
+
+    case 'org-registration-denial-client' :
+      template = {
+        id: templateId,
+        variables: {
+          firstName: firstName,
+          orgName: orgName,
+          deniedReason: deniedReason,
+        }
+      }
+      break;
+
+      case 'org-registration-approval-client' :
+      template = {
+        id: templateId,
+        variables: {
+          firstName: firstName,
+          orgName: orgName,
+        }
+      }
+      break;
+
+
+
   }
   
 
   const msg = {
     from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
     to: 'h4ih4h@gmail.com', // emailAddress,
-    subject: 'Hello World - Resend Testing',
-    react: react_content,
-    //reply_to: 'h4ih4h@gmail.com',
+    template,
   }
-//   {
-//     from: "info@ecologistics.org",
-//     to: emailAddress,
-//     first_name: firstName,
-//     unique_name: orgName,
-//     eventTitle: eventTitle,
-//     deniedReason: deniedReason,
-//     }
-  await resend.emails.send(msg);
+
+  await resend.emails.send({...msg});
 };
