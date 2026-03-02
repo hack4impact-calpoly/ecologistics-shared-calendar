@@ -116,9 +116,12 @@ export default function MapPin({
   const sourceRef = useRef<VectorSource | null>(null);
   const pinFeatureRef = useRef<Feature<Point> | null>(null);
 
-  const [addressCoords, setAddressCoords] = useState<[number, number]>([0, 0]);
+  const [addressCoords, setAddressCoords] = useState<{
+    lon: number;
+    lat: number;
+  }>({ lon: 0, lat: 0 });
   const [loading, setLoading] = useState(true);
-
+  //const [currAddress, setCurrAddress] = useState({state: "", city: "", street: "", postalCode: ""});
   const [pinCoords, setPinCoords] = useState<{ lon: number; lat: number }>({
     lon: 0,
     lat: 0,
@@ -142,16 +145,35 @@ export default function MapPin({
     const controller = new AbortController();
 
     setLoading(true);
-
-    geocodeAddress(
-      street,
-      city,
-      state,
-      postalCode,
-      (coords) => setAddressCoords(coords),
-      () => setLoading(false),
-      controller.signal,
-    );
+    if (!street || !city || !state || !postalCode) {
+      const watchId = navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setAddressCoords({
+            lon: position.coords.longitude,
+            lat: position.coords.latitude,
+          });
+          const picked = reverseGeocodeNominatim(position.coords.longitude, position.coords.latitude).then(picked => {
+            onPickAddress?.(picked);
+          });
+        },
+        (error) => {
+          console.error("Error getting position:", error);
+        },
+      );
+      
+      setLoading(false);
+      return;
+    } else {
+      geocodeAddress(
+        street,
+        city,
+        state,
+        postalCode,
+        (coords) => setAddressCoords({ lon: coords[0], lat: coords[1] }),
+        () => setLoading(false),
+        controller.signal,
+      );
+    }
 
     return () => {
       controller.abort();
@@ -207,8 +229,8 @@ export default function MapPin({
       setPinCoords({ lon, lat });
 
       feat.setGeometry(new Point(clickedPoint));
-      //had it reverse geocaching before
-      /*const reqId = ++reverseReqIdRef.current;
+
+      const reqId = ++reverseReqIdRef.current;
 
       try {
         const picked = await reverseGeocodeNominatim(lon, lat);
@@ -218,7 +240,7 @@ export default function MapPin({
         onPickAddress?.(picked);
       } catch (e) {
         console.error("Reverse geocoding failed:", e);
-      }*/
+      }
     };
 
     map.on("click", handleClick);
@@ -244,7 +266,7 @@ export default function MapPin({
     const feat = pinFeatureRef.current;
     if (!map || !feat) return;
 
-    const [lon, lat] = addressCoords;
+    const { lon, lat } = addressCoords;
 
     if (lon === 0 && lat === 0) return;
 
@@ -254,7 +276,9 @@ export default function MapPin({
     feat.setGeometry(new Point(projected));
 
     map.getView().animate({
-      center: addressCoords ? fromLonLat(addressCoords) : undefined,
+      center: addressCoords
+        ? fromLonLat([addressCoords.lon, addressCoords.lat])
+        : undefined,
       zoom: 16,
       duration: 500,
     });
@@ -269,22 +293,7 @@ export default function MapPin({
 
       <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
       <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
+      <p>Selected Address: {address}</p>
     </div>
   );
 }
-/*{loading ? (
-        <div>
-          <div>Loading...</div>
-          {/* Need this container or else map would never load (mapDivRef forever null). Unsure if I want to keep the loading feature
-          <div ref={mapDivRef} className="h-96 w-96" />
-          <div ref={toolbarRef} />
-        </div>
-      ) : (
-        <div>
-          <div>Pin coordinates: {`Longitude: ${pinCoords.lon}, Latitude: ${pinCoords.lat}`}</div>
-          <div ref={mapDivRef} className="h-96 w-96" />
-          <div ref={toolbarRef} />
-        </div>
-      )}
-    </div>
-*/

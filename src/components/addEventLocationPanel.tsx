@@ -1,5 +1,6 @@
 "use client";
-import { useState } from 'react' 
+import { useState } from 'react'
+import MapPin from './mapPin';
 
 type LocationMode = "in-person" | "virtual";
 type InPersonMethod = "pin" | "search";
@@ -43,6 +44,12 @@ export default function AddEventLocationPanel(){
     </div>
     )
     }
+    {mode === "in-person" && method === "pin" && (
+      <div>
+        <MapPin street="" city="" state="" postalCode="" />
+        <p>Selected Address</p>
+      </div>
+    )}
 
     </div>
     );

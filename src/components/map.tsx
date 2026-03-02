@@ -8,8 +8,9 @@ import VectorSource from "ol/source/Vector";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { fromLonLat } from "ol/proj";
-import { Icon, Style } from 'ol/style';
+import { Icon, Style } from "ol/style";
 import OSM from "ol/source/OSM";
+
 
 interface StaticMapProps {
   street: string;
@@ -18,7 +19,13 @@ interface StaticMapProps {
   postalCode: string;
 }
 
-const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }) => {
+
+const StaticMap: React.FC<StaticMapProps> = ({
+  street,
+  city,
+  state,
+  postalCode,
+}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [addressCoords, setAddressCoords] = useState<[number, number]>([0, 0]);
   const [loading, setLoading] = useState(true);
@@ -26,10 +33,10 @@ const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }
   const address = `${street}, ${city}, ${state}, ${postalCode}`;
 
   useEffect(() => {
-    setLoading(true); 
+    setLoading(true);
     const geocodeAddress = async () => {
       const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        address
+        address,
       )}`;
       try {
         const response = await fetch(url);
@@ -50,7 +57,7 @@ const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }
   }, [address]);
 
   useEffect(() => {
-    if (!mapRef.current || addressCoords[0] === 0 && addressCoords[1] === 0) {
+    if (!mapRef.current || (addressCoords[0] === 0 && addressCoords[1] === 0)) {
       setLoading(true);
       return;
     }
@@ -68,7 +75,7 @@ const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }
     const iconStyle = new Style({
       image: new Icon({
         anchor: [0.5, 1],
-        src: 'https://openlayers.org/en/latest/examples/data/icon.png',
+        src: "https://openlayers.org/en/latest/examples/data/icon.png",
       }),
     });
 
@@ -90,7 +97,7 @@ const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }
         zoom: 15,
       }),
     });
-
+  
     map.on("singleclick", () => {
       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${addressCoords[1]},${addressCoords[0]}`;
       window.open(googleMapsUrl, "_blank");
@@ -104,7 +111,11 @@ const StaticMap: React.FC<StaticMapProps> = ({ street, city, state, postalCode }
 
   return (
     <>
-      {loading ? <div>Loading...</div> :  <div ref={mapRef} style={{ width: "100%", height: "100%" }} /> }
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+      )}
     </>
   );
 };
