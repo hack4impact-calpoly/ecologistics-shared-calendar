@@ -15,7 +15,7 @@ export default function SignUp() {
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordValidation, setPasswordValidation] = useState("");
+  const [passwordValidation, setPasswordValidation] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
@@ -49,6 +49,18 @@ export default function SignUp() {
     // Handle loading state
     return null;
   }
+
+  // Returns flag if any password requirements are not met, otherwise returns empty array
+  const getPasswordErrors = (pwd: string): string[] => {
+    const meetsLength = pwd.length >= 8;
+    const meetsNumber = /\d/.test(pwd);
+    const meetsSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pwd);
+
+    if (!meetsLength || !meetsNumber || !meetsSpecial) {
+      return ["invalid"]; // Flag to trigger the error UI
+    }
+    return [];
+  };
 
   // handle input to verification
   function handleInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
@@ -127,14 +139,12 @@ export default function SignUp() {
     e.preventDefault();
 
     // Password validation
-    const passwordRegex = /^(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setPasswordValidation(
-        "Password must be at least 8 characters long and include a number.",
-      );
+    const errors = getPasswordErrors(password);
+    if (errors.length > 0) {
+      setPasswordValidation(errors);
       return;
     } else {
-      setPasswordValidation(""); // Clear any previous validation messages
+      setPasswordValidation([]); // Clear any previous validation messages
     }
 
     try {
@@ -415,7 +425,10 @@ export default function SignUp() {
                   placeholder="Enter Your Password"
                   className={styles.input}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordValidation(getPasswordErrors(e.target.value));
+                  }}
                   required
                 />
                 <button
@@ -426,9 +439,11 @@ export default function SignUp() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              {passwordValidation && (
+              {passwordValidation.length > 0 && (
                 <p className={styles.passwordValidation}>
-                  {passwordValidation}
+                  Password must be 8+ characters and include:
+                  <br />• At least one number
+                  <br />• At least one special character
                 </p>
               )}
             </div>
