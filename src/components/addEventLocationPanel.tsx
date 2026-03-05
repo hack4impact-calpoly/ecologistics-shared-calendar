@@ -1,9 +1,12 @@
 "use client";
 import { useState } from "react";
+import { AddressAutoFill } from "./addressAutofill";
 import MapPin from "./mapPin";
 
 type LocationMode = "in-person" | "virtual";
 type InPersonMethod = "pin" | "search";
+
+const geoKey = process.env.GEOAPIFY_API_KEY!;
 
 export default function AddEventLocationPanel() {
   const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
@@ -13,12 +16,7 @@ export default function AddEventLocationPanel() {
     lat: 0,
     desc: "",
   });
-  const [address, setAddress] = useState({
-    street: "",
-    city: "",
-    state: "",
-    postalCode: "",
-  });
+  
 
   return (
     <div style={styles.container}>
@@ -73,17 +71,12 @@ export default function AddEventLocationPanel() {
       {mode === "in-person" && method === "pin" && (
         <div>
           <MapPin
-            street=""
-            city=""
-            state=""
-            postalCode=""
+            inLon = {formData.lon}
+            inLat = {formData.lat}
             onPickAddress={(data) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
             }}
           />
-          <p>
-            Lon: {formData.lat}, Lat: {formData.lon}, Description: {formData.desc}
-          </p>
 
           <input
             type="text"
@@ -96,7 +89,12 @@ export default function AddEventLocationPanel() {
       )}
       {mode === "in-person" && method === "search" && (
         <div>
-          <p>Search method implemented in</p>
+          <AddressAutoFill
+            apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
+            onSelect={(data) => {
+              setFormData({ ...formData, lon: data.lon, lat: data.lat });
+            }}
+          />
         </div>
       )}
     </div>
