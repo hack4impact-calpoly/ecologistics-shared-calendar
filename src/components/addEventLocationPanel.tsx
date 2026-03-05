@@ -47,7 +47,11 @@ export default function AddEventLocationPanel(){
     {mode === "in-person" && method === "pin" && (
       <div>
         <MapPin street="" city="" state="" postalCode="" />
-        <p>Selected Address</p>
+      </div>
+    )}
+    {mode === "in-person" && method === "search" && (
+      <div>
+        <p>Search method implemented in</p>
       </div>
     )}
 

@@ -24,6 +24,7 @@ import Zoom from "ol/control/Zoom";
 import Attribution from "ol/control/Attribution";
 import "ol/ol.css";
 import { Icon, Style } from "ol/style";
+import { s } from "@fullcalendar/core/internal-common";
 
 type PickedAddress = {
   street: string;
@@ -126,6 +127,8 @@ export default function MapPin({
     lon: 0,
     lat: 0,
   });
+  const [description, setDescription] = useState("");
+  
   const reverseReqIdRef = useRef(0);
   const iconStyle = useMemo(
     () =>
@@ -148,13 +151,11 @@ export default function MapPin({
     if (!street || !city || !state || !postalCode) {
       const watchId = navigator.geolocation.getCurrentPosition(
         (position) => {
-          setAddressCoords({
+          setPinCoords({
             lon: position.coords.longitude,
             lat: position.coords.latitude,
           });
-          const picked = reverseGeocodeNominatim(position.coords.longitude, position.coords.latitude).then(picked => {
-            onPickAddress?.(picked);
-          });
+          
         },
         (error) => {
           console.error("Error getting position:", error);
@@ -227,9 +228,9 @@ export default function MapPin({
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-
+      
       feat.setGeometry(new Point(clickedPoint));
-
+        /*
       const reqId = ++reverseReqIdRef.current;
 
       try {
@@ -240,7 +241,7 @@ export default function MapPin({
         onPickAddress?.(picked);
       } catch (e) {
         console.error("Reverse geocoding failed:", e);
-      }
+      }*/
     };
 
     map.on("click", handleClick);
@@ -266,18 +267,18 @@ export default function MapPin({
     const feat = pinFeatureRef.current;
     if (!map || !feat) return;
 
-    const { lon, lat } = addressCoords;
+    const { lon, lat } = pinCoords;
 
-    if (lon === 0 && lat === 0) return;
+    //if (lon === 0 && lat === 0) return;
 
-    setPinCoords({ lon, lat });
+    //setPinCoords({ lon, lat });
 
     const projected = fromLonLat([lon, lat]);
     feat.setGeometry(new Point(projected));
 
     map.getView().animate({
-      center: addressCoords
-        ? fromLonLat([addressCoords.lon, addressCoords.lat])
+      center: pinCoords
+        ? fromLonLat([pinCoords.lon, pinCoords.lat])
         : undefined,
       zoom: 16,
       duration: 500,
@@ -285,7 +286,7 @@ export default function MapPin({
 
     map.updateSize();
     requestAnimationFrame(() => map.updateSize());
-  }, [addressCoords]);
+  }, [pinCoords]);
 
   return (
     <div>
@@ -293,7 +294,7 @@ export default function MapPin({
 
       <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
       <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
-      <p>Selected Address: {address}</p>
+      <p>Selected Address: </p>
     </div>
   );
 }
