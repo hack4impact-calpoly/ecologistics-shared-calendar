@@ -1,10 +1,10 @@
 /**
  * This component creates a map using OpenLayers and allows user to click on map to place a pin.
- * Pin coordinates update the state of the form, done via reverse geocoding.
+ * Pin coordinates update the state of the form, for now lon/lat
  * Map auto-centers on initial address and recenters when pin is placed.
  *
  * Author: @AmeliaHarris
- * Version: 1.1
+ * Version: 1.2
  */
 
 "use client";
@@ -31,84 +31,18 @@ type PickedAddress = {
   state: string;
   postalCode: string;
 };
+type AddLonLat = {
+  lon: number;
+  lat: number;
+};
 
 type MapPinProps = {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  onPickAddress?: (address: PickedAddress) => void;
+  inLon: number;
+  inLat: number;
+  onPickAddress?: (formdata: AddLonLat) => void;
 };
 
-// Helper function to geocode an address and get coordinates. Used in useEffect to get initial coordinates for map center/pin
-const geocodeAddress = async (
-  street: string,
-  city: string,
-  state: string,
-  postalCode: string,
-  onResult: (coords: [number, number]) => void,
-  onDone: () => void,
-  signal?: AbortSignal,
-) => {
-  if (!street || !city || !state || !postalCode) {
-    onResult([0, 0]);
-    onDone();
-    return;
-  }
-
-  const address = `${street}, ${city}, ${state}, ${postalCode}`;
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-    address,
-  )}`;
-
-  try {
-    const response = await fetch(url, { signal });
-    const data = await response.json();
-
-    if (data && data.length > 0) {
-      const { lat, lon } = data[0];
-      onResult([parseFloat(lon), parseFloat(lat)]);
-    } else {
-      onResult([0, 0]);
-    }
-  } catch (error: any) {
-    if (error.name !== "AbortError") {
-      console.error("Failed to geocode address:", error);
-      onResult([0, 0]);
-    }
-  } finally {
-    onDone();
-  }
-};
-
-//Helper function to get the reverse geocoded address from coordinates. Could be used in handler but went back to coordinates.
-async function reverseGeocodeNominatim(
-  lon: number,
-  lat: number,
-): Promise<PickedAddress> {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
-    lat,
-  )}&lon=${encodeURIComponent(lon)}&addressdetails=1`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  const a = data?.address ?? {};
-  return {
-    street: [a.house_number, a.road].filter(Boolean).join(" ").trim(),
-    city: a.city || a.town || a.village || a.hamlet || a.county || "",
-    state: a.state || "",
-    postalCode: a.postcode || "",
-  };
-}
-
-export default function MapPin({
-  street,
-  city,
-  state,
-  postalCode,
-  onPickAddress,
-}: MapPinProps) {
+export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
   const mapDivRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
@@ -116,12 +50,14 @@ export default function MapPin({
   const sourceRef = useRef<VectorSource | null>(null);
   const pinFeatureRef = useRef<Feature<Point> | null>(null);
 
-  const [addressCoords, setAddressCoords] = useState<[number, number]>([0, 0]);
+  const [addressCoords, setAddressCoords] = useState<{
+    lon: number;
+    lat: number;
+  }>({ lon: inLon, lat: inLat });
   const [loading, setLoading] = useState(true);
-
   const [pinCoords, setPinCoords] = useState<{ lon: number; lat: number }>({
-    lon: 0,
-    lat: 0,
+    lon: inLon ?? 0,
+    lat: inLat ?? 0,
   });
   const reverseReqIdRef = useRef(0);
   const iconStyle = useMemo(
@@ -135,28 +71,36 @@ export default function MapPin({
     [],
   );
 
-  const address = `${street}, ${city}, ${state}, ${postalCode}`;
-
   // Effect to geocode address and get coordinates for map center/pin on initial load and when address changes. Also handles loading state for geocoding.
   useEffect(() => {
     const controller = new AbortController();
 
     setLoading(true);
-
-    geocodeAddress(
-      street,
-      city,
-      state,
-      postalCode,
-      (coords) => setAddressCoords(coords),
-      () => setLoading(false),
-      controller.signal,
-    );
+    if (inLon == 0 || inLat == 0) {
+      const watchId = navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setPinCoords({
+            lon: position.coords.longitude,
+            lat: position.coords.latitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting position:", error);
+        },
+      );
+      if(onPickAddress) {
+        onPickAddress({ lon: pinCoords.lon , lat: pinCoords.lat });
+      }
+      setLoading(false);
+    } else {
+      setPinCoords({ lon: inLon, lat: inLat });
+      setLoading(false);
+    }
 
     return () => {
       controller.abort();
     };
-  }, [street, city, state, postalCode]);
+  }, [inLon, inLat]);
 
   // Effect to initialize map on first load and add click handler to place pin and update form address. Also cleans up map on unmount.
   useEffect(() => {
@@ -178,7 +122,7 @@ export default function MapPin({
         new VectorLayer({ source }),
       ],
       view: new View({
-        center: fromLonLat([0, 0]),
+        center: fromLonLat([inLon, inLat]),
         zoom: 2,
       }),
     });
@@ -189,7 +133,7 @@ export default function MapPin({
     );
 
     const pinFeature = new Feature({
-      geometry: new Point(fromLonLat([0, 0])),
+      geometry: new Point(fromLonLat([inLon, inLat])),
     });
     pinFeature.setStyle(iconStyle);
     pinFeatureRef.current = pinFeature;
@@ -205,20 +149,11 @@ export default function MapPin({
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
+      if(onPickAddress) {
+        onPickAddress({ lon, lat });
+      }
 
       feat.setGeometry(new Point(clickedPoint));
-      //had it reverse geocaching before
-      /*const reqId = ++reverseReqIdRef.current;
-
-      try {
-        const picked = await reverseGeocodeNominatim(lon, lat);
-
-        if (reqId !== reverseReqIdRef.current) return;
-
-        onPickAddress?.(picked);
-      } catch (e) {
-        console.error("Reverse geocoding failed:", e);
-      }*/
     };
 
     map.on("click", handleClick);
@@ -244,47 +179,27 @@ export default function MapPin({
     const feat = pinFeatureRef.current;
     if (!map || !feat) return;
 
-    const [lon, lat] = addressCoords;
-
-    if (lon === 0 && lat === 0) return;
-
-    setPinCoords({ lon, lat });
+    const { lon, lat } = pinCoords;
 
     const projected = fromLonLat([lon, lat]);
     feat.setGeometry(new Point(projected));
 
     map.getView().animate({
-      center: addressCoords ? fromLonLat(addressCoords) : undefined,
+      center: pinCoords ? fromLonLat([lon, lat]) : undefined,
       zoom: 16,
       duration: 500,
     });
 
     map.updateSize();
     requestAnimationFrame(() => map.updateSize());
-  }, [addressCoords]);
+  }, [pinCoords, inLon, inLat]);
 
   return (
     <div>
-      <div>{loading ? " (geocoding...)" : ""}</div>
+      <div>{loading ? " (Loading...)" : ""}</div>
 
       <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
       <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
     </div>
   );
 }
-/*{loading ? (
-        <div>
-          <div>Loading...</div>
-          {/* Need this container or else map would never load (mapDivRef forever null). Unsure if I want to keep the loading feature
-          <div ref={mapDivRef} className="h-96 w-96" />
-          <div ref={toolbarRef} />
-        </div>
-      ) : (
-        <div>
-          <div>Pin coordinates: {`Longitude: ${pinCoords.lon}, Latitude: ${pinCoords.lat}`}</div>
-          <div ref={mapDivRef} className="h-96 w-96" />
-          <div ref={toolbarRef} />
-        </div>
-      )}
-    </div>
-*/

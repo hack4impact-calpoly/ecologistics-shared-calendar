@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { convertEventDatesToDates } from "../utils/events";
 import { DateTime } from "luxon";
 import { useUser } from "@clerk/clerk-react";
+import AddEventLocationPanel from "../components/addEventLocationPanel";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
@@ -305,12 +306,7 @@ export default function CalendarPage() {
             totalEvents={events}
           />
         ) : (
-          <AddEventPanel
-            onClose={() => setIsAddingEvent(false)}
-            onCreate={() => setIsShowingEventPopUp(true)}
-            addEvent={addEvent}
-          />
-        )}
+          <AddEventLocationPanel/>)}
       </div>
     </Layout>
   );

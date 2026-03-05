@@ -610,31 +610,7 @@ export default function AddEventPanel({
             required
             disabled={isLoading}
           />
-          <div
-            style={{
-              marginTop: "10px",
-              marginBottom: "10px",
-              flexDirection: "column",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <MapPin
-              onPickAddress={(addr) => {
-                setFormData({
-                  ...formData,
-                  street: addr.street,
-                  city: addr.city,
-                  state: addr.state,
-                  postalCode: addr.postalCode,
-                });
-              }}
-              street={formData.street}
-              city={formData.city}
-              state={formData.state}
-              postalCode={formData.postalCode}
-            />
-          </div>
+          
         </>
       ) : mode == "virtual" ? (
         <>

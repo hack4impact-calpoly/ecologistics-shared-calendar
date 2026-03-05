@@ -1,55 +1,122 @@
 "use client";
-import { useState } from 'react' 
+import { useState } from "react";
+import { AddressAutoFill } from "./addressAutofill";
+import MapPin from "./mapPin";
 
 type LocationMode = "in-person" | "virtual";
 type InPersonMethod = "pin" | "search";
 
-export default function AddEventLocationPanel(){
+const geoKey = process.env.GEOAPIFY_API_KEY!;
 
-    const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
-    const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
+export default function AddEventLocationPanel() {
+  const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
+  const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
+  const [formData, setFormData] = useState({
+    lon: 0,
+    lat: 0,
+    desc: "",
+  });
 
-
-    return(
+  return (
     <div style={styles.container}>
+      <h2 style={styles.header}>Create New Event</h2>
+      <p style={styles.subHeader}>Where will this event take place?</p>
 
-    <h2 style={styles.header}>Create New Event</h2>
-    <p style={styles.subHeader}>Where will this event take place?</p>
+      <div style={styles.toggleContainer}>
+        {/* activates "active" css for button depending on mode*/}
+        <button
+          style={
+            mode === "in-person" ? styles.activeModeButton : styles.modeButton
+          }
+          onClick={() => setMode("in-person")}
+        >
+          In Person
+        </button>
+        <button
+          style={
+            mode === "virtual" ? styles.activeModeButton : styles.modeButton
+          }
+          onClick={() => setMode("virtual")}
+        >
+          Virtual
+        </button>
+      </div>
 
-    <div style={styles.toggleContainer}>
+      <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
-    {/* activates "active" css for button depending on mode*/}
-    <button style={mode === "in-person" ? styles.activeModeButton : styles.modeButton} onClick={() => setMode("in-person")}>
-        In Person
-    </button>
-    <button style={mode === "virtual" ? styles.activeModeButton : styles.modeButton} onClick={() => setMode("virtual")}>
-        Virtual
-    </button>
-
-    </div>
-    
-    <h3 style={styles.sectionHeader}>Set Event Location</h3>
-
-    {/* activates "active" css for button depending on method*/}
-    {mode == "in-person" && (
+      {/* activates "active" css for button depending on method*/}
+      {mode == "in-person" && (
         <div style={styles.methodContainer}>
-        <button style={method === "pin" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("pin")}>
+          <button
+            style={
+              method === "pin" ? styles.activeMethodButton : styles.methodButton
+            }
+            onClick={() => setMethod("pin")}
+          >
             Pin
-        </button>
-        <button style={method === "search" ? styles.activeMethodButton : styles.methodButton} onClick={() => setMethod("search")}>
+          </button>
+          <button
+            style={
+              method === "search"
+                ? styles.activeMethodButton
+                : styles.methodButton
+            }
+            onClick={() => setMethod("search")}
+          >
             Search
-        </button>
+          </button>
+        </div>
+      )}
+      {mode === "in-person" && method === "pin" && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              border: "1px solid #989898",
+            }}
+          >
+            <MapPin
+              inLon={formData.lon}
+              inLat={formData.lat}
+              onPickAddress={(data) => {
+                setFormData({ ...formData, lon: data.lon, lat: data.lat });
+              }}
+            />
+          </div>
 
+          <input
+            type="text"
+            style={styles.input}
+            onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+            value={formData.desc}
+            placeholder="Add description of location (optional)"
+          />
+        </div>
+      )}
+      {mode === "in-person" && method === "search" && (
+        <div>
+          <AddressAutoFill
+            apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
+            onSelect={(data) => {
+              setFormData({ ...formData, lon: data.lon, lat: data.lat });
+            }}
+          />
+        </div>
+      )}
     </div>
-    )
-    }
-
-    </div>
-    );
+  );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-container: {
+  container: {
     width: "100%",
     maxWidth: "550px",
     padding: "20px",
@@ -57,6 +124,7 @@ container: {
     borderRadius: "12px",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "center",
     gap: "12px",
   },
   header: {
@@ -65,7 +133,7 @@ container: {
   subHeader: {
     color: "#333",
   },
-toggleContainer: {
+  toggleContainer: {
     display: "flex",
     background: "#bdbdbd",
     borderRadius: "999px",
@@ -75,7 +143,7 @@ toggleContainer: {
     display: "flex",
     gap: "12px",
   },
-modeButton: {
+  modeButton: {
     flex: 1,
     border: "none",
     background: "transparent",
@@ -84,7 +152,7 @@ modeButton: {
     cursor: "pointer",
     fontWeight: 500,
   },
-activeModeButton: {
+  activeModeButton: {
     flex: 1,
     border: "none",
     padding: "10px",
@@ -111,6 +179,13 @@ activeModeButton: {
     cursor: "pointer",
     background: "#b0b0b0",
     border: "2px solid #888",
-  }
-
-}
+  },
+  input: {
+    width: "calc(100% - 20px)",
+    padding: "10px",
+    borderRadius: "15px",
+    background: "rgba(217, 217, 217, 0.3)",
+    border: "1px solid #989898",
+    color: "black",
+  },
+};
