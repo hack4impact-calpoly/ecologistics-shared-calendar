@@ -3,7 +3,11 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 
-export default function AddEventMisc({ onSubmit }) {
+type AddEventMiscProps = {
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+};
+
+export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
   const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -20,6 +24,7 @@ export default function AddEventMisc({ onSubmit }) {
   });
 
   return (
+    <form onSubmit={onSubmit}>
     <div style={styles.container}>
       <h3>Create New Event</h3>
 
@@ -54,11 +59,12 @@ export default function AddEventMisc({ onSubmit }) {
         )}
       </div>
 
-      <button type="button" style={styles.button} onClick={() => onSubmit()}>
+      <button type="submit" style={styles.button}>
         Submit
       </button>
 
     </div>
+    </form>
   );
 }
 

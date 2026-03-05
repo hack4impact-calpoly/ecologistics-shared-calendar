@@ -2,13 +2,24 @@
 import { useState } from "react";
 import { AddressAutoFill } from "./addressAutofill";
 import MapPin from "./mapPin";
+import { AddEventFormType } from "./addEventPanel";
 
 type LocationMode = "in-person" | "virtual";
 type InPersonMethod = "pin" | "search";
 
 const geoKey = process.env.GEOAPIFY_API_KEY!;
 
-export default function AddEventLocationPanel({ setPanelType, setEventFormData, eventFormData }) {
+type AddEventLocationPanelProps = {
+  setPanelType: (panel: "start" | "location" | "misc") => void;
+  setEventFormData: React.Dispatch<React.SetStateAction<AddEventFormType>>;
+  eventFormData: AddEventFormType;
+};
+
+export default function AddEventLocationPanel({
+  setPanelType,
+  setEventFormData,
+  eventFormData
+}: AddEventLocationPanelProps) {
   const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
   const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
   const [formData, setFormData] = useState({
@@ -105,18 +116,19 @@ export default function AddEventLocationPanel({ setPanelType, setEventFormData, 
         <div>
           <AddressAutoFill
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
-            onSelect={(data, addr) => {
+            onSelect={(data, feature) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
               setEventFormData((prev) => {
+                const addr = feature.properties;
                 const updated = {
                   ...prev,
-                  street: addr.street,
-                  city: addr.city,
-                  state: addr.state_code,
-                  postalCode: addr.postcode,
-                  mode: "in-person"
+                  street: (feature.properties.street ?? "") as string,
+                  city: (feature.properties.city ?? "") as string,
+                  state: (feature.properties.state_code ?? "") as string,
+                  postalCode: (feature.properties.postcode ?? "") as string,
+                  mode: "in-person",
                 };
-                console.log("Updated formData:", updated); // check here
+                console.log("Updated formData:", updated);
                 return updated;
               });
             }}

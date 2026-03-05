@@ -37,7 +37,7 @@ type SelectedAddress = {
 
 type AddressAutoFillProps = {
   apiKey: string;
-  onSelect?: (selected: SelectedAddress, addr) => void;
+  onSelect?: (selected: SelectedAddress, feature: GeoapifyFeature) => void;
   placeholder?: string;
   minChars?: number;
   limit?: number;
@@ -149,7 +149,7 @@ export function AddressAutoFill({
     setInput(feature.properties.formatted);
     setDropOpen(false);
     setItems([]);
-    onSelect?.({ lat, lon }, feature.properties);
+    onSelect?.({ lat, lon }, feature);
   }
 
   return (

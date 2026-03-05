@@ -10,7 +10,7 @@ import AddEventLocationPanel from "./addEventLocationPanel";
 import MapPin from "./mapPin";
 import AddEventMisc from "./addEventMisc";
 
-interface AddEventForm {
+export interface AddEventFormType {
   //organization: string;
   title: string;
   startDate: string;
@@ -89,7 +89,7 @@ export default function AddEventPanel({
 }: AddEventPanelProps) {
   const { user } = useUser();
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
+  const [formData, setFormData] = useState<AddEventFormType>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [titleCharsTyped, setTitleCharsTyped] = useState(0);
@@ -316,7 +316,7 @@ export default function AddEventPanel({
     },
     onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0] as File | null; // Will not be null, but TS doesn't know that.
-      setFormData((prev: AddEventForm) => ({ ...prev, photo: file }));
+      setFormData((prev: AddEventFormType) => ({ ...prev, photo: file }));
       setImagePreviewUrl(URL.createObjectURL(file as Blob));
     },
   });
