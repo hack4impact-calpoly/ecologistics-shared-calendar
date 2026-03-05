@@ -37,7 +37,7 @@ type SelectedAddress = {
 
 type AddressAutoFillProps = {
   apiKey: string;
-  onSelect?: (selected: SelectedAddress) => void;
+  onSelect?: (selected: SelectedAddress, addr) => void;
   placeholder?: string;
   minChars?: number;
   limit?: number;
@@ -143,12 +143,13 @@ export function AddressAutoFill({
   const hasResults = items.length > 0;
   function choose(feature: GeoapifyFeature) {
     const [lon, lat] = feature.geometry.coordinates;
+    console.log(feature.properties)
     setSelectedAddress({ lat, lon });
     skipNextFetchRef.current = true;
     setInput(feature.properties.formatted);
     setDropOpen(false);
     setItems([]);
-    onSelect?.({ lat, lon });
+    onSelect?.({ lat, lon }, feature.properties);
   }
 
   return (

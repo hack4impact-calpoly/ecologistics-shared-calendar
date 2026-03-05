@@ -3,7 +3,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 
-export default function AddEventMisc() {
+export default function AddEventMisc({ onSubmit }) {
   const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -54,7 +54,7 @@ export default function AddEventMisc() {
         )}
       </div>
 
-      <button type="button" style={styles.button}>
+      <button type="button" style={styles.button} onClick={() => onSubmit()}>
         Submit
       </button>
 
@@ -66,7 +66,18 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     flexDirection: "column",
-    gap: "10px",
+    alignContent: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    borderRadius: "10px",
+    border: "1px solid black",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    padding: "20px",
+    margin: "10px",
+    width: "80%",
+    height: "50%",
+    position: "relative",
+    gap: "5px",
   },
   textarea: {
     width: "100%",
@@ -90,6 +101,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "10px 15px",
     borderRadius: "20px",
     border: "none",
+    background: "#335543",
+    color: "white",
     cursor: "pointer",
     width: "120px",
     alignSelf: "center",

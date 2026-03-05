@@ -8,6 +8,7 @@ import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
 import AddEventLocationPanel from "./addEventLocationPanel";
 import MapPin from "./mapPin";
+import AddEventMisc from "./addEventMisc";
 
 interface AddEventForm {
   //organization: string;
@@ -73,6 +74,8 @@ const stringToDate = (date: string, time: string): Date => {
   return new Date(year, month - 1, day, hours, minutes);
 };
 
+type Panel = 'start' | 'location' | 'misc'
+
 interface AddEventPanelProps {
   onClose: () => void;
   onCreate: () => void;
@@ -92,6 +95,7 @@ export default function AddEventPanel({
   const [titleCharsTyped, setTitleCharsTyped] = useState(0);
   const [desCharsTyped, setDesCharsTyped] = useState(0);
   const [mode, setMode] = useState("");
+  const [panelType, setPanelType] = useState<Panel>('start')
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -165,13 +169,13 @@ export default function AddEventPanel({
 
     addDateErrors(errors);
 
-    await addLocationErrors(errors);
+    // await addLocationErrors(errors);
 
     return errors;
   };
 
   const onEventAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e?.preventDefault();
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -382,6 +386,8 @@ export default function AddEventPanel({
   ];
 
   return (
+    <>
+    {panelType === 'start' && (
     <form style={styles.container} onSubmit={onEventAdd}>
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h3 style={styles.title}>Add Event</h3>
@@ -508,7 +514,7 @@ export default function AddEventPanel({
           <p style={styles.error}>{formErrors.description}</p>
         </div>
       )}
-
+{/* 
       <h4 style={styles.inputTitle}>
         Location<span style={{ color: "red" }}> *</span>
       </h4>
@@ -596,7 +602,7 @@ export default function AddEventPanel({
             value={formData.state}
             required
             disabled={isLoading}
-          /> */}
+          />
           <h4 style={styles.inputTitle}>
             Postal Code<span style={{ color: "red" }}> *</span>
           </h4>
@@ -662,12 +668,16 @@ export default function AddEventPanel({
         <div style={styles.errorBox}>
           <p style={styles.error}>{formErrors.photo}</p>
         </div>
-      )}
+      )} */}
 
-      <button style={styles.button} type="submit" disabled={isLoading}>
-        {isLoading ? "Loading..." : "Add Event"}
+      <button style={styles.button} type="button" disabled={isLoading} onClick={() => setPanelType('location')}>
+        {isLoading ? "Loading..." : "Continue"}
       </button>
-    </form>
+    </form>)}
+    {panelType === 'location' && (<AddEventLocationPanel setPanelType={setPanelType} eventFormData={formData}
+      setEventFormData={setFormData}/>)}
+    {panelType === 'misc' && (<AddEventMisc onSubmit={onEventAdd}/>)}
+    </>
   );
 }
 
