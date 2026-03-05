@@ -24,8 +24,7 @@ export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
   });
 
   return (
-    <form onSubmit={onSubmit}>
-    <div style={styles.container}>
+    <form onSubmit={onSubmit} style={styles.container}>
       <h3>Create New Event</h3>
 
       <h4>Additional Details</h4>
@@ -62,8 +61,6 @@ export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
       <button type="submit" style={styles.button}>
         Submit
       </button>
-
-    </div>
     </form>
   );
 }

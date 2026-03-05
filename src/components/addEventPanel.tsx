@@ -9,6 +9,7 @@ import { stat } from "fs";
 import AddEventLocationPanel from "./addEventLocationPanel";
 import MapPin from "./mapPin";
 import AddEventMisc from "./addEventMisc";
+import { add } from "ol/coordinate";
 
 export interface AddEventFormType {
   //organization: string;
@@ -176,7 +177,6 @@ export default function AddEventPanel({
 
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
-    console.log(formData)
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -191,7 +191,6 @@ export default function AddEventPanel({
       }
 
       if (formData) {
-        console.log(formData)
         console.log(formData.state);
         const fileData = new FormData();
         var uploadResult = null;
@@ -206,9 +205,11 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (mode == "in-person") {
+        if (formData.mode == "in-person") {
           address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
         }
+
+        console.log(address)
 
         const event: Event = {
           title: formData.title,
