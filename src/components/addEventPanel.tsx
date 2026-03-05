@@ -176,6 +176,7 @@ export default function AddEventPanel({
 
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
+    console.log(formData)
     onCreate();
     setFormData(EMPTY_FORM);
     setImagePreviewUrl(null);
@@ -190,6 +191,7 @@ export default function AddEventPanel({
       }
 
       if (formData) {
+        console.log(formData)
         console.log(formData.state);
         const fileData = new FormData();
         var uploadResult = null;

@@ -118,19 +118,12 @@ export default function AddEventLocationPanel({
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
             onSelect={(data, feature) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
-              setEventFormData((prev) => {
-                const addr = feature.properties;
-                const updated = {
-                  ...prev,
+              setEventFormData({...eventFormData,
                   street: (feature.properties.street ?? "") as string,
                   city: (feature.properties.city ?? "") as string,
                   state: (feature.properties.state_code ?? "") as string,
                   postalCode: (feature.properties.postcode ?? "") as string,
-                  mode: "in-person",
-                };
-                console.log("Updated formData:", updated);
-                return updated;
-              });
+                  mode: mode});
             }}
           />
         </div>
