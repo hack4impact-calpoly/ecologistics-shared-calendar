@@ -103,6 +103,9 @@ export default function AdminRequestTable() {
           firstName: user?.data?.firstName,
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
+          eventDescription: eventToAccept.data.description,
+          eventTimeAndDate: `${eventToAccept.data.startDate} -- ${eventToAccept.data.endDate}`,
+          templateId: 'event-approval-client-1'
         }),
       })
         .then((response) => {
@@ -166,6 +169,7 @@ export default function AdminRequestTable() {
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
           deniedReason: message,
+          templateId: 'event-denial-client',
         }),
       })
         .then((response) => {

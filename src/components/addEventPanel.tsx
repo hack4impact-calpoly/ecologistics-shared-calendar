@@ -250,6 +250,9 @@ export default function AddEventPanel({
           firstName: user?.firstName,
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
+          eventDescription: formData.description,
+          eventTimeAndDate: `${formData.startDate} -- ${formData.endDate}`,
+          templateId: 'event-pending-client'
         }),
       })
         .then((response) => {
@@ -283,6 +286,9 @@ export default function AddEventPanel({
           firstName: user?.firstName || "default",
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
+          eventDescription: formData.description,
+          eventTimeAndDate: `${formData.startDate} -- ${formData.endDate}`,
+          templateId: 'event-pending-admin'
         }),
       })
         .then((response) => {

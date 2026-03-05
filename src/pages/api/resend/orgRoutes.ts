@@ -4,17 +4,6 @@ import { ReactElement } from "react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// const { data, error } = await resend.emails.send({
-//   from: 'Acme <onboarding@resend.dev>',
-//   to: ['delivered@resend.dev'],
-//   subject: 'hello world',
-//   html: '<p>it works!</p>',
-//   reply_to: 'onboarding@resend.dev',
-// });
-
-
-
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -34,15 +23,12 @@ export default async function handler(
     templateId
   } = req.body;
 
-
-// I don't think I need this : 
-
-  // if (!emailAddress || !firstName) {
-  //   return res.status(400).json({
-  //     message:
-  //       "Missing required parameters (emailAddress, firstName)",
-  //   });
-  // }
+  if (!emailAddress || !firstName) {
+    return res.status(400).json({
+      message:
+        "Missing required parameters (emailAddress, firstName)",
+    });
+  }
 
   try {
     await sendDynamicEmail(
@@ -77,6 +63,9 @@ async function sendDynamicEmail(
   templateId: string,
 ) {
 
+  // Current Date & Time, not used as of now  :
+
+
   // const now : Date = new Date();
   
   // const time = now.toLocaleTimeString("en-US", {
@@ -96,83 +85,23 @@ async function sendDynamicEmail(
   // // date & time in format : HH:mm - MM/DD/YYYY
   // const date_string : string = `${time} - ${date}`;
 
-  // // if there is a denied reason, this will be true
-  // const hasDeniedReason =
-  //   typeof deniedReason === "string" && deniedReason.trim().length > 0;
-
-  // let react_content: ReactElement;
-
-  // // send request denied Email
-  // if(hasDeniedReason) {
-    
-  //   const templateProps = {
-  //     firstName,
-  //     orgName,
-  //     deniedReason,
-  //     eventTitle,
-  //     date_string,
-  //   };
-  // }
-
-  // // send request approved email
-  // else {
-
-  //   const templateProps = {
-  //     firstName,
-  //     orgName,
-  //     deniedReason,
-  //     eventTitle,
-  //     date_string,
-  //   };
-
-  //   react_content = EmailApprovedTemplate({...templateProps});
-  // }
-
-  let template: {};
-
-  switch(templateId) {
-
-    case 'org-registration-pending-client' :
-      template = {
-        id: templateId,
-        variables: {
-          firstName: firstName,
-          orgName: orgName,
-        }
-      }
-      break;
-
-    case 'org-registration-denial-client' :
-      template = {
-        id: templateId,
-        variables: {
-          firstName: firstName,
-          orgName: orgName,
-          deniedReason: deniedReason,
-        }
-      }
-      break;
-
-      case 'org-registration-approval-client' :
-      template = {
-        id: templateId,
-        variables: {
-          firstName: firstName,
-          orgName: orgName,
-        }
-      }
-      break;
-
-
-
-  }
   
 
   const msg = {
     from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
     to: 'h4ih4h@gmail.com', // emailAddress,
-    template,
+    template: {
+      id: templateId,
+      variables: {
+        firstName: firstName,
+        orgName: orgName,
+        deniedReason: deniedReason,
+        eventTitle: eventTitle,
+        eventDateAndTime: eventTimeAndDate,
+        eventDescription: eventDescription,
+      }
+    },
   }
 
-  await resend.emails.send({...msg});
+  await resend.emails.send(msg);
 };

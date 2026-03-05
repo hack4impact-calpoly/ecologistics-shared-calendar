@@ -59,6 +59,7 @@ export default function AdminRequestTable() {
             emailAddress: user?.email,
             firstName: user?.firstName,
             orgName: user?.organization,
+            templateId: 'org-registration-approval-client'
           }),
         })
           .then((response) => {
@@ -111,6 +112,7 @@ export default function AdminRequestTable() {
             firstName: user?.firstName,
             orgName: user?.organization,
             deniedReason: message,
+            templateId: 'org-registration-denial-client'
           }),
         })
           .then((response) => {

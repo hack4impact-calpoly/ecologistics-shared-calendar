@@ -213,6 +213,7 @@ export default function SignUp() {
             emailAddress: email,
             firstName: fName,
             orgName: organization,
+            templateId: 'org-registration-pending-client'
           }),
         })
           .then((response) => {
@@ -246,6 +247,7 @@ export default function SignUp() {
             emailAddress: admin_email,
             firstName: fName,
             orgName: organization,
+            templateId: 'org-registration-pending-admin'
           }),
         })
           .then((response) => {
@@ -432,7 +434,7 @@ export default function SignUp() {
             </div>
 
             <button
-              type="submit"
+              type="button"
               className={`${styles.button} ${styles.buttonSent}`}
               onClick={goToLogin}
             >
