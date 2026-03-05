@@ -1,10 +1,10 @@
 /**
  * This component creates a map using OpenLayers and allows user to click on map to place a pin.
- * Pin coordinates update the state of the form, done via reverse geocoding.
+ * Pin coordinates update the state of the form, for now lon/lat
  * Map auto-centers on initial address and recenters when pin is placed.
  *
  * Author: @AmeliaHarris
- * Version: 1.1
+ * Version: 1.2
  */
 
 "use client";
@@ -32,13 +32,17 @@ type PickedAddress = {
   state: string;
   postalCode: string;
 };
+type AddLonLat = {
+  lon: number;
+  lat: number;
+}
 
 type MapPinProps = {
   street: string;
   city: string;
   state: string;
   postalCode: string;
-  onPickAddress?: (address: PickedAddress) => void;
+  onPickAddress?: (formdata: AddLonLat) => void;
 };
 
 // Helper function to geocode an address and get coordinates. Used in useEffect to get initial coordinates for map center/pin
@@ -122,13 +126,10 @@ export default function MapPin({
     lat: number;
   }>({ lon: 0, lat: 0 });
   const [loading, setLoading] = useState(true);
-  //const [currAddress, setCurrAddress] = useState({state: "", city: "", street: "", postalCode: ""});
   const [pinCoords, setPinCoords] = useState<{ lon: number; lat: number }>({
     lon: 0,
     lat: 0,
   });
-  const [description, setDescription] = useState("");
-  
   const reverseReqIdRef = useRef(0);
   const iconStyle = useMemo(
     () =>
@@ -161,19 +162,21 @@ export default function MapPin({
           console.error("Error getting position:", error);
         },
       );
-      
+      onPickAddress({lon: pinCoords.lon, lat: pinCoords.lat});
       setLoading(false);
       return;
     } else {
+      
       geocodeAddress(
         street,
         city,
         state,
         postalCode,
-        (coords) => setAddressCoords({ lon: coords[0], lat: coords[1] }),
+        (coords) => setPinCoords({ lon: coords[0], lat: coords[1] }),
         () => setLoading(false),
         controller.signal,
       );
+
     }
 
     return () => {
@@ -228,20 +231,9 @@ export default function MapPin({
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-      
+      onPickAddress({lon, lat});
+
       feat.setGeometry(new Point(clickedPoint));
-        /*
-      const reqId = ++reverseReqIdRef.current;
-
-      try {
-        const picked = await reverseGeocodeNominatim(lon, lat);
-
-        if (reqId !== reverseReqIdRef.current) return;
-
-        onPickAddress?.(picked);
-      } catch (e) {
-        console.error("Reverse geocoding failed:", e);
-      }*/
     };
 
     map.on("click", handleClick);
@@ -269,16 +261,12 @@ export default function MapPin({
 
     const { lon, lat } = pinCoords;
 
-    //if (lon === 0 && lat === 0) return;
-
-    //setPinCoords({ lon, lat });
-
     const projected = fromLonLat([lon, lat]);
     feat.setGeometry(new Point(projected));
 
     map.getView().animate({
       center: pinCoords
-        ? fromLonLat([pinCoords.lon, pinCoords.lat])
+        ? fromLonLat([lon, lat])
         : undefined,
       zoom: 16,
       duration: 500,
@@ -294,7 +282,6 @@ export default function MapPin({
 
       <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
       <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
-      <p>Selected Address: </p>
     </div>
   );
 }

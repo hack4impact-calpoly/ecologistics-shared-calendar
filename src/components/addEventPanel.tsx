@@ -619,8 +619,9 @@ export default function AddEventPanel({
               alignItems: "center",
             }}
           >
+            
             <MapPin
-              onPickAddress={(addr) => {
+              /*onPickAddress={(addr) => {
                 setFormData({
                   ...formData,
                   street: addr.street,
@@ -628,12 +629,13 @@ export default function AddEventPanel({
                   state: addr.state,
                   postalCode: addr.postalCode,
                 });
-              }}
+              }}*/
               street={formData.street}
               city={formData.city}
               state={formData.state}
               postalCode={formData.postalCode}
             />
+            
           </div>
         </>
       ) : mode == "virtual" ? (
