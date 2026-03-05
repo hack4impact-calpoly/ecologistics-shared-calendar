@@ -24,7 +24,6 @@ import Zoom from "ol/control/Zoom";
 import Attribution from "ol/control/Attribution";
 import "ol/ol.css";
 import { Icon, Style } from "ol/style";
-import { s } from "@fullcalendar/core/internal-common";
 
 type PickedAddress = {
   street: string;
