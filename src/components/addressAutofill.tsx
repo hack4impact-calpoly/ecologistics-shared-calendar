@@ -1,3 +1,14 @@
+/**
+ * This component creates a dropdown using Geoapify APIand allows user to type in an address
+ *  and click an auto suggested address. This address is then passed to the parent and sets the lon and lat
+ *  of the address in the current form data. Currently is not very stylized.
+ *
+ * Author: @AmeliaHarris
+ * Version: 1.0
+ */
+
+
+
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
