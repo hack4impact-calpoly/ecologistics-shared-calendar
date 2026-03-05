@@ -16,7 +16,6 @@ export default function AddEventLocationPanel() {
     lat: 0,
     desc: "",
   });
-  
 
   return (
     <div style={styles.container}>
@@ -69,17 +68,29 @@ export default function AddEventLocationPanel() {
         </div>
       )}
       {mode === "in-person" && method === "pin" && (
-        <div style = {{display: "flex", flexDirection: "column", alignItems: "center", gap: "12px"}}>
-          <div style = {{borderRadius: "12px", overflow: "hidden", border: "1px solid #989898"}}>
-            <MapPin
-            inLon = {formData.lon}
-            inLat = {formData.lat}
-            onPickAddress={(data) => {
-              setFormData({ ...formData, lon: data.lon, lat: data.lat });
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              border: "1px solid #989898",
             }}
-          />
-        </div>
-          
+          >
+            <MapPin
+              inLon={formData.lon}
+              inLat={formData.lat}
+              onPickAddress={(data) => {
+                setFormData({ ...formData, lon: data.lon, lat: data.lat });
+              }}
+            />
+          </div>
 
           <input
             type="text"

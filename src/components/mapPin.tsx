@@ -35,7 +35,7 @@ type PickedAddress = {
 type AddLonLat = {
   lon: number;
   lat: number;
-}
+};
 
 type MapPinProps = {
   inLon: number;
@@ -43,15 +43,7 @@ type MapPinProps = {
   onPickAddress?: (formdata: AddLonLat) => void;
 };
 
-
-
-
-
-export default function MapPin({
-  inLon,
-  inLat,
-  onPickAddress,
-}: MapPinProps) {
+export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
   const mapDivRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
@@ -62,7 +54,7 @@ export default function MapPin({
   const [addressCoords, setAddressCoords] = useState<{
     lon: number;
     lat: number;
-  }>({ lon: inLon, lat: inLat});
+  }>({ lon: inLon, lat: inLat });
   const [loading, setLoading] = useState(true);
   const [pinCoords, setPinCoords] = useState<{ lon: number; lat: number }>({
     lon: inLon,
@@ -80,8 +72,6 @@ export default function MapPin({
     [],
   );
 
-  
-
   // Effect to geocode address and get coordinates for map center/pin on initial load and when address changes. Also handles loading state for geocoding.
   useEffect(() => {
     const controller = new AbortController();
@@ -94,7 +84,6 @@ export default function MapPin({
             lon: position.coords.longitude,
             lat: position.coords.latitude,
           });
-          
         },
         (error) => {
           console.error("Error getting position:", error);
@@ -103,11 +92,8 @@ export default function MapPin({
       onPickAddress({ lon: pinCoords.lon, lat: pinCoords.lat });
       setLoading(false);
     } else {
-      
       setPinCoords({ lon: inLon, lat: inLat });
       setLoading(false);
-      
-
     }
 
     return () => {
@@ -162,7 +148,7 @@ export default function MapPin({
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-      onPickAddress({lon, lat});
+      onPickAddress({ lon, lat });
 
       feat.setGeometry(new Point(clickedPoint));
     };
@@ -196,9 +182,7 @@ export default function MapPin({
     feat.setGeometry(new Point(projected));
 
     map.getView().animate({
-      center: pinCoords
-        ? fromLonLat([lon, lat])
-        : undefined,
+      center: pinCoords ? fromLonLat([lon, lat]) : undefined,
       zoom: 16,
       duration: 500,
     });
