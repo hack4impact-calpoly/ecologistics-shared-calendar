@@ -56,8 +56,8 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
   }>({ lon: inLon, lat: inLat });
   const [loading, setLoading] = useState(true);
   const [pinCoords, setPinCoords] = useState<{ lon: number; lat: number }>({
-    lon: inLon,
-    lat: inLat,
+    lon: inLon ?? 0,
+    lat: inLat ?? 0,
   });
   const reverseReqIdRef = useRef(0);
   const iconStyle = useMemo(
@@ -88,7 +88,9 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
           console.error("Error getting position:", error);
         },
       );
-      onPickAddress({ lon: pinCoords.lon, lat: pinCoords.lat });
+      if(onPickAddress) {
+        onPickAddress({ lon: pinCoords.lon , lat: pinCoords.lat });
+      }
       setLoading(false);
     } else {
       setPinCoords({ lon: inLon, lat: inLat });
@@ -147,7 +149,9 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-      onPickAddress({ lon, lat });
+      if(onPickAddress) {
+        onPickAddress({ lon, lat });
+      }
 
       feat.setGeometry(new Point(clickedPoint));
     };
