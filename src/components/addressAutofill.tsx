@@ -143,7 +143,6 @@ export function AddressAutoFill({
   const hasResults = items.length > 0;
   function choose(feature: GeoapifyFeature) {
     const [lon, lat] = feature.geometry.coordinates;
-    console.log(feature.properties)
     setSelectedAddress({ lat, lon });
     skipNextFetchRef.current = true;
     setInput(feature.properties.formatted);
