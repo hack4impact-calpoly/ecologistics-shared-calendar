@@ -104,7 +104,10 @@ export default function AdminRequestTable() {
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
           eventDescription: eventToAccept.data.description,
-          eventTimeAndDate: `${eventToAccept.data.startDate} -- ${eventToAccept.data.endDate}`,
+          eventStartTime: eventToAccept.data.startTime,
+          eventEndTime: eventToAccept.data.endTime,
+          eventStartData: eventToAccept.data.startDate,
+          eventEndDate: eventToAccept.data.endDate,
           templateId: 'event-approval-client-1'
         }),
       })

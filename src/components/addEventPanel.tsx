@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { stat } from "fs";
 
+
 interface AddEventForm {
   //organization: string;
   title: string;
@@ -251,7 +252,10 @@ export default function AddEventPanel({
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
           eventDescription: formData.description,
-          eventTimeAndDate: `${formData.startDate} -- ${formData.endDate}`,
+          eventStartTime: formData.startTime,
+          eventEndTime: formData.endTime,
+          eventStartData: formData.startDate,
+          eventEndDate: formData.endDate,
           templateId: 'event-pending-client'
         }),
       })
@@ -287,7 +291,10 @@ export default function AddEventPanel({
           orgName: user?.publicMetadata.organization,
           eventTitle: formData.title,
           eventDescription: formData.description,
-          eventTimeAndDate: `${formData.startDate} -- ${formData.endDate}`,
+          eventStartTime: formData.startTime,
+          eventEndTime: formData.endTime,
+          eventStartData: formData.startDate,
+          eventEndDate: formData.endDate,
           templateId: 'event-pending-admin'
         }),
       })

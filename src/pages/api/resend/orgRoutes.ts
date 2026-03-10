@@ -19,7 +19,10 @@ export default async function handler(
     deniedReason, 
     eventTitle,
     eventDescription,
-    eventTimeAndDate,
+    evenStartTime,
+    eventEndTime,
+    eventStartDate,
+    eventEndDate,
     templateId
   } = req.body;
 
@@ -38,7 +41,10 @@ export default async function handler(
       deniedReason,
       eventTitle,
       eventDescription,
-      eventTimeAndDate,
+      evenStartTime,
+      eventEndTime,
+      eventStartDate,
+      eventEndDate,
       templateId
     );
     return res
@@ -59,7 +65,10 @@ async function sendDynamicEmail(
   deniedReason: string,
   eventTitle: string,
   eventDescription: string,
-  eventTimeAndDate: string,
+  eventStartTime: string,
+  eventEndTime: string,
+  eventStartDate: string,
+  eventEndDate: string,
   templateId: string,
 ) {
 
@@ -97,7 +106,10 @@ async function sendDynamicEmail(
         orgName: orgName,
         deniedReason: deniedReason,
         eventTitle: eventTitle,
-        eventDateAndTime: eventTimeAndDate,
+        eventStartTime: eventStartTime,
+        eventEndTime: eventEndTime,
+        eventStartDate: eventStartDate,
+        eventEndDate: eventEndDate,
         eventDescription: eventDescription,
       }
     },
