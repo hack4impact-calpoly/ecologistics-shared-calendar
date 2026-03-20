@@ -1,15 +1,11 @@
-import React, { ReactEventHandler, useState } from "react";
-import { MdOutlineFileUpload, MdClose } from "react-icons/md";
-import { useDropzone } from "react-dropzone";
+import React, { useState } from "react";
+import { MdClose } from "react-icons/md";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
-import Image from "next/image";
-import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { stat } from "fs";
 import AddEventLocationPanel from "./addEventLocationPanel";
-import MapPin from "./mapPin";
+import AddEventMisc from "./addEventMisc";
 
-interface AddEventForm {
+export interface AddEventFormType {
   //organization: string;
   title: string;
   startDate: string;
@@ -73,6 +69,8 @@ const stringToDate = (date: string, time: string): Date => {
   return new Date(year, month - 1, day, hours, minutes);
 };
 
+type Panel = "start" | "location" | "misc";
+
 interface AddEventPanelProps {
   onClose: () => void;
   onCreate: () => void;
@@ -85,13 +83,12 @@ export default function AddEventPanel({
   addEvent,
 }: AddEventPanelProps) {
   const { user } = useUser();
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-  const [formData, setFormData] = useState<AddEventForm>(EMPTY_FORM);
+  const [formData, setFormData] = useState<AddEventFormType>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [titleCharsTyped, setTitleCharsTyped] = useState(0);
   const [desCharsTyped, setDesCharsTyped] = useState(0);
-  const [mode, setMode] = useState("");
+  const [panelType, setPanelType] = useState<Panel>("start");
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -125,24 +122,6 @@ export default function AddEventPanel({
     return errors;
   };
 
-  const addLocationErrors = async (errors: Partial<FormErrors>) => {
-    if (mode == "virtual") return;
-
-    const address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
-
-    const response = await fetch(
-      new Request(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`,
-      ),
-    );
-
-    const data = await response.json();
-
-    if (data.length === 0) {
-      errors.location = "Location not found. Please enter a valid address.";
-    }
-  };
-
   const addDateErrors = (errors: Partial<FormErrors>) => {
     let start = stringToDate(formData.startDate, formData.startTime);
     let end = stringToDate(formData.endDate, formData.endTime);
@@ -165,16 +144,15 @@ export default function AddEventPanel({
 
     addDateErrors(errors);
 
-    await addLocationErrors(errors);
+    // await addLocationErrors(errors);
 
     return errors;
   };
 
   const onEventAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e?.preventDefault();
     onCreate();
     setFormData(EMPTY_FORM);
-    setImagePreviewUrl(null);
     setIsLoading(true);
     setDesCharsTyped(0);
     setTitleCharsTyped(0);
@@ -200,7 +178,7 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (mode == "in-person") {
+        if (formData.mode == "in-person") {
           address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
         }
 
@@ -222,7 +200,6 @@ export default function AddEventPanel({
           addEvent(event);
           onCreate();
           setFormData(EMPTY_FORM);
-          setImagePreviewUrl(null);
           console.log("CREATED EVENT");
         } else {
           setFormErrors((prev) => ({
@@ -306,28 +283,6 @@ export default function AddEventPanel({
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png"],
-    },
-    onDrop: (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0] as File | null; // Will not be null, but TS doesn't know that.
-      setFormData((prev: AddEventForm) => ({ ...prev, photo: file }));
-      setImagePreviewUrl(URL.createObjectURL(file as Blob));
-    },
-  });
-
-  const handleClick = (event: React.ChangeEvent<{ value: string }>) => {
-    setMode(event.target.value);
-    setFormData({ ...formData, mode: event.target.value });
-    console.log(formData.mode);
-    if (event.target.value == "in-person") {
-      setFormData({ ...formData, isVirtual: false });
-    } else {
-      setFormData({ ...formData, isVirtual: true });
-    }
-  };
-
   const states = [
     "AL",
     "AK",
@@ -382,292 +337,153 @@ export default function AddEventPanel({
   ];
 
   return (
-    <form style={styles.container} onSubmit={onEventAdd}>
-      <MdClose onClick={onClose} style={styles.close} size={25} />
-      <h3 style={styles.title}>Add Event</h3>
-      <h4 style={styles.inputTitle}>
-        Title<span style={{ color: "red" }}> *</span>
-      </h4>
-
-      <input
-        type="text"
-        style={styles.input}
-        onChange={(e) => {
-          const currLength = e.target.value.length;
-          if (currLength <= 45) {
-            setTitleCharsTyped(currLength);
-            setFormData({ ...formData, title: e.target.value });
-          }
-        }}
-        value={formData.title}
-        disabled={isLoading}
-        required
-      />
-      <p style={styles.characterCount}>
-        Characters Typed: {titleCharsTyped}/45
-      </p>
-
-      <div style={styles.horizontal}>
-        <div style={styles.inputContainer}>
+    <>
+      {panelType === "start" && (
+        <form style={styles.container} onSubmit={onEventAdd}>
+          <MdClose onClick={onClose} style={styles.close} size={25} />
+          <h3 style={styles.title}>Add Event</h3>
           <h4 style={styles.inputTitle}>
-            Start Date<span style={{ color: "red" }}> *</span>
+            Title<span style={{ color: "red" }}> *</span>
           </h4>
-          <input
-            type="date"
-            style={{
-              ...styles.input,
-              marginRight: "10px",
-              display: "inline-block",
-            }}
-            onChange={(e) =>
-              setFormData({ ...formData, startDate: e.target.value })
-            }
-            disabled={isLoading}
-            value={formData.startDate}
-            required
-          />
 
-          <h4 style={styles.inputTitle}>
-            Start Time<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="time"
-            style={{
-              ...styles.input,
-              display: "inline-block",
-            }}
-            onChange={(e) =>
-              setFormData({ ...formData, startTime: e.target.value })
-            }
-            value={formData.startTime}
-            disabled={isLoading}
-            required
-          />
-        </div>
-        <div style={styles.inputContainer}>
-          <h4 style={styles.inputTitle}>
-            End Date<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="date"
-            style={{
-              ...styles.input,
-              marginRight: "10px",
-              display: "inline-block",
-            }}
-            onChange={(e) =>
-              setFormData({ ...formData, endDate: e.target.value })
-            }
-            value={formData.endDate}
-            disabled={isLoading}
-            required
-          />
-
-          <h4 style={styles.inputTitle}>
-            End Time<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="time"
-            style={{
-              ...styles.input,
-              display: "inline-block",
-            }}
-            onChange={(e) =>
-              setFormData({ ...formData, endTime: e.target.value })
-            }
-            value={formData.endTime}
-            disabled={isLoading}
-            required
-          />
-        </div>
-      </div>
-
-      {formErrors.dates && (
-        <div style={styles.errorBox}>
-          <p style={styles.error}>{formErrors.dates}</p>
-        </div>
-      )}
-
-      <h4 style={styles.inputTitle}>Description</h4>
-      <textarea
-        style={styles.textarea}
-        onChange={(e) => {
-          const currLength = e.target.value.length;
-          if (currLength <= 1500) {
-            setDesCharsTyped(currLength);
-            setFormData({ ...formData, description: e.target.value });
-          }
-        }}
-        value={formData.description}
-      ></textarea>
-      <p style={styles.characterCount}>
-        Characters Typed: {desCharsTyped}/1500
-      </p>
-      {formErrors.description && (
-        <div style={styles.errorBox}>
-          <p style={styles.error}>{formErrors.description}</p>
-        </div>
-      )}
-
-      <h4 style={styles.inputTitle}>
-        Location<span style={{ color: "red" }}> *</span>
-      </h4>
-
-      <div style={styles.radioContainer}>
-        <label>
-          <input
-            type="radio"
-            name="location"
-            value="virtual"
-            style={styles.radioButton}
-            onChange={handleClick}
-            required
-            disabled={isLoading}
-          />
-          Virtual
-        </label>
-        <label style={{ marginLeft: "20px" }}>
-          <input
-            type="radio"
-            name="location"
-            value="in-person"
-            style={styles.radioButton}
-            onChange={handleClick}
-            required
-            disabled={isLoading}
-          />
-          In Person
-        </label>
-      </div>
-
-      {mode == "in-person" ? (
-        <>
-          <h4 style={styles.inputTitle}>
-            Street<span style={{ color: "red" }}> *</span>
-          </h4>
           <input
             type="text"
             style={styles.input}
-            onChange={(e) =>
-              setFormData({ ...formData, street: e.target.value })
-            }
-            value={formData.street}
-            required
+            onChange={(e) => {
+              const currLength = e.target.value.length;
+              if (currLength <= 45) {
+                setTitleCharsTyped(currLength);
+                setFormData({ ...formData, title: e.target.value });
+              }
+            }}
+            value={formData.title}
             disabled={isLoading}
-          />
-          <h4 style={styles.inputTitle}>
-            City<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="text"
-            style={styles.input}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            value={formData.city}
             required
-            disabled={isLoading}
           />
-          <h4 style={styles.inputTitle}>
-            State<span style={{ color: "red" }}> *</span>
-          </h4>
-          <Select
-            labelId="state-select-label"
-            id="state-select"
-            value={formData.state}
-            label="Select a state"
-            onChange={(e) =>
-              setFormData({ ...formData, state: e.target.value })
-            }
+          <p style={styles.characterCount}>
+            Characters Typed: {titleCharsTyped}/45
+          </p>
+
+          <div style={styles.horizontal}>
+            <div style={styles.inputContainer}>
+              <h4 style={styles.inputTitle}>
+                Start Date<span style={{ color: "red" }}> *</span>
+              </h4>
+              <input
+                type="date"
+                style={{
+                  ...styles.input,
+                  marginRight: "10px",
+                  display: "inline-block",
+                }}
+                onChange={(e) =>
+                  setFormData({ ...formData, startDate: e.target.value })
+                }
+                disabled={isLoading}
+                value={formData.startDate}
+                required
+              />
+
+              <h4 style={styles.inputTitle}>
+                Start Time<span style={{ color: "red" }}> *</span>
+              </h4>
+              <input
+                type="time"
+                style={{
+                  ...styles.input,
+                  display: "inline-block",
+                }}
+                onChange={(e) =>
+                  setFormData({ ...formData, startTime: e.target.value })
+                }
+                value={formData.startTime}
+                disabled={isLoading}
+                required
+              />
+            </div>
+            <div style={styles.inputContainer}>
+              <h4 style={styles.inputTitle}>
+                End Date<span style={{ color: "red" }}> *</span>
+              </h4>
+              <input
+                type="date"
+                style={{
+                  ...styles.input,
+                  marginRight: "10px",
+                  display: "inline-block",
+                }}
+                onChange={(e) =>
+                  setFormData({ ...formData, endDate: e.target.value })
+                }
+                value={formData.endDate}
+                disabled={isLoading}
+                required
+              />
+
+              <h4 style={styles.inputTitle}>
+                End Time<span style={{ color: "red" }}> *</span>
+              </h4>
+              <input
+                type="time"
+                style={{
+                  ...styles.input,
+                  display: "inline-block",
+                }}
+                onChange={(e) =>
+                  setFormData({ ...formData, endTime: e.target.value })
+                }
+                value={formData.endTime}
+                disabled={isLoading}
+                required
+              />
+            </div>
+          </div>
+
+          {formErrors.dates && (
+            <div style={styles.errorBox}>
+              <p style={styles.error}>{formErrors.dates}</p>
+            </div>
+          )}
+
+          <h4 style={styles.inputTitle}>Description</h4>
+          <textarea
+            style={styles.textarea}
+            onChange={(e) => {
+              const currLength = e.target.value.length;
+              if (currLength <= 1500) {
+                setDesCharsTyped(currLength);
+                setFormData({ ...formData, description: e.target.value });
+              }
+            }}
+            value={formData.description}
+          ></textarea>
+          <p style={styles.characterCount}>
+            Characters Typed: {desCharsTyped}/1500
+          </p>
+          {formErrors.description && (
+            <div style={styles.errorBox}>
+              <p style={styles.error}>{formErrors.description}</p>
+            </div>
+          )}
+          <button
+            style={styles.button}
+            type="button"
+            disabled={isLoading}
+            onClick={() => setPanelType("location")}
           >
-            <MenuItem value="">
-              <em>Select...</em>
-            </MenuItem>
-            {states.map((stateAbbr, index) => (
-              <MenuItem key={index} value={stateAbbr}>
-                {stateAbbr}
-              </MenuItem>
-            ))}
-          </Select>
-          {/* <input
-            type="text"
-            style={styles.input}
-            onChange={(e) =>
-              setFormData({ ...formData, state: e.target.value })
-            }
-            value={formData.state}
-            required
-            disabled={isLoading}
-          /> */}
-          <h4 style={styles.inputTitle}>
-            Postal Code<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="text"
-            style={styles.input}
-            onChange={(e) =>
-              setFormData({ ...formData, postalCode: e.target.value })
-            }
-            value={formData.postalCode}
-            required
-            disabled={isLoading}
-          />
-          
-        </>
-      ) : mode == "virtual" ? (
-        <>
-          <h4 style={styles.inputTitle}>
-            Link<span style={{ color: "red" }}> *</span>
-          </h4>
-          <input
-            type="text"
-            style={styles.input}
-            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            value={formData.url ? formData.url : ""}
-            required
-            disabled={isLoading}
-          />
-        </>
-      ) : null}
-
-      {formErrors.location && (
-        <div style={styles.errorBox}>
-          <p style={styles.error}>{formErrors.location}</p>
-        </div>
+            {isLoading ? "Loading..." : "Continue"}
+          </button>
+        </form>
       )}
-
-      <div {...getRootProps()} style={styles.uploadContainer}>
-        <input {...getInputProps()} />
-        {imagePreviewUrl ? (
-          <div>
-            <Image
-              src={imagePreviewUrl}
-              alt="Preview"
-              width={0}
-              height={0}
-              style={{ width: "20%", height: "20%" }}
-            />
-          </div>
-        ) : (
-          <div>
-            <label htmlFor="file-upload" style={styles.uploadButton}>
-              {isDragActive
-                ? "Drop the files here."
-                : "Drag and drop or select image."}
-            </label>
-            <MdOutlineFileUpload size={30} />
-          </div>
-        )}
-      </div>
-
-      {formErrors.photo && (
-        <div style={styles.errorBox}>
-          <p style={styles.error}>{formErrors.photo}</p>
-        </div>
+      {panelType === "location" && (
+        <AddEventLocationPanel
+          setPanelType={setPanelType}
+          eventFormData={formData}
+          setEventFormData={setFormData}
+        />
       )}
-
-      <button style={styles.button} type="submit" disabled={isLoading}>
-        {isLoading ? "Loading..." : "Add Event"}
-      </button>
-    </form>
+      {panelType === "misc" && <AddEventMisc onSubmit={onEventAdd} />}
+    </>
   );
 }
 

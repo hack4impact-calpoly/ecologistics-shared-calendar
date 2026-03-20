@@ -2,13 +2,24 @@
 import { useState } from "react";
 import { AddressAutoFill } from "./addressAutofill";
 import MapPin from "./mapPin";
+import { AddEventFormType } from "./addEventPanel";
 
 type LocationMode = "in-person" | "virtual";
 type InPersonMethod = "pin" | "search";
 
 const geoKey = process.env.GEOAPIFY_API_KEY!;
 
-export default function AddEventLocationPanel() {
+type AddEventLocationPanelProps = {
+  setPanelType: (panel: "start" | "location" | "misc") => void;
+  setEventFormData: React.Dispatch<React.SetStateAction<AddEventFormType>>;
+  eventFormData: AddEventFormType;
+};
+
+export default function AddEventLocationPanel({
+  setPanelType,
+  setEventFormData,
+  eventFormData
+}: AddEventLocationPanelProps) {
   const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
   const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
   const [formData, setFormData] = useState({
@@ -105,27 +116,52 @@ export default function AddEventLocationPanel() {
         <div>
           <AddressAutoFill
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
-            onSelect={(data) => {
+            onSelect={(data, feature) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
+              setEventFormData({...eventFormData,
+                  street: (feature.properties.street ?? "") as string,
+                  city: (feature.properties.city ?? "") as string,
+                  state: (feature.properties.state_code ?? "") as string,
+                  postalCode: (feature.properties.postcode ?? "") as string,
+                  mode: mode});
             }}
           />
         </div>
       )}
+      <button style={styles.button} type="button" onClick={() => setPanelType('misc')}>
+        Continue
+      </button>
     </div>
   );
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    width: "100%",
-    maxWidth: "550px",
-    padding: "20px",
-    background: "#e5e5e5",
-    borderRadius: "12px",
     display: "flex",
     flexDirection: "column",
+    alignContent: "center",
     justifyContent: "center",
-    gap: "12px",
+    boxSizing: "border-box",
+    borderRadius: "10px",
+    border: "1px solid black",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    padding: "20px",
+    margin: "10px",
+    width: "80%",
+    height: "50%",
+    position: "relative",
+    gap: "5px",
+  },
+    button: {
+    padding: "10px 15px",
+    border: "none",
+    borderRadius: "20px",
+    background: "#335543",
+    color: "white",
+    cursor: "pointer",
+    display: "block",
+    width: "15%",
+    alignSelf: "center",
   },
   header: {
     margin: 0,

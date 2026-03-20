@@ -306,7 +306,11 @@ export default function CalendarPage() {
             totalEvents={events}
           />
         ) : (
-          <AddEventLocationPanel/>)}
+          <AddEventPanel
+            onClose={() => setIsAddingEvent(false)}
+            onCreate={() => setIsShowingEventPopUp(true)}
+            addEvent={addEvent}
+          />)}
       </div>
     </Layout>
   );
