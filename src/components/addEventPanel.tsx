@@ -90,34 +90,61 @@ export default function AddEventPanel({
   const [desCharsTyped, setDesCharsTyped] = useState(0);
   const [panelType, setPanelType] = useState<Panel>("start");
 
-  const getErrorsForEmptyFields = (): Partial<FormErrors> => {
+  const hasText = (value: string | null | undefined) =>
+    Boolean(value && value.trim());
+
+  // Validate only the fields shown on the first panel
+  const getStartPanelErrors = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
 
-    const fieldsToCheck = [
-      { field: "title", error: "Title is required." },
-      { field: "dates", error: "Start date is required." },
-      { field: "dates", error: "Start time is required." },
-      { field: "dates", error: "End date is required." },
-      { field: "dates", error: "End time is required." },
-      //{ field: "description", error: "Description is required." },
-      { field: "location", error: "Link or address is required." },
-      //{ field: "photo",isFile: true },
-    ];
+    if (!hasText(formData.title)) {
+      errors.title = "Title is required.";
+    }
 
-    const fieldKeyToErrorKey = (field: string) => {
-      if (field.includes("Date") || field.includes("Time")) return "dates";
-      return field;
-    };
+    if (!hasText(formData.startDate)) {
+      errors.dates = "Start date is required.";
+    } else if (!hasText(formData.startTime)) {
+      errors.dates = "Start time is required.";
+    } else if (!hasText(formData.endDate)) {
+      errors.dates = "End date is required.";
+    } else if (!hasText(formData.endTime)) {
+      errors.dates = "End time is required.";
+    }
 
-    fieldsToCheck.forEach(({ field, error /*isFile*/ }) => {
-      // const key = field as keyof typeof formData;
-      // if (
-      //   (isFile && formData[key] === null) ||
-      //   (!isFile && formData[key] === "")
-      // ) {
-      //   errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
-      // }
-    });
+    return errors;
+  };
+
+  // Keep location rules separate so each panel can block progression
+  const getLocationPanelErrors = (): Partial<FormErrors> => {
+    const errors = {} as Partial<FormErrors>;
+
+    if (
+      formData.mode === "in-person" &&
+      (!hasText(formData.street) ||
+        !hasText(formData.city) ||
+        !hasText(formData.state) ||
+        !hasText(formData.postalCode))
+    ) {
+      errors.location = "Address is required.";
+    } else if (formData.mode === "virtual" && !hasText(formData.url)) {
+      errors.location = "Meeting link is required.";
+    }
+
+    return errors;
+  };
+
+  const getErrorsForEmptyFields = (
+    panels: Panel[] = panelType === "misc" ? [] : [panelType],
+  ): Partial<FormErrors> => {
+    const errors = {} as Partial<FormErrors>;
+
+    if (panels.includes("start")) {
+      Object.assign(errors, getStartPanelErrors());
+    }
+
+    if (panels.includes("location")) {
+      Object.assign(errors, getLocationPanelErrors());
+    }
 
     return errors;
   };
