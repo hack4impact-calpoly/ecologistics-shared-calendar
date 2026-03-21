@@ -21,6 +21,9 @@ export interface AddEventFormType {
   street: string;
   state: string;
   postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationDescription: string;
 }
 
 interface FormErrors {
@@ -40,7 +43,7 @@ const EMPTY_FORM = {
   startTime: "",
   endTime: "",
   description: "",
-  mode: "",
+  mode: "in-person",
   isVirtual: false,
   url: null,
   photo: null,
@@ -48,6 +51,9 @@ const EMPTY_FORM = {
   street: "",
   state: "",
   postalCode: "",
+  latitude: null,
+  longitude: null,
+  locationDescription: "",
 };
 
 interface Event {
@@ -117,15 +123,23 @@ export default function AddEventPanel({
   // Keep location rules separate so each panel can block progression
   const getLocationPanelErrors = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
+    const hasStructuredAddress =
+      hasText(formData.street) &&
+      hasText(formData.city) &&
+      hasText(formData.state) &&
+      hasText(formData.postalCode);
+    const hasPinnedLocation =
+      hasText(formData.locationDescription) ||
+      (formData.latitude !== null &&
+        formData.longitude !== null &&
+        (formData.latitude !== 0 || formData.longitude !== 0));
 
     if (
       formData.mode === "in-person" &&
-      (!hasText(formData.street) ||
-        !hasText(formData.city) ||
-        !hasText(formData.state) ||
-        !hasText(formData.postalCode))
+      !hasStructuredAddress &&
+      !hasPinnedLocation
     ) {
-      errors.location = "Address is required.";
+      errors.location = "Location is required.";
     } else if (formData.mode === "virtual" && !hasText(formData.url)) {
       errors.location = "Meeting link is required.";
     }
@@ -176,6 +190,35 @@ export default function AddEventPanel({
     return errors;
   };
 
+  // Continue buttons validate their own panel before changing steps.
+  const handleStartContinue = () => {
+    const errors = getErrorsForEmptyFields(["start"]);
+
+    if (Object.keys(errors).length === 0) {
+      addDateErrors(errors);
+    }
+
+    if (Object.keys(errors).length !== 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
+    setPanelType("location");
+  };
+
+  const handleLocationContinue = () => {
+    const errors = getErrorsForEmptyFields(["location"]);
+
+    if (Object.keys(errors).length !== 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
+    setPanelType("misc");
+  };
+
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
     onCreate();
@@ -206,7 +249,18 @@ export default function AddEventPanel({
         let address = formData.url || "";
 
         if (formData.mode == "in-person") {
+          const hasStructuredAddress =
+            hasText(formData.street) &&
+            hasText(formData.city) &&
+            hasText(formData.state) &&
+            hasText(formData.postalCode);
+
           address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
+          if (!hasStructuredAddress) {
+            address =
+              formData.locationDescription.trim() ||
+              `${formData.latitude}, ${formData.longitude}`;
+          }
         }
 
         const event: Event = {
@@ -390,6 +444,11 @@ export default function AddEventPanel({
           <p style={styles.characterCount}>
             Characters Typed: {titleCharsTyped}/45
           </p>
+          {formErrors.title && (
+            <div style={styles.errorBox}>
+              <p style={styles.error}>{formErrors.title}</p>
+            </div>
+          )}
 
           <div style={styles.horizontal}>
             <div style={styles.inputContainer}>
@@ -496,7 +555,7 @@ export default function AddEventPanel({
             style={styles.button}
             type="button"
             disabled={isLoading}
-            onClick={() => setPanelType("location")}
+            onClick={handleStartContinue}
           >
             {isLoading ? "Loading..." : "Continue"}
           </button>
@@ -504,7 +563,8 @@ export default function AddEventPanel({
       )}
       {panelType === "location" && (
         <AddEventLocationPanel
-          setPanelType={setPanelType}
+          error={formErrors.location}
+          onContinue={handleLocationContinue}
           eventFormData={formData}
           setEventFormData={setFormData}
         />

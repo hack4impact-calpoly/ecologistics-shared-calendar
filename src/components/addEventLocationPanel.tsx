@@ -10,23 +10,37 @@ type InPersonMethod = "pin" | "search";
 const geoKey = process.env.GEOAPIFY_API_KEY!;
 
 type AddEventLocationPanelProps = {
-  setPanelType: (panel: "start" | "location" | "misc") => void;
+  onContinue: () => void;
   setEventFormData: React.Dispatch<React.SetStateAction<AddEventFormType>>;
   eventFormData: AddEventFormType;
+  error?: string;
 };
 
 export default function AddEventLocationPanel({
-  setPanelType,
+  onContinue,
   setEventFormData,
-  eventFormData
+  eventFormData,
+  error,
 }: AddEventLocationPanelProps) {
-  const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
+  const [mode, setMode] = useState<LocationMode>(
+    eventFormData.mode === "virtual" ? "virtual" : "in-person",
+  ); //active mode
   const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
   const [formData, setFormData] = useState({
     lon: 0,
     lat: 0,
     desc: "",
   });
+
+  // Keep the parent state in sync so validation can run in one place.
+  const setLocationMode = (nextMode: LocationMode) => {
+    setMode(nextMode);
+    setEventFormData((prev) => ({
+      ...prev,
+      mode: nextMode,
+      isVirtual: nextMode === "virtual",
+    }));
+  };
 
   return (
     <div style={styles.container}>
@@ -39,7 +53,7 @@ export default function AddEventLocationPanel({
           style={
             mode === "in-person" ? styles.activeModeButton : styles.modeButton
           }
-          onClick={() => setMode("in-person")}
+          onClick={() => setLocationMode("in-person")}
         >
           In Person
         </button>
@@ -47,7 +61,7 @@ export default function AddEventLocationPanel({
           style={
             mode === "virtual" ? styles.activeModeButton : styles.modeButton
           }
-          onClick={() => setMode("virtual")}
+          onClick={() => setLocationMode("virtual")}
         >
           Virtual
         </button>
@@ -99,6 +113,13 @@ export default function AddEventLocationPanel({
               inLat={formData.lat}
               onPickAddress={(data) => {
                 setFormData({ ...formData, lon: data.lon, lat: data.lat });
+                setEventFormData((prev) => ({
+                  ...prev,
+                  mode: "in-person",
+                  isVirtual: false,
+                  latitude: data.lat,
+                  longitude: data.lon,
+                }));
               }}
             />
           </div>
@@ -106,7 +127,15 @@ export default function AddEventLocationPanel({
           <input
             type="text"
             style={styles.input}
-            onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+            onChange={(e) => {
+              setFormData({ ...formData, desc: e.target.value });
+              setEventFormData((prev) => ({
+                ...prev,
+                mode: "in-person",
+                isVirtual: false,
+                locationDescription: e.target.value,
+              }));
+            }}
             value={formData.desc}
             placeholder="Add description of location (optional)"
           />
@@ -118,17 +147,40 @@ export default function AddEventLocationPanel({
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
             onSelect={(data, feature) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
-              setEventFormData({...eventFormData,
+              setEventFormData((prev) => ({
+                  ...prev,
                   street: (feature.properties.street ?? "") as string,
                   city: (feature.properties.city ?? "") as string,
                   state: (feature.properties.state_code ?? "") as string,
                   postalCode: (feature.properties.postcode ?? "") as string,
-                  mode: mode});
+                  latitude: data.lat,
+                  longitude: data.lon,
+                  mode: mode,
+                  isVirtual: false,
+              }));
             }}
           />
         </div>
       )}
-      <button style={styles.button} type="button" onClick={() => setPanelType('misc')}>
+      {mode === "virtual" && (
+        <input
+          type="url"
+          style={styles.input}
+          placeholder="Meeting link"
+          value={eventFormData.url ?? ""}
+          onChange={(e) =>
+            setEventFormData((prev) => ({
+              ...prev,
+              mode: "virtual",
+              isVirtual: true,
+              url: e.target.value,
+            }))
+          }
+        />
+      )}
+      {error && <p style={styles.error}>{error}</p>}
+
+      <button style={styles.button} type="button" onClick={onContinue}>
         Continue
       </button>
     </div>
@@ -223,5 +275,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
+  },
+  error: {
+    color: "red",
+    alignSelf: "center",
   },
 };
