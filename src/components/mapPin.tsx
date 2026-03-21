@@ -198,8 +198,14 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     <div>
       <div>{loading ? " (Loading...)" : ""}</div>
 
-      <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
-      <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
+      <div style={{ position: "relative", width: "24rem", height: "24rem" }}>
+        {/* Keep controls inside the map so they don't cover panel */}
+        <div
+          ref={toolbarRef}
+          style={{ position: "absolute", top: "0.5rem", left: "0.5rem", zIndex: 1 }}
+        />
+        <div ref={mapDivRef} style={{ width: "24rem", height: "24rem" }} />
+      </div>
     </div>
   );
 }

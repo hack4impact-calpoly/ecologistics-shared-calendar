@@ -1,13 +1,21 @@
 import React, { useState } from "react";
+import { MdArrowBack } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 
 type AddEventMiscProps = {
+  onBack: () => void;
+  onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
-export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
+export default function AddEventMisc({
+  onBack,
+  onClose,
+  onSubmit,
+}: AddEventMiscProps) {
   const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -25,7 +33,9 @@ export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
 
   return (
     <form onSubmit={onSubmit} style={styles.container}>
-      <h3>Create New Event</h3>
+      <MdArrowBack onClick={onBack} style={styles.back} size={25} />
+      <MdClose onClick={onClose} style={styles.close} size={25} />
+      <h3 style={styles.title}>Create New Event</h3>
 
       <h4>Additional Details</h4>
       <textarea
@@ -58,9 +68,11 @@ export default function AddEventMisc({ onSubmit }: AddEventMiscProps) {
         )}
       </div>
 
-      <button type="submit" style={styles.button}>
-        Submit
-      </button>
+      <div style={styles.actions}>
+        <button type="submit" style={styles.button}>
+          Submit
+        </button>
+      </div>
     </form>
   );
 }
@@ -72,42 +84,63 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
     boxSizing: "border-box",
-    borderRadius: "10px",
+    borderRadius: "0.625rem",
     border: "1px solid black",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    padding: "20px",
-    margin: "10px",
+    padding: "1.25rem",
+    margin: "0.625rem",
     width: "80%",
     height: "50%",
     position: "relative",
-    gap: "5px",
+    gap: "0.3125rem",
   },
   textarea: {
     width: "100%",
     minHeight: "100px",
-    padding: "10px",
-    borderRadius: "10px",
+    padding: "0.625rem",
+    borderRadius: "0.625rem",
     border: "1px solid #989898",
   },
   uploadContainer: {
     textAlign: "center",
-    padding: "40px",
+    padding: "2.5rem",
     border: "1px dashed #000",
-    borderRadius: "5px",
+    borderRadius: "0.3125rem",
   },
   uploadButton: {
     cursor: "pointer",
     display: "block",
     marginBottom: "8px",
   },
+  title: {
+    marginTop: "1.25rem",
+  },
   button: {
-    padding: "10px 15px",
-    borderRadius: "20px",
+    padding: "0.625rem 0.9375rem",
+    borderRadius: "1.25rem",
     border: "none",
     background: "#335543",
     color: "white",
     cursor: "pointer",
-    width: "120px",
-    alignSelf: "center",
+    width: "7.5rem",
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "0.75rem",
+  },
+  close: {
+    position: "absolute",
+    top: "0.5rem",
+    right: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
+  },
+  back: {
+    position: "absolute",
+    top: "0.5rem",
+    left: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
   },
 };

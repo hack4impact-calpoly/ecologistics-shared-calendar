@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MdArrowBack } from "react-icons/md";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
@@ -219,6 +220,11 @@ export default function AddEventPanel({
     setPanelType("misc");
   };
 
+  const handleBack = (panel: Panel) => {
+    setFormErrors({});
+    setPanelType(panel);
+  };
+
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
     onCreate();
@@ -421,6 +427,7 @@ export default function AddEventPanel({
     <>
       {panelType === "start" && (
         <form style={styles.container} onSubmit={onEventAdd}>
+          <MdArrowBack onClick={onClose} style={styles.back} size={25} />
           <MdClose onClick={onClose} style={styles.close} size={25} />
           <h3 style={styles.title}>Add Event</h3>
           <h4 style={styles.inputTitle}>
@@ -444,11 +451,9 @@ export default function AddEventPanel({
           <p style={styles.characterCount}>
             Characters Typed: {titleCharsTyped}/45
           </p>
-          {formErrors.title && (
-            <div style={styles.errorBox}>
-              <p style={styles.error}>{formErrors.title}</p>
-            </div>
-          )}
+          <div style={styles.errorBox}>
+            {formErrors.title && <p style={styles.error}>{formErrors.title}</p>}
+          </div>
 
           <div style={styles.horizontal}>
             <div style={styles.inputContainer}>
@@ -525,11 +530,9 @@ export default function AddEventPanel({
             </div>
           </div>
 
-          {formErrors.dates && (
-            <div style={styles.errorBox}>
-              <p style={styles.error}>{formErrors.dates}</p>
-            </div>
-          )}
+          <div style={styles.errorBox}>
+            {formErrors.dates && <p style={styles.error}>{formErrors.dates}</p>}
+          </div>
 
           <h4 style={styles.inputTitle}>Description</h4>
           <textarea
@@ -564,12 +567,20 @@ export default function AddEventPanel({
       {panelType === "location" && (
         <AddEventLocationPanel
           error={formErrors.location}
+          onBack={() => handleBack("start")}
+          onClose={onClose}
           onContinue={handleLocationContinue}
           eventFormData={formData}
           setEventFormData={setFormData}
         />
       )}
-      {panelType === "misc" && <AddEventMisc onSubmit={onEventAdd} />}
+      {panelType === "misc" && (
+        <AddEventMisc
+          onBack={() => handleBack("location")}
+          onClose={onClose}
+          onSubmit={onEventAdd}
+        />
+      )}
     </>
   );
 }
@@ -581,20 +592,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
     boxSizing: "border-box",
-    borderRadius: "10px",
+    borderRadius: "0.625rem",
     border: "1px solid black",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    padding: "20px",
-    margin: "10px",
+    padding: "1.25rem",
+    margin: "0.625rem",
     width: "80%",
     height: "50%",
     position: "relative",
-    gap: "5px",
+    gap: "0.3125rem",
   },
   input: {
     width: "calc(100% - 20px)",
-    padding: "10px",
-    borderRadius: "15px",
+    padding: "0.625rem",
+    borderRadius: "0.9375rem",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
@@ -602,8 +613,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   textarea: {
     width: "calc(100% - 20px)",
     minHeight: "100px",
-    padding: "10px",
-    borderRadius: "15px",
+    padding: "0.625rem",
+    borderRadius: "0.9375rem",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
@@ -619,9 +630,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     accentColor: "black",
   },
   button: {
-    padding: "10px 15px",
+    padding: "0.625rem 0.9375rem",
     border: "none",
-    borderRadius: "20px",
+    borderRadius: "1.25rem",
     background: "#335543",
     color: "white",
     cursor: "pointer",
@@ -630,11 +641,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignSelf: "center",
   },
   uploadContainer: {
-    marginTop: "10px",
+    marginTop: "0.625rem",
     textAlign: "center",
-    padding: "40px",
+    padding: "2.5rem",
     border: "1px dashed #000",
-    borderRadius: "5px",
+    borderRadius: "0.3125rem",
   },
   uploadButton: {
     cursor: "pointer",
@@ -647,7 +658,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
-    gap: "5px",
+    gap: "0.3125rem",
   },
   inputContainer: {
     display: "flex",
@@ -658,21 +669,33 @@ const styles: { [key: string]: React.CSSProperties } = {
   inputTitle: {
     fontWeight: "bold",
   },
+  title: {
+    marginTop: "1.25rem",
+  },
   close: {
     position: "absolute",
-    top: "0",
+    top: "0.5rem",
+    right: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
+  },
+  back: {
+    position: "absolute",
+    top: "0.5rem",
     left: "0",
-    margin: "5px",
+    margin: "0.3125rem",
     cursor: "pointer",
   },
   error: {
     color: "red",
-    marginTop: "5px",
+    margin: 0,
+    fontSize: "1rem",
   },
   errorBox: {
     display: "flex",
     alignContent: "center",
     justifyContent: "center",
+    minHeight: "1.25rem",
   },
   characterCount: {
     color: "grey",
