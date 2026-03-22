@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   white-space: nowrap;
 }
 
@@ -17,8 +17,8 @@
   text-align: center;
   background: #f7ab74;
   border-radius: 0.75rem;
-  border: 0px;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  border: 0;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
   cursor: pointer;
   margin-left: 1rem;
 }
@@ -44,15 +44,15 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     white-space: nowrap;
   }
 }
 @media (orientation:landscape) and (min-width: 786px) {
   .addButton {
-    display: block; /* or flex, depending on your layout */
-    width: 50%; /* Example to make it full width under the calendar */
-    margin-top: 20px; /* Space between the calendar and the button */
+    display: block;
+    width: 50%;
+    margin-top: 20px;
   }
 }
