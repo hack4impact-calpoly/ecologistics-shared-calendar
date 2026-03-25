@@ -266,8 +266,8 @@ export default function CalendarPage() {
               right: "",
             }}
             buttonIcons={{
-              prev: "arrow-left",
-              next: "arrow-right",
+              prev: "chevron-left",
+              next: "chevron-right",
             }}
             initialView="dayGridMonth"
             nowIndicator={true}
@@ -328,13 +328,18 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 const calendarStyles = `
    .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #335543;
+     background-color: #FFFFFF;
      border: none;
-     color: #FFF;
-     font-size: 2em;
-     font-size: 1.5em;
-     border-radius: 50%; 
+     color: #0A0A0A;  
+     width: 36px;
+     height: 36px;
+     border-radius: 8px; 
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 16px;
      line-height: 1;
+     padding: 0;
    }
 
    .fc .fc-prev-button:hover,
@@ -362,12 +367,6 @@ const calendarStyles = `
    .fc .fc-toolbar-title {
      text-align: center;
      margin-right: 2.5%;
-     font-family: "Inter", sans-serif;
-     font-weight: 600;
-     font-size: 24px;
-     line-height: 32px;
-     letter-spacing: 0.07px;
-     color: #0A0A0A;
    }
 
    .fc-toolbar-chunk {
