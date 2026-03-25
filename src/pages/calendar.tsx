@@ -241,6 +241,7 @@ export default function CalendarPage() {
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
+          <div style={styles.fullCalendar}>
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -289,6 +290,7 @@ export default function CalendarPage() {
             eventBackgroundColor="#F7AB74"
           />
         </div>
+        </div>
         {windowWidth < 786 && (
           <button
             className={style1.addButton}
@@ -318,6 +320,20 @@ export default function CalendarPage() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   spaced: {},
+  fullCalendar: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "720px",
+    borderRadius: "10px", 
+    gap: "24px",
+    paddingTop: "24px",
+    paddingRight: "24px",
+    paddingLeft: "24px",
+    background: "white",
+    boxShadow:
+      "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
 };
 
 const calendarStyles = `
