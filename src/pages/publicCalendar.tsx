@@ -248,6 +248,7 @@ export default function CalendarPage() {
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
+          <div style={styles.fullCalendar}>
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -286,6 +287,7 @@ export default function CalendarPage() {
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
           />
+          </div>
         </div>
         {!isAddingEvent ? (
           <EventBar
@@ -308,6 +310,20 @@ export default function CalendarPage() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   spaced: {},
+  fullCalendar: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "720px",
+    borderRadius: "10px", 
+    gap: "24px",
+    paddingTop: "24px",
+    paddingRight: "24px",
+    paddingLeft: "24px",
+    background: "white",
+    boxShadow:
+      "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
 };
 
 const calendarStyles = `
@@ -346,6 +362,12 @@ const calendarStyles = `
    .fc .fc-toolbar-title {
      text-align: center;
      margin-right: 2.5%;
+     font-family: "Inter", sans-serif;
+     font-weight: 600;
+     font-size: 24px;
+     line-height: 32px;
+     letter-spacing: 0.07px;
+     color: #0A0A0A;
    }
 
    .fc-toolbar-chunk {
