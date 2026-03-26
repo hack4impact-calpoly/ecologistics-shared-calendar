@@ -261,15 +261,24 @@ export default function CalendarPage() {
                 },
                 hint: "none",
               },
+              searchButton: {
+            text: "Search events...",
+            click: () => {} // no-op
+            
+            },
+            filterButton: {
+            text: "Filter",
+            click: () => {} // no-op
+            }
             }}
             headerToolbar={{
-              left: "",
-              center: "prev title next",
-              right: windowWidth >= 786 ? "AddEvent" : "",
+              left: "prev title next",
+              center: "",
+              right: windowWidth >= 786 ? "searchButton filterButton AddEvent" : "searchButton filterButton ",
             }}
             buttonIcons={{
-              prev: "arrow-left",
-              next: "arrow-right",
+              prev: "chevron-left",
+              next: "chevron-right",
             }}
             initialView="dayGridMonth"
             nowIndicator={true}
@@ -338,13 +347,18 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 const calendarStyles = `
    .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #335543;
+     background-color: #FFFFFF;
      border: none;
-     color: #FFF;
-     font-size: 2em;
-     font-size: 1.5em;
-     border-radius: 50%; 
+     color: #0A0A0A;  
+     width: 36px;
+     height: 36px;
+     border-radius: 8px; 
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 16px;
      line-height: 1;
+     padding: 0;
    }
 
    .fc .fc-prev-button:hover,
@@ -438,5 +452,41 @@ const calendarStyles = `
    .fc .fc-daygrid {
      border: 1px solid #ddd;
      border-right: 1px solid #ddd;
+   }
+  
+   .fc .fc-searchButton-button {
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+    width: 194px;
+    height: 38px;
+    background-color: white;
+    border-radius: 9999px;
+    border: 1px solid #D1D5DC;
+    padding: 0 16px;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.15px;
+    color: rgba(10, 10, 10, 0.5);
+   }
+
+   .fc .fc-filterButton-button{
+    display: flex;
+    flex-direction: horizontal;
+    justify-content: center;
+    align-items: center;
+    width: 65.56px;
+    height: 36px;
+    background-color: rgb(229, 231, 235);
+    border-radius: 9999px;
+    border: none;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.15px;
+    color: rgba(10, 10, 10);
    }
  `;
