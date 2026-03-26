@@ -405,7 +405,17 @@ const calendarStyles = `
    .fc-col-header-cell {
      background: #335543;
      color: #FFF;
+     height: 44px;
+     border: none;
+     vertical-align: middle;
    }
+
+   .fc .fc-scrollgrid-sync-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    }
 
    .fc .fc-AddEvent-button {
      background-color: #F7AB74;
@@ -447,7 +457,6 @@ const calendarStyles = `
      display: none;
    }
 
-   .fc .fc-col-header-cell,
    .fc .fc-daygrid-day,
    .fc .fc-daygrid {
      border: 1px solid #ddd;
