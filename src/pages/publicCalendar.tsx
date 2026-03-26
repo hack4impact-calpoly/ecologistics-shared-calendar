@@ -397,7 +397,17 @@ const calendarStyles = `
    .fc-col-header-cell {
      background: #335543;
      color: #FFF;
+     height: 44px;
+     border: none;
+     vertical-align: middle;
    }
+
+   .fc .fc-scrollgrid-sync-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    }
 
    .fc .fc-AddEvent-button {
      background-color: #F7AB74;
@@ -438,7 +448,6 @@ const calendarStyles = `
 	align-items: normal !important;
     }
 
-   .fc .fc-col-header-cell,
    .fc .fc-daygrid-day,
    .fc .fc-daygrid {
      border: 1px solid #ddd;
@@ -447,7 +456,7 @@ const calendarStyles = `
 
    .fc .fc-searchButton-button {
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     align-items: center;
     width: 194px;
     height: 38px;
@@ -465,7 +474,7 @@ const calendarStyles = `
 
    .fc .fc-filterButton-button{
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     width: 65.56px;
