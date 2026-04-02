@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Link from "next/link";
 import styles from "../styles/navbar.module.css"; // Changed to import as a module
 import PositionedMenu from "./PositionedMenu";
+import Alert from "./Alert";
+import PendingApprovals from "../admin_components/PendingApprovals";
 import { useSession } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useClerk } from "@clerk/clerk-react";
 
+
 const Navbar: React.FC = () => {
     const router = useRouter();
     const clerk = useClerk();
+    const [isOpen, setIsOpen] = useState(false)
+    const [hasPending, setHasPending] = useState(false);
     const { pathname } = router;
 
     const menuItems = [];
@@ -17,6 +22,33 @@ const Navbar: React.FC = () => {
     const role = session?.user?.publicMetadata?.role;
 
     const DONT_SHOW_LOGIN_PATHS = ["/login", "/signup", "/forgot-password"];
+    useEffect(() => {
+    const checkPending = async () => {
+        try {
+            const eventsRes = await fetch("/api/users/eventRoutes");
+            const orgsRes = await fetch("/api/admins/userRoutes");
+
+            if (!eventsRes.ok || !orgsRes.ok) return;
+
+            const eventsData = await eventsRes.json();
+            const orgsData = await orgsRes.json();
+
+            const pendingEvents = (eventsData?.data || []).filter(
+                (e: any) => e.status === "Pending"
+            );
+
+            const pendingOrgs = (orgsData?.data || []).filter(
+                (u: any) => u.role === "pending"
+            );
+
+            setHasPending(pendingEvents.length > 0 || pendingOrgs.length > 0);
+        } catch (err) {
+            console.error("Error checking pending approvals:", err);
+        }
+    };
+
+    checkPending();
+}, []);
 
     var eventsPath: string;
     if (role === "admin") {
@@ -60,9 +92,21 @@ const Navbar: React.FC = () => {
             </Link>
             {clerk.user && (role === "approved" || role === "admin") && (
                 <div className={styles.dropdown}>
+                    <Alert onClick={() => setIsOpen(true)} hasPending={hasPending} />
                     <PositionedMenu items={menuItems} />
                 </div>
             )}{" "}
+            {isOpen && (
+                <>
+                <div className={styles.modalOverlay} onClick={() => setIsOpen(false)}/>
+                <div className={styles.modalBox}>
+                    <button className={styles.modalClose} onClick={() => setIsOpen(false)} type = "button">
+                        x
+                    </button>
+                    <PendingApprovals />
+                </div>
+                </>
+            )}
             {(!clerk.user ||
                 role === "pending" ||
                 role === "declined" ||

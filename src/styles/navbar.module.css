@@ -17,7 +17,6 @@
     margin: 0.25em;
 }
 
-
 .logo {
     max-height: 30px; 
     padding: 0.25em; 
@@ -40,3 +39,73 @@
     background-color: #a8572a; 
 }
 
+/* Bell Button */
+.iconButton {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconWrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0; 
+}
+
+.bellIcon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 2px;      
+  right: 2px;    
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e02424; 
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+  pointer-events: none; 
+}
+
+.modalBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  width: 600px;             
+  max-width: 90vw;           
+  max-height: 85vh;
+  overflow-y: auto;
+
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+
+  z-index: 1000;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}

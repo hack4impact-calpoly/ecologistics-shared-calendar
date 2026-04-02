@@ -14,7 +14,7 @@ export default function SignUp() {
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordValidation, setPasswordValidation] = useState("");
+  const [passwordValidation, setPasswordValidation] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
@@ -23,6 +23,7 @@ export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [position, setPosition] = useState("");
   const [organizationLen, setOrganizationLen] = useState(0);
+  const [verifying, setVerifying] = useState(false);
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -47,6 +48,18 @@ export default function SignUp() {
     // Handle loading state
     return null;
   }
+
+  // Returns flag if any password requirements are not met, otherwise returns empty array
+  const getPasswordErrors = (pwd: string): string[] => {
+    const meetsLength = pwd.length >= 8;
+    const meetsNumber = /\d/.test(pwd);
+    const meetsSpecial = /[!@#$%^&*(),.?\":{}|<>]/.test(pwd);
+
+    if (!meetsLength || !meetsNumber || !meetsSpecial) {
+      return ["invalid"]; // Flag to trigger the error UI
+    }
+    return [];
+  };
 
   // handle input to verification
   function handleInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
@@ -87,7 +100,7 @@ export default function SignUp() {
   // Handle backspace key
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) {
     const input = e.target as HTMLInputElement;
     const previousInput = inputRefs[index - 1]?.current;
@@ -96,7 +109,7 @@ export default function SignUp() {
     if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
       e.preventDefault();
       setCode(
-        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1)
+        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1),
       );
       if (previousInput) {
         previousInput.focus();
@@ -125,14 +138,12 @@ export default function SignUp() {
     e.preventDefault();
 
     // Password validation
-    const passwordRegex = /^(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setPasswordValidation(
-        "Password must be at least 8 characters long and include a number."
-      );
+    const errors = getPasswordErrors(password);
+    if (errors.length > 0) {
+      setPasswordValidation(errors);
       return;
     } else {
-      setPasswordValidation(""); // Clear any previous validation messages
+      setPasswordValidation([]); // Clear any previous validation messages
     }
 
     try {
@@ -166,7 +177,7 @@ export default function SignUp() {
               backgroundColor: "white", // Green background color
               color: "#red", // White text color
             },
-          }
+          },
         );
       }
     }
@@ -180,10 +191,18 @@ export default function SignUp() {
       return;
     }
 
+    // Prevent duplicate verification attempts
+    if (verifying) {
+      return;
+    }
+
+    setVerifying(true);
+
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
+
       if (completeSignUp.status !== "complete") {
         console.log(JSON.stringify(completeSignUp, null, 2));
       }
@@ -231,7 +250,7 @@ export default function SignUp() {
 
         // send email notif to admin
         const admin_response = await fetch(
-          "/api/admins/userRoutes/?role=admin" // get admin email first
+          "/api/admins/userRoutes/?role=admin", // get admin email first
         );
         if (!admin_response.ok) {
           throw new Error("Network response was not ok");
@@ -267,6 +286,9 @@ export default function SignUp() {
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      // Reset verifying state, even if verification failed or downstream call threw
+      setVerifying(false);
     }
   };
 
@@ -402,7 +424,10 @@ export default function SignUp() {
                   placeholder="Enter Your Password"
                   className={styles.input}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordValidation(getPasswordErrors(e.target.value));
+                  }}
                   required
                 />
                 <button
@@ -413,9 +438,11 @@ export default function SignUp() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              {passwordValidation && (
+              {passwordValidation.length > 0 && (
                 <p className={styles.passwordValidation}>
-                  {passwordValidation}
+                  Password must be 8+ characters and include:
+                  <br />• At least one number
+                  <br />• At least one special character
                 </p>
               )}
             </div>
@@ -465,6 +492,15 @@ export default function SignUp() {
                   onPaste={handlePaste}
                 />
               ))}
+            </div>
+
+            {/* Keeps dedicated div for loading circle so the screen does not jump */}
+            <div className={styles.loadingSlot} aria-live="polite">
+              {/* Conditionally renders loading circle only while verification is running */}
+              <div
+                className={`${styles.loadingCircle} ${verifying ? styles.loadingVisible : ""}`}
+                aria-label="Verifying"
+              />
             </div>
           </div>
         )}
