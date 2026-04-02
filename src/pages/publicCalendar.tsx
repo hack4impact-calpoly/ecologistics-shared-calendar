@@ -245,11 +245,9 @@ export default function CalendarPage() {
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
-        <div className="calendar-container">
-          <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
           <div style={styles.fullCalendar}>
-          <FullCalendar
+            <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
               dayGridPlugin,
@@ -297,9 +295,8 @@ export default function CalendarPage() {
             }}
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
-          />
+            />
           </div>
-        </div>
         {!isAddingEvent ? (
           <EventBar
             events={
