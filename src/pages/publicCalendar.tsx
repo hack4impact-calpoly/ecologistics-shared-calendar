@@ -464,7 +464,7 @@ const calendarStyles = `
     border-radius: 9999px;
     border: 1px solid #D1D5DC;
     padding: 0 16px;
-    font-family: "Inter", sans-serif;
+    font-family: Inter, sans-serif;
     font-weight: 400;
     font-size: 14px;
     line-height: 1;
@@ -482,8 +482,8 @@ const calendarStyles = `
     background-color: rgb(229, 231, 235);
     border-radius: 9999px;
     border: none;
-    font-family: "Inter", sans-serif;
     font-weight: 500;
+    font-family: Inter, sans-serif;
     font-size: 14px;
     line-height: 1;
     letter-spacing: -0.15px;
