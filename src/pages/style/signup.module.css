@@ -79,7 +79,7 @@
   border-radius: 10px;
   width: 12%;
   cursor: pointer;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .statusMessage {
@@ -408,6 +408,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .mainContainer {
@@ -415,7 +417,9 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 50vh;
+  min-height: 50vh;
+  width: min(42rem, 92vw);
+  padding: 1rem 0;
 }
 .mainContainer h3 {
   margin: 0;
@@ -427,15 +431,19 @@
 }
 
 .messageSlot {
-  height: 2rem;
+  min-height: 3.25rem;
+  width: min(32rem, 92vw);
   margin-top: 0.5rem;
-  overflow: hidden;
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .errorMessage {
   color: red;
   margin: 0;
+  text-align: center;
+  line-height: 1.35;
   visibility: hidden;
   opacity: 0;
   transition:
@@ -447,6 +455,21 @@
   visibility: visible;
   opacity: 1;
   transition-delay: 0ms;
+}
+
+.resendSlot {
+  min-height: 3.75rem;
+  width: min(32rem, 92vw);
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.resendButton {
+  width: min(15rem, 60%);
+  margin-top: 0.25rem;
 }
 
 .loadingSlot {
@@ -472,6 +495,37 @@
 .loadingCircle.loadingVisible {
   opacity: 1;
   animation: spin 800ms linear infinite;
+}
+
+@media only screen and (max-width: 768px) {
+  .mainContainer {
+    width: 94vw;
+    min-height: 56vh;
+    padding: 1rem 0 1.5rem;
+  }
+
+  .mainContainer p {
+    text-align: center;
+  }
+
+  .verificationButton {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    line-height: 3.25rem;
+    font-size: 2rem;
+  }
+
+  .messageSlot {
+    min-height: 4.5rem;
+  }
+
+  .resendSlot {
+    min-height: 3.75rem;
+  }
+
+  .resendButton {
+    width: min(15rem, 72vw);
+  }
 }
 
 @keyframes spin {

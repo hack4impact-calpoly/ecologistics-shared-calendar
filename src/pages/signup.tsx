@@ -27,6 +27,7 @@ export default function SignUp() {
   const [organizationLen, setOrganizationLen] = useState(0);
   const [verifying, setVerifying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showResendVerification, setShowResendVerification] = useState(false);
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -139,6 +140,32 @@ export default function SignUp() {
     router.push("/login"); // Use Next.js router for navigation
   };
 
+  const resetVerificationInputs = () => {
+    setCode("");
+    inputRefs.forEach((r) => {
+      if (r.current) r.current.value = "";
+    });
+    inputRefs[0]?.current?.focus();
+  };
+
+  const handleResendVerification = async () => {
+    if (!isLoaded || verifying) {
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+      setErrorMessage("");
+      setShowResendVerification(false);
+      resetVerificationInputs();
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
@@ -190,134 +217,138 @@ export default function SignUp() {
     }
   };
 
-  const MIN_SPINNER_MS = 1000;
-
   const onPressVerify = async () => {
-    /*
-        Verifies confirmation code
-    */
     if (!isLoaded) {
       return;
     }
 
-    // Prevent duplicate verification attempts
     if (verifying) {
       return;
     }
 
-    // Clear previous error when starting a new attempt
     setErrorMessage("");
+    setShowResendVerification(false);
 
-    const start = Date.now();
     setVerifying(true);
 
+    let completeSignUp;
     try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
+      completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
-
-      if (completeSignUp.status !== "complete") {
-        console.log(JSON.stringify(completeSignUp, null, 2));
-      }
-
-      //if successfully created clerk user, create in local db
-      if (completeSignUp.status === "complete") {
-        await setActive({
-          session: completeSignUp.createdSessionId,
-        });
-        //create user in DB
-        await axios.post("/api/userRoutes", {
-          email: email,
-          organization: organization,
-          phoneNumber: phone,
-          firstName: fName,
-          lastName: lName,
-          position: position,
-        });
-
-        // send the confirmation email to organization
-        await fetch("/api/sendGrid/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: email,
-            firstName: fName,
-            orgName: organization,
-            templateId: "d-77a657d34e704e7286fe3badf3868f53", //replaced
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data); // Handle success response
-          })
-          .catch((error) => {
-            console.error("Error:", error); // Handle error
-          });
-
-        // send email notif to admin
-        const admin_response = await fetch(
-          "/api/admins/userRoutes/?role=admin", // get admin email first
-        );
-        if (!admin_response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const admin = await admin_response.json();
-        const admin_email = admin.data.email;
-        await fetch("/api/sendGrid/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: admin_email,
-            firstName: fName,
-            orgName: organization,
-            templateId: "d-74ef1ec42582458a849fb2a65c7235c0", // replaced
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data); // Handle success response
-          })
-          .catch((error) => {
-            console.error("Error:", error); // Handle error
-          });
-
-        router.push("/confirmation-page");
-      }
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
+      const status = err?.status;
+      const errorCode = err?.errors?.[0]?.code;
 
-      // Ensure spinner is visible at least MIN_SPINNER_MS
-      const elapsed = Date.now() - start;
-      const remaining = MIN_SPINNER_MS - elapsed;
-      if (remaining > 0) {
-        await new Promise((res) => setTimeout(res, remaining));
+      if (status === 429 || errorCode === "too_many_requests") {
+        setErrorMessage("Too many requests. Please wait and try again.");
+        setShowResendVerification(false);
+      } else if (errorCode === "verification_failed") {
+        setErrorMessage(
+          "Too many failed attempts. Request a new verification code.",
+        );
+        setShowResendVerification(true);
+        resetVerificationInputs();
+      } else if (errorCode === "form_code_incorrect") {
+        setErrorMessage("Incorrect code. Please try again.");
+        setShowResendVerification(false);
+        resetVerificationInputs();
+      } else if (
+        errorCode === "verification_expired" ||
+        errorCode === "verification_missing" ||
+        errorCode === "verification_not_sent"
+      ) {
+        setErrorMessage("Request a new verification code.");
+        setShowResendVerification(true);
+        resetVerificationInputs();
+      } else {
+        setErrorMessage("Incorrect code. Please try again.");
+        setShowResendVerification(false);
+        resetVerificationInputs();
       }
 
-      // Set a simple red error message
-      setErrorMessage("Incorrect code. Please try again.");
+      setVerifying(false);
+      return;
+    }
 
-      // Fully reset verification UI for another attempt
-      setCode("");
-      inputRefs.forEach((r) => {
-        if (r.current) r.current.value = "";
+    try {
+      if (completeSignUp.status !== "complete") {
+        console.log(JSON.stringify(completeSignUp, null, 2));
+        return;
+      }
+
+      await setActive({
+        session: completeSignUp.createdSessionId,
       });
-      inputRefs[0]?.current?.focus();
+
+      await axios.post("/api/userRoutes", {
+        email: email,
+        organization: organization,
+        phoneNumber: phone,
+        firstName: fName,
+        lastName: lName,
+        position: position,
+      });
+
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: email,
+          firstName: fName,
+          orgName: organization,
+          templateId: "d-77a657d34e704e7286fe3badf3868f53",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
+      if (!admin_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const admin = await admin_response.json();
+      const admin_email = admin.data.email;
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: admin_email,
+          firstName: fName,
+          orgName: organization,
+          templateId: "d-74ef1ec42582458a849fb2a65c7235c0",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      router.push("/confirmation-page");
     } finally {
-      // Reset verifying state, even if verification failed or downstream call threw
       setVerifying(false);
     }
   };
@@ -525,6 +556,19 @@ export default function SignUp() {
               >
                 {errorMessage}
               </p>
+            </div>
+
+            <div className={styles.resendSlot} aria-live="polite">
+              {showResendVerification && (
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonSent} ${styles.resendButton}`}
+                  onClick={handleResendVerification}
+                  disabled={verifying}
+                >
+                  Request New Code
+                </button>
+              )}
             </div>
 
             {/* Keeps dedicated div for loading circle so the screen does not jump */}
