@@ -1,10 +1,11 @@
 .calendarPageContainer {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: start;
   margin: 0px;
   padding: 32px;
   gap: 24px;
+  white-space: nowrap;
 }
 
 .logoutButton,
@@ -44,7 +45,7 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    padding: 0px;
+    padding: 32px;
     margin: 0px;
     white-space: nowrap;
   }
