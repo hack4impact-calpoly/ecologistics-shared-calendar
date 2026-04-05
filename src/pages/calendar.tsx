@@ -10,6 +10,7 @@ import { useEffect, useState, useRef } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
+import PendingApprovals from "../admin_components/PendingApprovals";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "../database/eventSchema";
@@ -45,6 +46,7 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [isShowingPendingApprovals, setIsShowingPendingApprovals] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
@@ -82,7 +84,7 @@ export default function CalendarPage() {
   }, [events]);
 
   // Fetch events from the database
-  useEffect(() => {
+  const fetchEvents = () => {
     fetch("/api/users/eventRoutes?status=Approved")
       .then((res) => res.json())
       .then((res) => {
@@ -92,6 +94,10 @@ export default function CalendarPage() {
       .catch((error) => {
         console.error("Error fetching events:", error);
       });
+  };
+
+  useEffect(() => {
+    fetchEvents();
   }, []);
   // useEffect(() => {
   //   fetch("/api/users/eventRoutes?status=Approved")
@@ -170,7 +176,9 @@ export default function CalendarPage() {
     };
   }, [events]);
 
-  const addEvent = (event: Event) => {};
+  const addEvent = () => {
+    fetchEvents();
+  };
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
@@ -237,6 +245,19 @@ export default function CalendarPage() {
       {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
+      {isShowingPendingApprovals && user?.publicMetadata?.role === "admin" && (
+        <div className={style1.pendingApprovalsOverlay}>
+          <div className={style1.pendingApprovalsModal}>
+            <button
+              className={style1.closeButton}
+              onClick={() => setIsShowingPendingApprovals(false)}
+            >
+              ✕
+            </button>
+            <PendingApprovals onEventApproved={() => { fetchEvents(); setIsShowingPendingApprovals(false); }} />
+          </div>
+        </div>
+      )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
@@ -296,6 +317,15 @@ export default function CalendarPage() {
             onClick={() => setIsAddingEvent((prev) => !prev)}
           >
             Add Event
+          </button>
+        )}
+        {user?.publicMetadata?.role === "admin" && (
+          <button
+            className={style1.addButton}
+            style={{ display: "block", margin: "10px auto 0" }}
+            onClick={() => setIsShowingPendingApprovals(true)}
+          >
+            Pending Approvals
           </button>
         )}
         {!isAddingEvent ? (

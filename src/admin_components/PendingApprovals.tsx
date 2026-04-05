@@ -64,7 +64,11 @@ function DenyPopup({ isOpen, onClose, onConfirm }: DenyPopupProps) {
   );
 }
 
-export default function PendingApprovals() {
+interface PendingApprovalsProps {
+  onEventApproved?: () => void;
+}
+
+export default function PendingApprovals({ onEventApproved }: PendingApprovalsProps) {
   const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
   const [pendingOrganizations, setPendingOrganizations] = useState<
     UserDocument[]
@@ -154,6 +158,8 @@ export default function PendingApprovals() {
         return event._id !== id;
       });
       setPendingEvents(updatedEvents);
+
+      if (onEventApproved) onEventApproved();
 
       const approvedEvent = response.data.data;
 
