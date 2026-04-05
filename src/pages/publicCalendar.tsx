@@ -356,10 +356,14 @@ const calendarStyles = `
 
    .fc-prev-button {
      margin-left: 3%;
+     height: 36px;
+     padding: 8px;
    }
 
    .fc-next-button {
      margin-right: 3%;
+     height: 36px;
+     padding: 8px;
    }
 
    .fc-header-toolbar {
@@ -368,11 +372,13 @@ const calendarStyles = `
      justify-content: space-between;
      text-transform: uppercase;
      padding-bottom: 1%;
+     height: 38px;
    }
 
    .fc .fc-toolbar-title {
      text-align: center;
      margin-right: 2.5%;
+     height: 32px;
    }
 
    .fc-toolbar-chunk {
