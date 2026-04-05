@@ -330,12 +330,10 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    height: "720px",
+    height: "auto",
     borderRadius: "10px", 
     gap: "24px",
-    paddingTop: "24px",
-    paddingRight: "24px",
-    paddingLeft: "24px",
+    padding: "24px",
     background: "white",
     boxShadow:
       "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
@@ -365,30 +363,37 @@ const calendarStyles = `
    }
 
    .fc-prev-button {
-     margin-left: 3%;
+     height: 38px;
+     padding: 8px;
    }
 
    .fc-next-button {
      margin-right: 3%;
+     height: 38px;
+     padding: 8px;
    }
 
    .fc-header-toolbar {
-     margin-top: 5%;
      display: flex;
      justify-content: space-between;
      text-transform: uppercase;
-     padding-bottom: 1%;
+     height: 38px;
    }
 
    .fc .fc-toolbar-title {
-     text-align: center;
+     display: flex;
+     justify-content: center;
+     align-items: center;
      margin-right: 2.5%;
+     height: 38px;
+     font-size: 32px;
    }
 
    .fc-toolbar-chunk {
      display: flex;
      align-items: center;
-     justify-content: center;
+     justify-content: start;
+     height: 38px;
    }
 
    .fc-toolbar-chunk:nth-child(2) {
@@ -422,7 +427,7 @@ const calendarStyles = `
      font-size: 1.1em;
      border: none;
      width: 120px; /* Adjust the width as needed */
-     height: 40px; /* Adjust the height as needed */
+     height: 38px; /* Adjust the height as needed */
    }
 
    .fc .fc-daygrid-event-harness {
@@ -462,7 +467,7 @@ const calendarStyles = `
   
    .fc .fc-searchButton-button {
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     align-items: center;
     width: 194px;
     height: 38px;
@@ -480,11 +485,11 @@ const calendarStyles = `
 
    .fc .fc-filterButton-button{
     display: flex;
-    flex-direction: horizontal;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     width: 65.56px;
-    height: 36px;
+    height: 38px;
     background-color: rgb(229, 231, 235);
     border-radius: 9999px;
     border: none;
