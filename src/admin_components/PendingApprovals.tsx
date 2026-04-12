@@ -22,6 +22,11 @@ interface ApiResponse {
   data: Event[];
 }
 
+interface PendingApprovalsProps {
+  initialEvents?: Event[];
+  initialOrgs?: UserDocument[];
+}
+
 // Popup that asks for an optional reason when denying
 interface DenyPopupProps {
   isOpen: boolean;
@@ -64,14 +69,12 @@ function DenyPopup({ isOpen, onClose, onConfirm }: DenyPopupProps) {
   );
 }
 
-export default function PendingApprovals() {
-  const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
-  const [pendingOrganizations, setPendingOrganizations] = useState<
-    UserDocument[]
-  >([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
+export default function PendingApprovals({ initialEvents, initialOrgs }: PendingApprovalsProps = {}) {
+  const [pendingEvents, setPendingEvents] = useState<Event[]>(initialEvents ?? []);
+  const [pendingOrganizations, setPendingOrganizations] = useState<UserDocument[]>(initialOrgs ?? []);
+  const [loadingEvents, setLoadingEvents] = useState(!initialEvents);
   const [errorEvents, setErrorEvents] = useState<string | null>(null);
-  const [loadingOrganizations, setLoadingOrganizations] = useState(true);
+  const [loadingOrganizations, setLoadingOrganizations] = useState(!initialOrgs);
   const [errorOrganizations, setErrorOrganizations] = useState<string | null>(
     null,
   );
@@ -83,6 +86,7 @@ export default function PendingApprovals() {
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialEvents) return;
     const fetchPendingEvents = async () => {
       try {
         setLoadingEvents(true);
@@ -113,6 +117,7 @@ export default function PendingApprovals() {
   }, []); // Runs once on mount
 
   useEffect(() => {
+    if (initialOrgs) return;
     const fetchPendingOrganizations = async () => {
       try {
         setLoadingOrganizations(true);
