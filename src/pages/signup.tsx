@@ -7,6 +7,7 @@ import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
 import { clerkClient } from "@clerk/nextjs/server";
 import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
+
 export default function SignUp() {
   const router = useRouter();
   const { signUp, isLoaded, setActive } = useSignUp();
@@ -25,6 +26,8 @@ export default function SignUp() {
   const [position, setPosition] = useState("");
   const [organizationLen, setOrganizationLen] = useState(0);
   const [verifying, setVerifying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showResendVerification, setShowResendVerification] = useState(false);
 
   interface InputRef {
     current: HTMLInputElement | null;
@@ -42,7 +45,7 @@ export default function SignUp() {
   // Call our callback when code = 6 chars
   useEffect(() => {
     if (code.length === 6) {
-      onPressVerify(code);
+      onPressVerify();
     }
   }, [code]); //eslint-disable-line
   if (!isLoaded) {
@@ -68,17 +71,21 @@ export default function SignUp() {
     const previousInput = inputRefs[index - 1]?.current;
     const nextInput = inputRefs[index + 1]?.current;
 
-    // Update code state with single digit
-    const newCode = [code];
-    // Convert lowercase letters to uppercase
-    if (/^[a-z]+$/.test(input.value)) {
-      const uc = input.value.toUpperCase();
-      newCode[index] = uc;
-      inputRefs[index].current!.value = uc;
-    } else {
-      newCode[index] = input.value;
+    // Treat code as a 6-character string buffer
+    const codeArr = code.split("");
+    while (codeArr.length < 6) {
+      codeArr.push("");
     }
-    setCode(newCode.join(""));
+
+    let val = input.value;
+
+    if (/^[a-z]$/.test(val)) {
+      val = val.toUpperCase();
+      inputRefs[index].current!.value = val;
+    }
+    codeArr[index] = val;
+
+    setCode(codeArr.join(""));
 
     input.select();
 
@@ -109,9 +116,19 @@ export default function SignUp() {
 
     if ((e.keyCode === 8 || e.keyCode === 46) && input.value === "") {
       e.preventDefault();
-      setCode(
-        (prevCode) => prevCode.slice(0, index) + prevCode.slice(index + 1),
-      );
+
+      setCode((prevCode) => {
+        const arr = prevCode.split("");
+
+        // Ensure there are always 6 slots
+        while (arr.length < 6) {
+          arr.push("");
+        }
+        // Clear the current index instead of shrinking the string
+        arr[index] = "";
+        return arr.join("");
+      });
+
       if (previousInput) {
         previousInput.focus();
       }
@@ -133,6 +150,32 @@ export default function SignUp() {
 
   const goToLogin = () => {
     router.push("/login"); // Use Next.js router for navigation
+  };
+
+  const resetVerificationInputs = () => {
+    setCode("");
+    inputRefs.forEach((r) => {
+      if (r.current) r.current.value = "";
+    });
+    inputRefs[0]?.current?.focus();
+  };
+
+  const handleResendVerification = async () => {
+    if (!isLoaded || verifying) {
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+      setErrorMessage("");
+      setShowResendVerification(false);
+      resetVerificationInputs();
+    } finally {
+      setVerifying(false);
+    }
   };
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
@@ -168,7 +211,7 @@ export default function SignUp() {
       // change the UI to our pending section.
       setPendingVerification(true);
     } catch (err: any) {
-      if (err.errors[0].code === "form_identifier_exists") {
+      if (err.errors && err.errors[0]?.code === "form_identifier_exists") {
         toast.error(
           "This email is already in use, please use a different email.",
           {
@@ -184,111 +227,138 @@ export default function SignUp() {
     }
   };
 
-  const onPressVerify = async (e: any) => {
-    /*
-        Verifies confirmation code
-        */
+  const onPressVerify = async () => {
     if (!isLoaded) {
       return;
     }
 
-    // Prevent duplicate verification attempts
     if (verifying) {
       return;
     }
 
+    setErrorMessage("");
+    setShowResendVerification(false);
+
     setVerifying(true);
 
+    let completeSignUp;
     try {
-      const completeSignUp = await signUp.attemptEmailAddressVerification({
+      completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+      const status = err?.status;
+      const errorCode = err?.errors?.[0]?.code;
 
+      if (status === 429 || errorCode === "too_many_requests") {
+        setErrorMessage("Too many requests. Please wait and try again.");
+        setShowResendVerification(false);
+      } else if (errorCode === "verification_failed") {
+        setErrorMessage(
+          "Too many failed attempts. Request a new verification code.",
+        );
+        setShowResendVerification(true);
+        resetVerificationInputs();
+      } else if (errorCode === "form_code_incorrect") {
+        setErrorMessage("Incorrect code. Please try again.");
+        setShowResendVerification(false);
+        resetVerificationInputs();
+      } else if (
+        errorCode === "verification_expired" ||
+        errorCode === "verification_missing" ||
+        errorCode === "verification_not_sent"
+      ) {
+        setErrorMessage("Request a new verification code.");
+        setShowResendVerification(true);
+        resetVerificationInputs();
+      } else {
+        setErrorMessage("Incorrect code. Please try again.");
+        setShowResendVerification(false);
+        resetVerificationInputs();
+      }
+
+      setVerifying(false);
+      return;
+    }
+
+    try {
       if (completeSignUp.status !== "complete") {
         console.log(JSON.stringify(completeSignUp, null, 2));
+        return;
       }
 
-      //if successfully created clerk user, create in local db
-      if (completeSignUp.status === "complete") {
-        await setActive({
-          session: completeSignUp.createdSessionId,
-        });
-        //create user in DB
-        await axios.post("/api/userRoutes", {
-          email: email,
-          organization: organization,
-          phoneNumber: phone,
+      await setActive({
+        session: completeSignUp.createdSessionId,
+      });
+
+      await axios.post("/api/userRoutes", {
+        email: email,
+        organization: organization,
+        phoneNumber: phone,
+        firstName: fName,
+        lastName: lName,
+        position: position,
+      });
+
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: email,
           firstName: fName,
-          lastName: lName,
-          position: position,
+          orgName: organization,
+          templateId: "d-77a657d34e704e7286fe3badf3868f53",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
         });
 
-        // send the confirmation email to organization
-        await fetch("/api/sendGrid/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: email,
-            firstName: fName,
-            orgName: organization,
-            templateId: "d-77a657d34e704e7286fe3badf3868f53", //replaced
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data); // Handle success response
-          })
-          .catch((error) => {
-            console.error("Error:", error); // Handle error
-          });
-
-        // send email notif to admin
-        const admin_response = await fetch(
-          "/api/admins/userRoutes/?role=admin", // get admin email first
-        );
-        if (!admin_response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const admin = await admin_response.json();
-        const admin_email = admin.data.email;
-        await fetch("/api/sendGrid/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: admin_email,
-            firstName: fName,
-            orgName: organization,
-            templateId: "d-74ef1ec42582458a849fb2a65c7235c0", // replaced
-          }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data); // Handle success response
-          })
-          .catch((error) => {
-            console.error("Error:", error); // Handle error
-          });
-
-        router.push("/confirmation-page");
+      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
+      if (!admin_response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      const admin = await admin_response.json();
+      const admin_email = admin.data.email;
+      await fetch("/api/sendGrid/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: admin_email,
+          firstName: fName,
+          orgName: organization,
+          templateId: "d-74ef1ec42582458a849fb2a65c7235c0",
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      router.push("/confirmation-page");
     } finally {
-      // Reset verifying state, even if verification failed or downstream call threw
       setVerifying(false);
     }
   };
@@ -326,9 +396,6 @@ export default function SignUp() {
                   }}
                   required
                 />
-                {/* <p className={styles.characterCount}>
-                  Characters Typed: {organizationLen}/32
-                </p> */}
               </div>
             </div>
 
@@ -476,7 +543,7 @@ export default function SignUp() {
             <h3>Verify your email address</h3>
             <p>
               We emailed you a 6-digit code to {email}. Enter the code below to
-              confirm your email address
+              confirm your email address.
             </p>
             <div className={`${styles.verificationContainer}`}>
               {[0, 1, 2, 3, 4, 5].map((index) => (
@@ -491,15 +558,41 @@ export default function SignUp() {
                   onFocus={handleFocus}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   onPaste={handlePaste}
+                  disabled={verifying}
                 />
               ))}
+            </div>
+
+            {/* Reserved message slot to keep page from moving when error appears */}
+            <div className={styles.messageSlot} aria-live="polite">
+              <p
+                className={`${styles.errorMessage} ${errorMessage ? styles.visible : ""}`}
+                role="status"
+              >
+                {errorMessage}
+              </p>
+            </div>
+
+            <div className={styles.resendSlot} aria-live="polite">
+              {showResendVerification && (
+                <button
+                  type="button"
+                  className={`${styles.button} ${styles.buttonSent} ${styles.resendButton}`}
+                  onClick={handleResendVerification}
+                  disabled={verifying}
+                >
+                  Request New Code
+                </button>
+              )}
             </div>
 
             {/* Keeps dedicated div for loading circle so the screen does not jump */}
             <div className={styles.loadingSlot} aria-live="polite">
               {/* Conditionally renders loading circle only while verification is running */}
               <div
-                className={`${styles.loadingCircle} ${verifying ? styles.loadingVisible : ""}`}
+                className={`${styles.loadingCircle} ${
+                  verifying ? styles.loadingVisible : ""
+                }`}
                 aria-label="Verifying"
               />
             </div>
