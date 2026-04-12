@@ -245,10 +245,9 @@ export default function CalendarPage() {
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
-        <div className="calendar-container">
-          <div style={styles.signoutContainer}></div>
           <style>{calendarStyles}</style>
-          <FullCalendar
+          <div style={styles.fullCalendar}>
+            <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
               dayGridPlugin,
@@ -260,13 +259,24 @@ export default function CalendarPage() {
               setResize(!resize);
             }}
             headerToolbar={{
-              left: "",
-              center: "prev title next",
-              right: "",
+              left: "prev title next",
+              center: "",
+              right: "searchButton filterButton",
             }}
             buttonIcons={{
-              prev: "arrow-left",
-              next: "arrow-right",
+              prev: "chevron-left",
+              next: "chevron-right",
+            }}
+            customButtons={{
+            searchButton: {
+            text: "Search events...",
+            click: () => {} // no-op
+            
+            },
+            filterButton: {
+            text: "Filter",
+            click: () => {} // no-op
+            }
             }}
             initialView="dayGridMonth"
             nowIndicator={true}
@@ -285,8 +295,8 @@ export default function CalendarPage() {
             }}
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
-          />
-        </div>
+            />
+          </div>
         {!isAddingEvent ? (
           <EventBar
             events={
@@ -308,17 +318,34 @@ export default function CalendarPage() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   spaced: {},
+  fullCalendar: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "auto",
+    borderRadius: "10px", 
+    gap: "24px",
+    padding: "24px",
+    background: "white",
+    boxShadow:
+      "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
 };
 
 const calendarStyles = `
    .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #335543;
+     background-color: #FFFFFF;
      border: none;
-     color: #FFF;
-     font-size: 2em;
-     font-size: 1.5em;
-     border-radius: 50%; 
+     color: #0A0A0A;  
+     width: 36px;
+     height: 36px;
+     border-radius: 8px; 
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 16px;
      line-height: 1;
+     padding: 0;
    }
 
    .fc .fc-prev-button:hover,
@@ -328,30 +355,37 @@ const calendarStyles = `
    }
 
    .fc-prev-button {
-     margin-left: 3%;
+     height: 38px;
+     padding: 8px;
    }
 
    .fc-next-button {
      margin-right: 3%;
+     height: 38px;
+     padding: 8px;
    }
 
    .fc-header-toolbar {
-     margin-top: 5%;
      display: flex;
      justify-content: space-between;
      text-transform: uppercase;
-     padding-bottom: 1%;
+     height: 38px;
    }
 
    .fc .fc-toolbar-title {
-     text-align: center;
+     display: flex;
+     justify-content: center;
+     align-items: center;
      margin-right: 2.5%;
+     height: 38px;
+     font-size: 32px;
    }
 
    .fc-toolbar-chunk {
      display: flex;
      align-items: center;
-     justify-content: center;
+     justify-content: start;
+     height: 38px;
    }
 
    .fc-toolbar-chunk:nth-child(2) {
@@ -365,7 +399,17 @@ const calendarStyles = `
    .fc-col-header-cell {
      background: #335543;
      color: #FFF;
+     height: 44px;
+     border: none;
+     vertical-align: middle;
    }
+
+   .fc .fc-scrollgrid-sync-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    }
 
    .fc .fc-AddEvent-button {
      background-color: #F7AB74;
@@ -375,7 +419,7 @@ const calendarStyles = `
      font-size: 1.1em;
      border: none;
      width: 120px; /* Adjust the width as needed */
-     height: 40px; /* Adjust the height as needed */
+     height: 38px; /* Adjust the height as needed */
    }
 
    .fc .fc-daygrid-event-harness {
@@ -406,10 +450,45 @@ const calendarStyles = `
 	align-items: normal !important;
     }
 
-   .fc .fc-col-header-cell,
    .fc .fc-daygrid-day,
    .fc .fc-daygrid {
      border: 1px solid #ddd;
      border-right: 1px solid #ddd;
+   }
+
+   .fc .fc-searchButton-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 194px;
+    height: 38px;
+    background-color: white;
+    border-radius: 9999px;
+    border: 1px solid #D1D5DC;
+    padding: 0 16px;
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.15px;
+    color: rgba(10, 10, 10, 0.5);
+   }
+
+   .fc .fc-filterButton-button{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 65.56px;
+    height: 38px;
+    background-color: rgb(229, 231, 235);
+    border-radius: 9999px;
+    border: none;
+    font-weight: 500;
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.15px;
+    color: rgba(10, 10, 10);
    }
  `;
