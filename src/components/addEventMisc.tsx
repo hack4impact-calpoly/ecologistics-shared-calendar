@@ -9,12 +9,14 @@ type AddEventMiscProps = {
   onBack: () => void;
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onPhotoChange: (photo: File | null) => void;
 };
 
 export default function AddEventMisc({
   onBack,
   onClose,
   onSubmit,
+  onPhotoChange,
 }: AddEventMiscProps) {
   const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
@@ -27,6 +29,7 @@ export default function AddEventMisc({
     onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0] ?? null;
       setPhoto(file);
+      onPhotoChange(file);
       if (file) setImagePreviewUrl(URL.createObjectURL(file));
     },
   });

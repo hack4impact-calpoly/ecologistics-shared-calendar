@@ -579,6 +579,7 @@ export default function AddEventPanel({
           onBack={() => handleBack("location")}
           onClose={onClose}
           onSubmit={onEventAdd}
+          onPhotoChange={(photo) => setFormData((prev) => ({ ...prev, photo }))}
         />
       )}
     </>
