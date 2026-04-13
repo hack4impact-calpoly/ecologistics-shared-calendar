@@ -8,9 +8,9 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState, useRef } from "react";
 import React from "react";
+import useSWR, { mutate } from "swr";
 import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
-import PendingApprovals from "../admin_components/PendingApprovals";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "../database/eventSchema";
@@ -35,7 +35,16 @@ export interface Event {
 
 export default function CalendarPage() {
   const { user } = useUser();
-  const [events, setEvents] = useState<EventDocument[]>([]);
+  const EVENTS_KEY = "/api/users/eventRoutes?status=Approved";
+  const { data: eventsData } = useSWR(EVENTS_KEY, (url: string) =>
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        convertEventDatesToDates(res.data as EventDocument[]);
+        return res.data as EventDocument[];
+      }),
+  );
+  const events: EventDocument[] = eventsData ?? [];
   const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
@@ -46,7 +55,6 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
-  const [isShowingPendingApprovals, setIsShowingPendingApprovals] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
@@ -84,35 +92,6 @@ export default function CalendarPage() {
   }, [events]);
 
   // Fetch events from the database
-  const fetchEvents = () => {
-    fetch("/api/users/eventRoutes?status=Approved")
-      .then((res) => res.json())
-      .then((res) => {
-        convertEventDatesToDates(res.data as EventDocument[]);
-        setEvents(res.data as EventDocument[]);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-  // useEffect(() => {
-  //   fetch("/api/users/eventRoutes?status=Approved")
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       convertEventDatesToDates(res.data as EventDocument[]);
-  //       setEvents(res.data as EventDocument[]);
-  //       setFutureEvents(filterFutureEvents(res.data as EventDocument[]));
-  //       setSelectedDateEvents(filterFutureEvents(res.data as EventDocument[])); // Initialize selectedDateEvents with future events
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching events:", error);
-  //     });
-  // }, []);
-
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
     console.log(clickedDate);
@@ -177,7 +156,7 @@ export default function CalendarPage() {
   }, [events]);
 
   const addEvent = () => {
-    fetchEvents();
+    mutate(EVENTS_KEY);
   };
 
   function adjustButtons() {
@@ -245,19 +224,6 @@ export default function CalendarPage() {
       {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
-      {isShowingPendingApprovals && user?.publicMetadata?.role === "admin" && (
-        <div className={style1.pendingApprovalsOverlay}>
-          <div className={style1.pendingApprovalsModal}>
-            <button
-              className={style1.closeButton}
-              onClick={() => setIsShowingPendingApprovals(false)}
-            >
-              ✕
-            </button>
-            <PendingApprovals onEventApproved={() => { fetchEvents(); setIsShowingPendingApprovals(false); }} />
-          </div>
-        </div>
-      )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
         <div className="calendar-container">
           <div style={styles.signoutContainer}></div>
@@ -317,15 +283,6 @@ export default function CalendarPage() {
             onClick={() => setIsAddingEvent((prev) => !prev)}
           >
             Add Event
-          </button>
-        )}
-        {user?.publicMetadata?.role === "admin" && (
-          <button
-            className={style1.addButton}
-            style={{ display: "block", margin: "10px auto 0" }}
-            onClick={() => setIsShowingPendingApprovals(true)}
-          >
-            Pending Approvals
           </button>
         )}
         {!isAddingEvent ? (

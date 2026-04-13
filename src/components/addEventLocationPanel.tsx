@@ -128,7 +128,32 @@ export default function AddEventLocationPanel({
           />
         </div>
       )}
-      <button style={styles.button} type="button" onClick={() => setPanelType('misc')}>
+      <button
+        style={styles.button}
+        type="button"
+        onClick={() => {
+          if (mode === "virtual") {
+            setEventFormData({
+              ...eventFormData,
+              mode,
+              isVirtual: true,
+              url: "Virtual",
+            });
+          } else if (method === "pin") {
+            setEventFormData({
+              ...eventFormData,
+              mode,
+              isVirtual: false,
+              street: formData.desc || `${formData.lat.toFixed(4)}, ${formData.lon.toFixed(4)}`,
+              city: "",
+              state: "",
+              postalCode: "",
+            });
+          }
+          // search method already sets eventFormData via onSelect
+          setPanelType("misc");
+        }}
+      >
         Continue
       </button>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UserDocument } from "../database/userSchema";
 import axios from "axios";
+import { mutate } from "swr";
 
 interface Event {
   organization: string;
@@ -64,11 +65,7 @@ function DenyPopup({ isOpen, onClose, onConfirm }: DenyPopupProps) {
   );
 }
 
-interface PendingApprovalsProps {
-  onEventApproved?: () => void;
-}
-
-export default function PendingApprovals({ onEventApproved }: PendingApprovalsProps) {
+export default function PendingApprovals() {
   const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
   const [pendingOrganizations, setPendingOrganizations] = useState<
     UserDocument[]
@@ -159,7 +156,7 @@ export default function PendingApprovals({ onEventApproved }: PendingApprovalsPr
       });
       setPendingEvents(updatedEvents);
 
-      if (onEventApproved) onEventApproved();
+      mutate("/api/users/eventRoutes?status=Approved");
 
       const approvedEvent = response.data.data;
 
