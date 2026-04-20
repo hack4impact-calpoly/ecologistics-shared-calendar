@@ -81,7 +81,7 @@ type Panel = "start" | "location" | "misc";
 interface AddEventPanelProps {
   onClose: () => void;
   onCreate: () => void;
-  addEvent: (event: Event) => void;
+  addEvent: () => void;
 }
 
 export default function AddEventPanel({
@@ -284,7 +284,7 @@ export default function AddEventPanel({
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);
         if (eventResponse.status === 201) {
-          addEvent(event);
+          addEvent();
           onCreate();
           setFormData(EMPTY_FORM);
           console.log("CREATED EVENT");

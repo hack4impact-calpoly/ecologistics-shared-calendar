@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UserDocument } from "../database/userSchema";
 import axios from "axios";
+import { mutate } from "swr";
 
 interface Event {
   organization: string;
@@ -159,6 +160,8 @@ export default function PendingApprovals({ initialEvents, initialOrgs }: Pending
         return event._id !== id;
       });
       setPendingEvents(updatedEvents);
+
+      mutate("/api/users/eventRoutes?status=Approved");
 
       const approvedEvent = response.data.data;
 

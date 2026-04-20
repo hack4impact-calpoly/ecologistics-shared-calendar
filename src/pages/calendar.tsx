@@ -8,6 +8,7 @@ import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect, useState, useRef } from "react";
 import React from "react";
+import useSWR, { mutate } from "swr";
 import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
@@ -34,7 +35,16 @@ export interface Event {
 
 export default function CalendarPage() {
   const { user } = useUser();
-  const [events, setEvents] = useState<EventDocument[]>([]);
+  const EVENTS_KEY = "/api/users/eventRoutes?status=Approved";
+  const { data: eventsData } = useSWR(EVENTS_KEY, (url: string) =>
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        convertEventDatesToDates(res.data as EventDocument[]);
+        return res.data as EventDocument[];
+      }),
+  );
+  const events: EventDocument[] = eventsData ?? [];
   const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
@@ -82,31 +92,6 @@ export default function CalendarPage() {
   }, [events]);
 
   // Fetch events from the database
-  useEffect(() => {
-    fetch("/api/users/eventRoutes?status=Approved")
-      .then((res) => res.json())
-      .then((res) => {
-        convertEventDatesToDates(res.data as EventDocument[]);
-        setEvents(res.data as EventDocument[]);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  }, []);
-  // useEffect(() => {
-  //   fetch("/api/users/eventRoutes?status=Approved")
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       convertEventDatesToDates(res.data as EventDocument[]);
-  //       setEvents(res.data as EventDocument[]);
-  //       setFutureEvents(filterFutureEvents(res.data as EventDocument[]));
-  //       setSelectedDateEvents(filterFutureEvents(res.data as EventDocument[])); // Initialize selectedDateEvents with future events
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching events:", error);
-  //     });
-  // }, []);
-
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
     console.log(clickedDate);
@@ -170,7 +155,9 @@ export default function CalendarPage() {
     };
   }, [events]);
 
-  const addEvent = (event: Event) => {};
+  const addEvent = () => {
+    mutate(EVENTS_KEY);
+  };
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");

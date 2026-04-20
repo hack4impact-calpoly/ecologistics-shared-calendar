@@ -177,7 +177,7 @@ export default function CalendarPage() {
     };
   }, []);
 
-  const addEvent = (event: Event) => {};
+  const addEvent = () => {};
 
   function adjustButtons() {
     const gridCell = document.querySelector(".fc-daygrid-day");
