@@ -14,6 +14,8 @@ const Navbar: React.FC = () => {
     const clerk = useClerk();
     const [isOpen, setIsOpen] = useState(false)
     const [hasPending, setHasPending] = useState(false);
+    const [pendingEvents, setPendingEvents] = useState<any[]>([]);
+    const [pendingOrgs, setPendingOrgs] = useState<any[]>([]);
     const { pathname } = router;
 
     const menuItems = [];
@@ -23,6 +25,7 @@ const Navbar: React.FC = () => {
 
     const DONT_SHOW_LOGIN_PATHS = ["/login", "/signup", "/forgot-password"];
     useEffect(() => {
+    if (role !== "admin") return;
     const checkPending = async () => {
         try {
             const eventsRes = await fetch("/api/users/eventRoutes");
@@ -33,22 +36,24 @@ const Navbar: React.FC = () => {
             const eventsData = await eventsRes.json();
             const orgsData = await orgsRes.json();
 
-            const pendingEvents = (eventsData?.data || []).filter(
+            const filteredEvents = (eventsData?.data || []).filter(
                 (e: any) => e.status === "Pending"
             );
 
-            const pendingOrgs = (orgsData?.data || []).filter(
+            const filteredOrgs = (orgsData?.data || []).filter(
                 (u: any) => u.role === "pending"
             );
 
-            setHasPending(pendingEvents.length > 0 || pendingOrgs.length > 0);
+            setPendingEvents(filteredEvents);
+            setPendingOrgs(filteredOrgs);
+            setHasPending(filteredEvents.length > 0 || filteredOrgs.length > 0);
         } catch (err) {
             console.error("Error checking pending approvals:", err);
         }
     };
 
     checkPending();
-}, []);
+}, [role]);
 
     var eventsPath: string;
     if (role === "admin") {
@@ -92,7 +97,7 @@ const Navbar: React.FC = () => {
             </Link>
             {clerk.user && (role === "approved" || role === "admin") && (
                 <div className={styles.dropdown}>
-                    <Alert onClick={() => setIsOpen(true)} hasPending={hasPending} />
+                    {role === "admin" && <Alert onClick={() => setIsOpen(true)} hasPending={hasPending} />}
                     <PositionedMenu items={menuItems} />
                 </div>
             )}{" "}
@@ -103,7 +108,7 @@ const Navbar: React.FC = () => {
                     <button className={styles.modalClose} onClick={() => setIsOpen(false)} type = "button">
                         x
                     </button>
-                    <PendingApprovals />
+                    <PendingApprovals initialEvents={pendingEvents} initialOrgs={pendingOrgs} />
                 </div>
                 </>
             )}
