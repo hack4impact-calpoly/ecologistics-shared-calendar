@@ -10,9 +10,9 @@ import fs from "fs";
 import sharp from "sharp";
 import getRawBody from "raw-body";
 
-const region = process.env.NEXT_PUBLIC_AWS_REGION;
-const accessKeyId = process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY;
+const region = process.env.AWS_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
 if (!region || !accessKeyId || !secretAccessKey) {
   throw new Error("AWS environment variables are missing");
@@ -120,18 +120,18 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
 
 async function uploadFileToS3(file: any, fileName: string) {
   const params = {
-    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
+    Bucket: process.env.S3_BUCKET_NAME!,
     Key: `${Date.now()}-${fileName}`,
     Body: file,
     ContentType: "image/jpeg",
   };
   await s3Client.send(new PutObjectCommand(params));
-  return `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+  return `https://${params.Bucket}.s3.${region}.amazonaws.com/${params.Key}`;
 }
 
 function getKeyFromUrl(url: string): string {
-  const bucketName = process.env.NEXT_PUBLIC_S3_BUCKET_NAME!;
-  const bucketUrl = `https://${bucketName}.s3.amazonaws.com/`;
+  const bucketName = process.env.S3_BUCKET_NAME!;
+  const bucketUrl = `https://${bucketName}.s3.${region}.amazonaws.com/`;
 
   if (!url.startsWith(bucketUrl)) {
     console.log("KEY ERROR");
@@ -145,7 +145,7 @@ function getKeyFromUrl(url: string): string {
 
 async function deleteFileFromS3(key: string) {
   const params = {
-    Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
+    Bucket: process.env.S3_BUCKET_NAME!,
     Key: key,
   };
   await s3Client.send(new DeleteObjectCommand(params));
