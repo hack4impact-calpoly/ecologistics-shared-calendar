@@ -81,6 +81,8 @@ export default async function handler(
         location,
         status,
         imageLink,
+        virtualMeetingId,
+        virtualPassword,
       } = await req.body;
 
       // console.log("AFTER: ", req.body);
@@ -98,6 +100,8 @@ export default async function handler(
         location,
         status,
         imageLink,
+        virtualMeetingId,
+        virtualPassword,
         createdBy: user._id,
       });
 

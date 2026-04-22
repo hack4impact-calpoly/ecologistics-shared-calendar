@@ -25,6 +25,8 @@ export interface AddEventFormType {
   latitude: number | null;
   longitude: number | null;
   locationDescription: string;
+  virtualMeetingId?: string;
+  virtualPassword?: string;
 }
 
 interface FormErrors {
@@ -67,6 +69,8 @@ interface Event {
   status: string;
   isVirtual: boolean;
   imageLink?: string;
+  virtualMeetingId?: string;
+  virtualPassword?: string;
 }
 
 const stringToDate = (date: string, time: string): Date => {
@@ -228,7 +232,7 @@ export default function AddEventPanel({
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
     onCreate();
-    setFormData(EMPTY_FORM);
+    // setFormData(EMPTY_FORM);
     setIsLoading(true);
     setDesCharsTyped(0);
     setTitleCharsTyped(0);
@@ -280,6 +284,8 @@ export default function AddEventPanel({
           status:
             user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
+          virtualMeetingId: formData.virtualMeetingId,
+          virtualPassword: formData.virtualPassword,
         };
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);

@@ -50,6 +50,11 @@ export default function AddEventLocationPanel({
 
   return (
     <div style={styles.container}>
+      <style>{`
+        .event-input::placeholder {
+          color: #aaa;
+        }
+      `}</style>
       <MdArrowBack onClick={onBack} style={styles.back} size={25} />
       <MdClose onClick={onClose} style={styles.close} size={25} />
       <h2 style={styles.header}>Create New Event</h2>
@@ -135,6 +140,7 @@ export default function AddEventLocationPanel({
           <input
             type="text"
             style={styles.input}
+            className="event-input"
             onChange={(e) => {
               setFormData({ ...formData, desc: e.target.value });
               setEventFormData((prev) => ({
@@ -171,20 +177,60 @@ export default function AddEventLocationPanel({
         </div>
       )}
       {mode === "virtual" && (
-        <input
-          type="url"
-          style={styles.input}
-          placeholder="Meeting link"
-          value={eventFormData.url ?? ""}
-          onChange={(e) =>
-            setEventFormData((prev) => ({
-              ...prev,
-              mode: "virtual",
-              isVirtual: true,
-              url: e.target.value,
-            }))
-          }
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div>
+            <p style={styles.fieldLabel}>Meeting Link <span style={{ color: "red" }}>*</span></p>
+            <input
+              type="url"
+              style={styles.input}
+              className="event-input"
+              placeholder="https://zoom.us/j/..."
+              value={eventFormData.url ?? ""}
+              onChange={(e) =>
+                setEventFormData((prev) => ({
+                  ...prev,
+                  mode: "virtual",
+                  isVirtual: true,
+                  url: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          <div>
+            <p style={styles.fieldLabel}>Meeting ID <span style={styles.optionalTag}>(optional)</span></p>
+            <input
+              type="text"
+              style={styles.input}
+              className="event-input"
+              placeholder="123 456 7890"
+              value={eventFormData.virtualMeetingId ?? ""}
+              onChange={(e) =>
+                setEventFormData((prev) => ({
+                  ...prev,
+                  virtualMeetingId: e.target.value,
+                }))
+              }
+            />
+          </div>
+
+          <div>
+            <p style={styles.fieldLabel}>Password <span style={styles.optionalTag}>(optional)</span></p>
+            <input
+              type="text"
+              style={styles.input}
+              className="event-input"
+              placeholder="Meeting password"
+              value={eventFormData.virtualPassword ?? ""}
+              onChange={(e) =>
+                setEventFormData((prev) => ({
+                  ...prev,
+                  virtualPassword: e.target.value,
+                }))
+              }
+            />
+          </div>
+        </div>
       )}
       <div style={styles.errorBox}>{error && <p style={styles.error}>{error}</p>}</div>
 
@@ -314,5 +360,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: "0",
     margin: "0.3125rem",
     cursor: "pointer",
+  },
+  fieldLabel: {
+    margin: "0 0 0.25rem 0.25rem",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    color: "#333",
+  },
+  optionalTag: {
+    fontWeight: 400,
+    color: "#888",
+    fontSize: "0.8rem",
   },
 };

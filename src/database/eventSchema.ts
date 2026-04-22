@@ -5,7 +5,7 @@ const EventSchema = new Schema(
     title: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    time: { type: String, requred: true },
+    time: { type: String, required: false },
     description: { type: String, required: false },
     isVirtual: { type: Boolean, required: true },
     location: {
@@ -16,6 +16,9 @@ const EventSchema = new Schema(
     imageLink: { type: String, required: false },
     createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
     deniedReason: { type: String, required: false },
+    virtualMeetingId: { type: String, required: false },
+    virtualPassword: { type: String, required: false },
+    additionalInfo: { type: String, required: false },
   },
   {
     timestamps: true,
@@ -36,6 +39,9 @@ export type EventDocument = {
   status: string;
   deniedReason?: string;
   imageLink?: string;
+  virtualMeetingId?: string;
+  virtualPassword?: string;
+  virtualInfo?: string;
   createdBy: mongoose.Types.ObjectId;
   _id: mongoose.Types.ObjectId;
 };
