@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UserDocument } from "../database/userSchema";
 import axios from "axios";
+import { getFormattedDateString, getFormattedTimeString } from "../utils/events";
 
 interface Event {
   organization: string;
@@ -155,23 +156,28 @@ export default function PendingApprovals() {
       });
       setPendingEvents(updatedEvents);
 
-      const approvedEvent = response.data.data;
+      const approvedEvent = response.data;
 
       // Look up the user who created this event to send them an email
       const userResponse = await fetch(
-        "/api/userRoutes/?createdBy=" + approvedEvent.createdBy,
+        "/api/userRoutes/?createdBy=" + approvedEvent.data.createdBy,
       );
       const userData = await userResponse.json();
 
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           emailAddress: userData?.data?.email,
           firstName: userData?.data?.firstName,
           orgName: userData?.data?.organization,
-          eventTitle: approvedEvent.title,
-          templateId: "d-d91e07d6440a460eaae6e9d4203a6936",
+          eventTitle: approvedEvent.data.title,
+          eventDescription: approvedEvent.data.description,
+          eventStartTime: getFormattedTimeString(new Date(approvedEvent.data.startDate)),
+          eventEndTime: getFormattedTimeString(new Date(approvedEvent.data.endDate)),
+          eventStartDate: getFormattedDateString(new Date(approvedEvent.data.startDate)),
+          eventEndDate: getFormattedDateString(new Date(approvedEvent.data.endDate)),
+          templateId: 'event-approval-client-1'
         }),
       });
     } catch (error) {
@@ -192,24 +198,24 @@ export default function PendingApprovals() {
       });
       setPendingEvents(updatedEvents);
 
-      const declinedEvent = response.data.data;
+      const declinedEvent = response.data;
 
       // Look up the user who created this event to send them an email
       const userResponse = await fetch(
-        "/api/userRoutes/?createdBy=" + declinedEvent.createdBy,
+        "/api/userRoutes/?createdBy=" + declinedEvent.data.createdBy,
       );
       const userData = await userResponse.json();
 
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           emailAddress: userData?.data?.email,
           firstName: userData?.data?.firstName,
           orgName: userData?.data?.organization,
-          eventTitle: declinedEvent.title,
+          eventTitle: declinedEvent.data.title,
           deniedReason: message,
-          templateId: "d-16d0c9212a1c46ce9d7dd50b623f4e39",
+          templateId: 'event-denial-client',
         }),
       });
     } catch (error) {
@@ -234,14 +240,15 @@ export default function PendingApprovals() {
       setPendingOrganizations(updatedOrgs);
 
       if (userToApprove) {
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          
           body: JSON.stringify({
-            emailAddress: userToApprove.email,
-            firstName: userToApprove.firstName,
-            orgName: userToApprove.organization,
-            templateId: "d-ff6ffd8130ce46c99acd82aa60452890",
+            emailAddress: userToApprove?.email,
+            firstName: userToApprove?.firstName,
+            orgName: userToApprove?.organization,
+            templateId: 'org-registration-approval-client'
           }),
         });
       }
@@ -268,15 +275,15 @@ export default function PendingApprovals() {
       setPendingOrganizations(updatedOrgs);
 
       if (userToDecline) {
-        await fetch("/api/sendGrid/orgRoutes", {
+        await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            emailAddress: userToDecline.email,
-            firstName: userToDecline.firstName,
-            orgName: userToDecline.organization,
+            emailAddress: userToDecline?.email,
+            firstName: userToDecline?.firstName,
+            orgName: userToDecline?.organization,
             deniedReason: message,
-            templateId: "d-d4b7037961ac48d9b1a02bef52494c1d",
+            templateId: 'org-registration-denial-client'
           }),
         });
       }
