@@ -233,7 +233,7 @@ export default function AddEventPanel({
           eventDescription: formData.description,
           eventStartTime: formData.startTime,
           eventEndTime: formData.endTime,
-          eventStartData: formData.startDate,
+          eventStartDate: formData.startDate,
           eventEndDate: formData.endDate,
           templateId: 'event-pending-client'
         }),
@@ -272,7 +272,7 @@ export default function AddEventPanel({
           eventDescription: formData.description,
           eventStartTime: formData.startTime,
           eventEndTime: formData.endTime,
-          eventStartData: formData.startDate,
+          eventStartDate: formData.startDate,
           eventEndDate: formData.endDate,
           templateId: 'event-pending-admin'
         }),

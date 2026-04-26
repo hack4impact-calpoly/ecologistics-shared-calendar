@@ -1,6 +1,5 @@
 import { Resend } from 'resend';
 import { NextApiRequest, NextApiResponse } from "next";
-import { ReactElement } from "react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -19,7 +18,7 @@ export default async function handler(
     deniedReason, 
     eventTitle,
     eventDescription,
-    evenStartTime,
+    eventStartTime,
     eventEndTime,
     eventStartDate,
     eventEndDate,
@@ -41,7 +40,7 @@ export default async function handler(
       deniedReason,
       eventTitle,
       eventDescription,
-      evenStartTime,
+      eventStartTime,
       eventEndTime,
       eventStartDate,
       eventEndDate,

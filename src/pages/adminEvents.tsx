@@ -99,7 +99,7 @@ export default function AdminRequestTable() {
           eventDescription: eventToAccept.data.description,
           eventStartTime: eventToAccept.data.startTime,
           eventEndTime: eventToAccept.data.endTime,
-          eventStartData: eventToAccept.data.startDate,
+          eventStartDate: eventToAccept.data.startDate,
           eventEndDate: eventToAccept.data.endDate,
           templateId: 'event-approval-client-1'
         }),
