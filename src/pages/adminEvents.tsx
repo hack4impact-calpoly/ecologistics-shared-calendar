@@ -2,6 +2,7 @@ import EventsTable from "../admin_components/EventsRequestTable";
 import Layout from "../components/layout";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { getFormattedDateString, getFormattedTimeString } from "../utils/events";
 
 // Interfaces for Event and API responses
 interface Event {
@@ -97,10 +98,10 @@ export default function AdminRequestTable() {
           orgName: user?.data?.organization,
           eventTitle: eventToAccept.data.title,
           eventDescription: eventToAccept.data.description,
-          eventStartTime: eventToAccept.data.startTime,
-          eventEndTime: eventToAccept.data.endTime,
-          eventStartDate: eventToAccept.data.startDate,
-          eventEndDate: eventToAccept.data.endDate,
+          eventStartTime: getFormattedTimeString(eventToAccept.data.startTime),
+          eventEndTime: getFormattedTimeString(eventToAccept.data.endTime),
+          eventStartDate: getFormattedDateString(eventToAccept.data.startDate),
+          eventEndDate: getFormattedDateString(eventToAccept.data.endDate),
           templateId: 'event-approval-client-1'
         }),
       })
