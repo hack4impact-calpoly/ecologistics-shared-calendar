@@ -6,7 +6,6 @@ import axios from "axios";
 import styles from "./style/signup.module.css"; // Make sure the path is correct
 import { toast } from "react-toastify";
 import { clerkClient } from "@clerk/nextjs/server";
-import sendWelcomeEmail from "./api/sendGrid/orgRoutes";
 
 export default function SignUp() {
   const router = useRouter();
@@ -301,7 +300,8 @@ export default function SignUp() {
         position: position,
       });
 
-      await fetch("/api/sendGrid/orgRoutes", {
+      // send the confirmation email to organization
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -310,7 +310,7 @@ export default function SignUp() {
           emailAddress: email,
           firstName: fName,
           orgName: organization,
-          templateId: "d-77a657d34e704e7286fe3badf3868f53",
+          templateId: 'org-registration-pending-client'
         }),
       })
         .then((response) => {
@@ -320,19 +320,22 @@ export default function SignUp() {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
+          console.log(data); // Handle success response
         })
         .catch((error) => {
-          console.error("Error:", error);
+          console.error("Error:", error); // Handle error
         });
 
-      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
+      // send email notif to admin
+      const admin_response = await fetch(
+        "/api/admins/userRoutes/?role=admin", // get admin email first
+      );
       if (!admin_response.ok) {
         throw new Error("Network response was not ok");
       }
       const admin = await admin_response.json();
       const admin_email = admin.data.email;
-      await fetch("/api/sendGrid/orgRoutes", {
+      await fetch("/api/resend/orgRoutes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -341,7 +344,7 @@ export default function SignUp() {
           emailAddress: admin_email,
           firstName: fName,
           orgName: organization,
-          templateId: "d-74ef1ec42582458a849fb2a65c7235c0",
+          templateId: 'org-registration-pending-admin'
         }),
       })
         .then((response) => {
@@ -529,7 +532,7 @@ export default function SignUp() {
             </div>
 
             <button
-              type="submit"
+              type="button"
               className={`${styles.button} ${styles.buttonSent}`}
               onClick={goToLogin}
             >

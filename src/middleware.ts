@@ -17,7 +17,7 @@ export default authMiddleware({
       "/api/test",
       "/api/users/eventRoutes",
       "/api/s3-upload/test",
-      "/api/sendGrid/orgRoutes",
+      "/api/resend/orgRoutes",
       "/api/admins/userRoutes",
       "/publicCalendar",
       "/eventDetails",
