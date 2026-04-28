@@ -115,5 +115,5 @@ async function sendDynamicEmail(
     },
   };
 
-  await resend.emails.send(msg);
+  await resend.emails.send(msg as any);
 }
