@@ -85,8 +85,6 @@ export function AddressAutoFill({
   const [items, setItems] = useState<GeoapifyFeature[]>([]);
   const [dropOpen, setDropOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedAddress, setSelectedAddress] =
-    useState<SelectedAddress | null>(null);
   const skipNextFetchRef = useRef(false);
 
   //Close dropdown if clicked outside
@@ -143,7 +141,6 @@ export function AddressAutoFill({
   const hasResults = items.length > 0;
   function choose(feature: GeoapifyFeature) {
     const [lon, lat] = feature.geometry.coordinates;
-    setSelectedAddress({ lat, lon });
     skipNextFetchRef.current = true;
     setInput(feature.properties.formatted);
     setDropOpen(false);
@@ -191,13 +188,6 @@ export function AddressAutoFill({
               </button>
             ))
           )}
-        </div>
-      )}
-      {selectedAddress && (
-        <div style={{ marginTop: "8px" }}>
-          <strong>Selected Address:</strong>
-          <div>Lat: {selectedAddress?.lat}</div>
-          <div>Lon: {selectedAddress?.lon}</div>
         </div>
       )}
     </div>

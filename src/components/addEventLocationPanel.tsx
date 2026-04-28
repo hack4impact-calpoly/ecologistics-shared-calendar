@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { MdArrowBack } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 import { AddressAutoFill } from "./addressAutofill";
 import MapPin from "./mapPin";
 import { AddEventFormType } from "./addEventPanel";
@@ -10,17 +12,25 @@ type InPersonMethod = "pin" | "search";
 const geoKey = process.env.GEOAPIFY_API_KEY!;
 
 type AddEventLocationPanelProps = {
-  setPanelType: (panel: "start" | "location" | "misc") => void;
+  onBack: () => void;
+  onClose: () => void;
+  onContinue: () => void;
   setEventFormData: React.Dispatch<React.SetStateAction<AddEventFormType>>;
   eventFormData: AddEventFormType;
+  error?: string;
 };
 
 export default function AddEventLocationPanel({
-  setPanelType,
+  onBack,
+  onClose,
+  onContinue,
   setEventFormData,
-  eventFormData
+  eventFormData,
+  error,
 }: AddEventLocationPanelProps) {
-  const [mode, setMode] = useState<LocationMode>("in-person"); //active mode
+  const [mode, setMode] = useState<LocationMode>(
+    eventFormData.mode === "virtual" ? "virtual" : "in-person",
+  ); //active mode
   const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
   const [formData, setFormData] = useState({
     lon: 0,
@@ -28,8 +38,20 @@ export default function AddEventLocationPanel({
     desc: "",
   });
 
+  // Keep the parent state in sync so validation can run in one place.
+  const setLocationMode = (nextMode: LocationMode) => {
+    setMode(nextMode);
+    setEventFormData((prev) => ({
+      ...prev,
+      mode: nextMode,
+      isVirtual: nextMode === "virtual",
+    }));
+  };
+
   return (
     <div style={styles.container}>
+      <MdArrowBack onClick={onBack} style={styles.back} size={25} />
+      <MdClose onClick={onClose} style={styles.close} size={25} />
       <h2 style={styles.header}>Create New Event</h2>
       <p style={styles.subHeader}>Where will this event take place?</p>
 
@@ -39,7 +61,7 @@ export default function AddEventLocationPanel({
           style={
             mode === "in-person" ? styles.activeModeButton : styles.modeButton
           }
-          onClick={() => setMode("in-person")}
+          onClick={() => setLocationMode("in-person")}
         >
           In Person
         </button>
@@ -47,7 +69,7 @@ export default function AddEventLocationPanel({
           style={
             mode === "virtual" ? styles.activeModeButton : styles.modeButton
           }
-          onClick={() => setMode("virtual")}
+          onClick={() => setLocationMode("virtual")}
         >
           Virtual
         </button>
@@ -99,6 +121,13 @@ export default function AddEventLocationPanel({
               inLat={formData.lat}
               onPickAddress={(data) => {
                 setFormData({ ...formData, lon: data.lon, lat: data.lat });
+                setEventFormData((prev) => ({
+                  ...prev,
+                  mode: "in-person",
+                  isVirtual: false,
+                  latitude: data.lat,
+                  longitude: data.lon,
+                }));
               }}
             />
           </div>
@@ -106,7 +135,15 @@ export default function AddEventLocationPanel({
           <input
             type="text"
             style={styles.input}
-            onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
+            onChange={(e) => {
+              setFormData({ ...formData, desc: e.target.value });
+              setEventFormData((prev) => ({
+                ...prev,
+                mode: "in-person",
+                isVirtual: false,
+                locationDescription: e.target.value,
+              }));
+            }}
             value={formData.desc}
             placeholder="Add description of location (optional)"
           />
@@ -118,19 +155,44 @@ export default function AddEventLocationPanel({
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
             onSelect={(data, feature) => {
               setFormData({ ...formData, lon: data.lon, lat: data.lat });
-              setEventFormData({...eventFormData,
+              setEventFormData((prev) => ({
+                  ...prev,
                   street: (feature.properties.street ?? "") as string,
                   city: (feature.properties.city ?? "") as string,
                   state: (feature.properties.state_code ?? "") as string,
                   postalCode: (feature.properties.postcode ?? "") as string,
-                  mode: mode});
+                  latitude: data.lat,
+                  longitude: data.lon,
+                  mode: mode,
+                  isVirtual: false,
+              }));
             }}
           />
         </div>
       )}
-      <button style={styles.button} type="button" onClick={() => setPanelType('misc')}>
-        Continue
-      </button>
+      {mode === "virtual" && (
+        <input
+          type="url"
+          style={styles.input}
+          placeholder="Meeting link"
+          value={eventFormData.url ?? ""}
+          onChange={(e) =>
+            setEventFormData((prev) => ({
+              ...prev,
+              mode: "virtual",
+              isVirtual: true,
+              url: e.target.value,
+            }))
+          }
+        />
+      )}
+      <div style={styles.errorBox}>{error && <p style={styles.error}>{error}</p>}</div>
+
+      <div style={styles.actions}>
+        <button style={styles.button} type="button" onClick={onContinue}>
+          Continue
+        </button>
+      </div>
     </div>
   );
 }
@@ -142,29 +204,28 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
     boxSizing: "border-box",
-    borderRadius: "10px",
+    borderRadius: "0.625rem",
     border: "1px solid black",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    padding: "20px",
-    margin: "10px",
+    padding: "1.25rem",
+    margin: "0.625rem",
     width: "80%",
     height: "50%",
     position: "relative",
-    gap: "5px",
+    gap: "0.3125rem",
   },
-    button: {
-    padding: "10px 15px",
+  button: {
+    padding: "0.625rem 0.9375rem",
     border: "none",
-    borderRadius: "20px",
+    borderRadius: "1.25rem",
     background: "#335543",
     color: "white",
     cursor: "pointer",
     display: "block",
-    width: "15%",
-    alignSelf: "center",
+    minWidth: "7.5rem",
   },
   header: {
-    margin: 0,
+    margin: "1.25rem 0 0 0",
   },
   subHeader: {
     color: "#333",
@@ -173,17 +234,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     background: "#bdbdbd",
     borderRadius: "999px",
-    padding: "4px",
+    padding: "0.25rem",
   },
   methodContainer: {
     display: "flex",
-    gap: "12px",
+    gap: "0.75rem",
   },
   modeButton: {
     flex: 1,
     border: "none",
     background: "transparent",
-    padding: "10px",
+    padding: "0.625rem",
     borderRadius: "999px",
     cursor: "pointer",
     fontWeight: 500,
@@ -191,7 +252,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   activeModeButton: {
     flex: 1,
     border: "none",
-    padding: "10px",
+    padding: "0.625rem",
     borderRadius: "999px",
     cursor: "pointer",
     fontWeight: 500,
@@ -200,8 +261,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   methodButton: {
     flex: 1,
-    padding: "20px",
-    borderRadius: "12px",
+    padding: "1.25rem",
+    borderRadius: "0.75rem",
     background: "#f0f0f0",
     textAlign: "center",
     cursor: "pointer",
@@ -209,8 +270,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   activeMethodButton: {
     flex: 1,
-    padding: "20px",
-    borderRadius: "12px",
+    padding: "1.25rem",
+    borderRadius: "0.75rem",
     textAlign: "center",
     cursor: "pointer",
     background: "#b0b0b0",
@@ -218,10 +279,40 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   input: {
     width: "calc(100% - 20px)",
-    padding: "10px",
-    borderRadius: "15px",
+    padding: "0.625rem",
+    borderRadius: "0.9375rem",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
+  },
+  error: {
+    color: "red",
+    alignSelf: "center",
+    margin: 0,
+    fontSize: "1rem",
+  },
+  errorBox: {
+    minHeight: "1.25rem",
+    display: "flex",
+    justifyContent: "center",
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "0.75rem",
+  },
+  close: {
+    position: "absolute",
+    top: "0.5rem",
+    right: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
+  },
+  back: {
+    position: "absolute",
+    top: "0.5rem",
+    left: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
   },
 };

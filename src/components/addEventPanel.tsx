@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { MdArrowBack } from "react-icons/md";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
@@ -21,6 +22,9 @@ export interface AddEventFormType {
   street: string;
   state: string;
   postalCode: string;
+  latitude: number | null;
+  longitude: number | null;
+  locationDescription: string;
 }
 
 interface FormErrors {
@@ -40,7 +44,7 @@ const EMPTY_FORM = {
   startTime: "",
   endTime: "",
   description: "",
-  mode: "",
+  mode: "in-person",
   isVirtual: false,
   url: null,
   photo: null,
@@ -48,6 +52,9 @@ const EMPTY_FORM = {
   street: "",
   state: "",
   postalCode: "",
+  latitude: null,
+  longitude: null,
+  locationDescription: "",
 };
 
 interface Event {
@@ -74,7 +81,7 @@ type Panel = "start" | "location" | "misc";
 interface AddEventPanelProps {
   onClose: () => void;
   onCreate: () => void;
-  addEvent: (event: Event) => void;
+  addEvent: () => void;
 }
 
 export default function AddEventPanel({
@@ -110,34 +117,69 @@ export default function AddEventPanel({
     }
   }, [user]);
 
-  const getErrorsForEmptyFields = (): Partial<FormErrors> => {
+  const hasText = (value: string | null | undefined) =>
+    Boolean(value && value.trim());
+
+  // Validate only the fields shown on the first panel
+  const getStartPanelErrors = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
 
-    const fieldsToCheck = [
-      { field: "title", error: "Title is required." },
-      { field: "dates", error: "Start date is required." },
-      { field: "dates", error: "Start time is required." },
-      { field: "dates", error: "End date is required." },
-      { field: "dates", error: "End time is required." },
-      //{ field: "description", error: "Description is required." },
-      { field: "location", error: "Link or address is required." },
-      //{ field: "photo",isFile: true },
-    ];
+    if (!hasText(formData.title)) {
+      errors.title = "Title is required.";
+    }
 
-    const fieldKeyToErrorKey = (field: string) => {
-      if (field.includes("Date") || field.includes("Time")) return "dates";
-      return field;
-    };
+    if (!hasText(formData.startDate)) {
+      errors.dates = "Start date is required.";
+    } else if (!hasText(formData.startTime)) {
+      errors.dates = "Start time is required.";
+    } else if (!hasText(formData.endDate)) {
+      errors.dates = "End date is required.";
+    } else if (!hasText(formData.endTime)) {
+      errors.dates = "End time is required.";
+    }
 
-    fieldsToCheck.forEach(({ field, error /*isFile*/ }) => {
-      // const key = field as keyof typeof formData;
-      // if (
-      //   (isFile && formData[key] === null) ||
-      //   (!isFile && formData[key] === "")
-      // ) {
-      //   errors[fieldKeyToErrorKey(key) as keyof FormErrors] = error;
-      // }
-    });
+    return errors;
+  };
+
+  // Keep location rules separate so each panel can block progression
+  const getLocationPanelErrors = (): Partial<FormErrors> => {
+    const errors = {} as Partial<FormErrors>;
+    const hasStructuredAddress =
+      hasText(formData.street) &&
+      hasText(formData.city) &&
+      hasText(formData.state) &&
+      hasText(formData.postalCode);
+    const hasPinnedLocation =
+      hasText(formData.locationDescription) ||
+      (formData.latitude !== null &&
+        formData.longitude !== null &&
+        (formData.latitude !== 0 || formData.longitude !== 0));
+
+    if (
+      formData.mode === "in-person" &&
+      !hasStructuredAddress &&
+      !hasPinnedLocation
+    ) {
+      errors.location = "Location is required.";
+    } else if (formData.mode === "virtual" && !hasText(formData.url)) {
+      errors.location = "Meeting link is required.";
+    }
+
+    return errors;
+  };
+
+  const getErrorsForEmptyFields = (
+    panels: Panel[] = panelType === "misc" ? [] : [panelType],
+  ): Partial<FormErrors> => {
+    const errors = {} as Partial<FormErrors>;
+
+    if (panels.includes("start")) {
+      Object.assign(errors, getStartPanelErrors());
+    }
+
+    if (panels.includes("location")) {
+      Object.assign(errors, getLocationPanelErrors());
+    }
 
     return errors;
   };
@@ -167,6 +209,40 @@ export default function AddEventPanel({
     // await addLocationErrors(errors);
 
     return errors;
+  };
+
+  // Continue buttons validate their own panel before changing steps.
+  const handleStartContinue = () => {
+    const errors = getErrorsForEmptyFields(["start"]);
+
+    if (Object.keys(errors).length === 0) {
+      addDateErrors(errors);
+    }
+
+    if (Object.keys(errors).length !== 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
+    setPanelType("location");
+  };
+
+  const handleLocationContinue = () => {
+    const errors = getErrorsForEmptyFields(["location"]);
+
+    if (Object.keys(errors).length !== 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
+    setPanelType("misc");
+  };
+
+  const handleBack = (panel: Panel) => {
+    setFormErrors({});
+    setPanelType(panel);
   };
 
   const onEventAdd = async (e: React.FormEvent) => {
@@ -199,7 +275,18 @@ export default function AddEventPanel({
         let address = formData.url || "";
 
         if (formData.mode == "in-person") {
+          const hasStructuredAddress =
+            hasText(formData.street) &&
+            hasText(formData.city) &&
+            hasText(formData.state) &&
+            hasText(formData.postalCode);
+
           address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
+          if (!hasStructuredAddress) {
+            address =
+              formData.locationDescription.trim() ||
+              `${formData.latitude}, ${formData.longitude}`;
+          }
         }
 
         const event: Event = {
@@ -217,7 +304,7 @@ export default function AddEventPanel({
 
         const eventResponse = await axios.post("api/users/eventRoutes", event);
         if (eventResponse.status === 201) {
-          addEvent(event);
+          addEvent();
           onCreate();
           setFormData(EMPTY_FORM);
           console.log("CREATED EVENT");
@@ -409,6 +496,7 @@ export default function AddEventPanel({
     <>
       {panelType === "start" && (
         <form style={styles.container} onSubmit={onEventAdd}>
+          <MdArrowBack onClick={onClose} style={styles.back} size={25} />
           <MdClose onClick={onClose} style={styles.close} size={25} />
           <h3 style={styles.title}>Add Event</h3>
           <h4 style={styles.inputTitle}>
@@ -432,6 +520,9 @@ export default function AddEventPanel({
           <p style={styles.characterCount}>
             Characters Typed: {titleCharsTyped}/45
           </p>
+          <div style={styles.errorBox}>
+            {formErrors.title && <p style={styles.error}>{formErrors.title}</p>}
+          </div>
 
           <div style={styles.horizontal}>
             <div style={styles.inputContainer}>
@@ -508,11 +599,9 @@ export default function AddEventPanel({
             </div>
           </div>
 
-          {formErrors.dates && (
-            <div style={styles.errorBox}>
-              <p style={styles.error}>{formErrors.dates}</p>
-            </div>
-          )}
+          <div style={styles.errorBox}>
+            {formErrors.dates && <p style={styles.error}>{formErrors.dates}</p>}
+          </div>
 
           <h4 style={styles.inputTitle}>Description</h4>
           <textarea
@@ -538,7 +627,7 @@ export default function AddEventPanel({
             style={styles.button}
             type="button"
             disabled={isLoading}
-            onClick={() => setPanelType("location")}
+            onClick={handleStartContinue}
           >
             {isLoading ? "Loading..." : "Continue"}
           </button>
@@ -546,12 +635,22 @@ export default function AddEventPanel({
       )}
       {panelType === "location" && (
         <AddEventLocationPanel
-          setPanelType={setPanelType}
+          error={formErrors.location}
+          onBack={() => handleBack("start")}
+          onClose={onClose}
+          onContinue={handleLocationContinue}
           eventFormData={formData}
           setEventFormData={setFormData}
         />
       )}
-      {panelType === "misc" && <AddEventMisc onSubmit={onEventAdd} />}
+      {panelType === "misc" && (
+        <AddEventMisc
+          onBack={() => handleBack("location")}
+          onClose={onClose}
+          onSubmit={onEventAdd}
+          onPhotoChange={(photo) => setFormData((prev) => ({ ...prev, photo }))}
+        />
+      )}
     </>
   );
 }
@@ -563,20 +662,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignContent: "center",
     justifyContent: "center",
     boxSizing: "border-box",
-    borderRadius: "10px",
+    borderRadius: "0.625rem",
     border: "1px solid black",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    padding: "20px",
-    margin: "10px",
+    padding: "1.25rem",
+    margin: "0.625rem",
     width: "80%",
     height: "50%",
     position: "relative",
-    gap: "5px",
+    gap: "0.3125rem",
   },
   input: {
     width: "calc(100% - 20px)",
-    padding: "10px",
-    borderRadius: "15px",
+    padding: "0.625rem",
+    borderRadius: "0.9375rem",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
@@ -584,8 +683,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   textarea: {
     width: "calc(100% - 20px)",
     minHeight: "100px",
-    padding: "10px",
-    borderRadius: "15px",
+    padding: "0.625rem",
+    borderRadius: "0.9375rem",
     background: "rgba(217, 217, 217, 0.3)",
     border: "1px solid #989898",
     color: "black",
@@ -601,9 +700,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     accentColor: "black",
   },
   button: {
-    padding: "10px 15px",
+    padding: "0.625rem 0.9375rem",
     border: "none",
-    borderRadius: "20px",
+    borderRadius: "1.25rem",
     background: "#335543",
     color: "white",
     cursor: "pointer",
@@ -612,11 +711,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignSelf: "center",
   },
   uploadContainer: {
-    marginTop: "10px",
+    marginTop: "0.625rem",
     textAlign: "center",
-    padding: "40px",
+    padding: "2.5rem",
     border: "1px dashed #000",
-    borderRadius: "5px",
+    borderRadius: "0.3125rem",
   },
   uploadButton: {
     cursor: "pointer",
@@ -629,7 +728,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-around",
-    gap: "5px",
+    gap: "0.3125rem",
   },
   inputContainer: {
     display: "flex",
@@ -640,21 +739,33 @@ const styles: { [key: string]: React.CSSProperties } = {
   inputTitle: {
     fontWeight: "bold",
   },
+  title: {
+    marginTop: "1.25rem",
+  },
   close: {
     position: "absolute",
-    top: "0",
+    top: "0.5rem",
+    right: "0",
+    margin: "0.3125rem",
+    cursor: "pointer",
+  },
+  back: {
+    position: "absolute",
+    top: "0.5rem",
     left: "0",
-    margin: "5px",
+    margin: "0.3125rem",
     cursor: "pointer",
   },
   error: {
     color: "red",
-    marginTop: "5px",
+    margin: 0,
+    fontSize: "1rem",
   },
   errorBox: {
     display: "flex",
     alignContent: "center",
     justifyContent: "center",
+    minHeight: "1.25rem",
   },
   characterCount: {
     color: "grey",

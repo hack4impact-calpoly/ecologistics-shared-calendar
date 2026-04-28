@@ -77,20 +77,20 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
 
     setLoading(true);
     if (inLon == 0 || inLat == 0) {
-      const watchId = navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.getCurrentPosition(
         (position) => {
-          setPinCoords({
+          const nextCoords = {
             lon: position.coords.longitude,
             lat: position.coords.latitude,
-          });
+          };
+
+          setPinCoords(nextCoords);
+          onPickAddress?.(nextCoords);
         },
         (error) => {
           console.error("Error getting position:", error);
         },
       );
-      if(onPickAddress) {
-        onPickAddress({ lon: pinCoords.lon , lat: pinCoords.lat });
-      }
       setLoading(false);
     } else {
       setPinCoords({ lon: inLon, lat: inLat });
@@ -198,8 +198,14 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     <div>
       <div>{loading ? " (Loading...)" : ""}</div>
 
-      <div ref={toolbarRef} style={{ width: 384, height: 20 }} />
-      <div ref={mapDivRef} style={{ width: 384, height: 384 }} />
+      <div style={{ position: "relative", width: "24rem", height: "24rem" }}>
+        {/* Keep controls inside the map so they don't cover panel */}
+        <div
+          ref={toolbarRef}
+          style={{ position: "absolute", top: "0.5rem", left: "0.5rem", zIndex: 1 }}
+        />
+        <div ref={mapDivRef} style={{ width: "24rem", height: "24rem" }} />
+      </div>
     </div>
   );
 }
