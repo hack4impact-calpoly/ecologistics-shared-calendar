@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
@@ -83,12 +83,32 @@ export default function AddEventPanel({
   addEvent,
 }: AddEventPanelProps) {
   const { user } = useUser();
+  const [mongoUser, setMongoUser] = useState(null);
   const [formData, setFormData] = useState<AddEventFormType>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [titleCharsTyped, setTitleCharsTyped] = useState(0);
   const [desCharsTyped, setDesCharsTyped] = useState(0);
   const [panelType, setPanelType] = useState<Panel>("start");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/userRoutes");
+        const result = await response.json();
+        if (result.success) {
+          setMongoUser(result.data);
+          console.log(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching Mongo user:", error);
+      }
+    };
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
 
   const getErrorsForEmptyFields = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
@@ -219,76 +239,115 @@ export default function AddEventPanel({
         photo: "Error uploading image or creating event",
       }));
     } finally {
-      // send the confirmation email.
-      await fetch("/api/resend/orgRoutes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailAddress: user?.emailAddresses?.[0]?.emailAddress,
-          firstName: user?.firstName,
-          orgName: user?.publicMetadata.organization,
-          eventTitle: formData.title,
-          eventDescription: formData.description,
-          eventStartTime: formData.startTime,
-          eventEndTime: formData.endTime,
-          eventStartDate: formData.startDate,
-          eventEndDate: formData.endDate,
-          templateId: 'event-pending-client'
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
+      const isAdmin = user?.publicMetadata?.role === "admin";
+
+      if (isAdmin) {
+        // send the confirmation email.
+        await fetch("/api/resend/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: user?.emailAddresses?.[0]?.emailAddress,
+            firstName: user?.firstName,
+            orgName: mongoUser?.organization,
+            eventTitle: formData.title,
+            eventDescription: formData.description,
+            eventStartTime: formData.startTime,
+            eventEndTime: formData.endTime,
+            eventStartDate: formData.startDate,
+            eventEndDate: formData.endDate,
+            templateId: "event-approval-client-1",
+          }),
         })
-        .then((data) => {
-          console.log(data); // Handle success response
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+      } else {
+        // send the confirmation email.
+        await fetch("/api/resend/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: user?.emailAddresses?.[0]?.emailAddress,
+            firstName: user?.firstName,
+            orgName: mongoUser?.organization,
+            eventTitle: formData.title,
+            eventDescription: formData.description,
+            eventStartTime: formData.startTime,
+            eventEndTime: formData.endTime,
+            eventStartDate: formData.startDate,
+            eventEndDate: formData.endDate,
+            templateId: "event-pending-client",
+          }),
         })
-        .catch((error) => {
-          console.error("Error:", error); // Handle error
-        });
-      //send admin confirmation email
-      // get admin email first
-      const admin_response = await fetch("/api/admins/userRoutes/?role=admin");
-      if (!admin_response.ok) {
-        throw new Error("Network response was not ok");
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
+        //send admin confirmation email
+        // get admin email first
+        const admin_response = await fetch(
+          "/api/admins/userRoutes/?role=admin",
+        );
+        if (!admin_response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const admin = await admin_response.json();
+        const admin_email = admin.data.email;
+        console.log(admin_email);
+        await fetch("/api/resend/orgRoutes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailAddress: admin_email,
+            firstName: user?.firstName || "default",
+            orgName: mongoUser?.organization,
+            eventTitle: formData.title,
+            eventDescription: formData.description,
+            eventStartTime: formData.startTime,
+            eventEndTime: formData.endTime,
+            eventStartDate: formData.startDate,
+            eventEndDate: formData.endDate,
+            templateId: "event-pending-admin",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data); // Handle success response
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Handle error
+          });
       }
-      const admin = await admin_response.json();
-      const admin_email = admin.data.email;
-      console.log(admin_email);
-      await fetch("/api/resend/orgRoutes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailAddress: admin_email,
-          firstName: user?.firstName || "default",
-          orgName: user?.publicMetadata.organization,
-          eventTitle: formData.title,
-          eventDescription: formData.description,
-          eventStartTime: formData.startTime,
-          eventEndTime: formData.endTime,
-          eventStartDate: formData.startDate,
-          eventEndDate: formData.endDate,
-          templateId: 'event-pending-admin'
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data); // Handle success response
-        })
-        .catch((error) => {
-          console.error("Error:", error); // Handle error
-        });
+
       setIsLoading(false); // End loading
     }
   };
