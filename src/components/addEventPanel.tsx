@@ -5,6 +5,7 @@ import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import AddEventLocationPanel from "./addEventLocationPanel";
 import AddEventMisc from "./addEventMisc";
+import { UserDocument } from "../database/userSchema";
 
 export interface AddEventFormType {
   //organization: string;
@@ -90,7 +91,7 @@ export default function AddEventPanel({
   addEvent,
 }: AddEventPanelProps) {
   const { user } = useUser();
-  const [mongoUser, setMongoUser] = useState(null);
+  const [mongoUser, setMongoUser] = useState<UserDocument | null>(null);
   const [formData, setFormData] = useState<AddEventFormType>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Partial<FormErrors>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);

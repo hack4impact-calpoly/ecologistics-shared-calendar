@@ -300,52 +300,52 @@ export default function SignUp() {
         position: position,
       });
 
-        // send the confirmation email to organization
-        await fetch("/api/resend/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: email,
-            firstName: fName,
-            orgName: organization,
-            templateId: 'org-registration-pending-client'
-          }),
+      // send the confirmation email to organization
+      await fetch("/api/resend/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: email,
+          firstName: fName,
+          orgName: organization,
+          templateId: 'org-registration-pending-client'
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
         })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data); // Handle success response
-          })
-          .catch((error) => {
-            console.error("Error:", error); // Handle error
-          });
+        .then((data) => {
+          console.log(data); // Handle success response
+        })
+        .catch((error) => {
+          console.error("Error:", error); // Handle error
+        });
 
-        // send email notif to admin
-        const admin_response = await fetch(
-          "/api/admins/userRoutes/?role=admin", // get admin email first
-        );
-        if (!admin_response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const admin = await admin_response.json();
-        const admin_email = admin.data.email;
-        await fetch("/api/resend/orgRoutes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailAddress: admin_email,
-            firstName: fName,
-            orgName: organization,
-            templateId: 'org-registration-pending-admin'
-          }),
+      // send email notif to admin
+      const admin_response = await fetch(
+        "/api/admins/userRoutes/?role=admin", // get admin email first
+      );
+      if (!admin_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const admin = await admin_response.json();
+      const admin_email = admin.data.email;
+      await fetch("/api/resend/orgRoutes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailAddress: admin_email,
+          firstName: fName,
+          orgName: organization,
+          templateId: 'org-registration-pending-admin'
+        }),
       })
         .then((response) => {
           if (!response.ok) {
