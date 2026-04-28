@@ -132,13 +132,21 @@ export default function EventPage() {
                 </h2>
                 <address style={styles.address}>
                   {event.isVirtual ? (
-                    <a
-                      href={event.location}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {event.location}
-                    </a>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <a href={event.location} target="_blank" rel="noopener noreferrer">
+                        {event.location}
+                      </a>
+                      {event.virtualMeetingId && (
+                        <p style={{ margin: 0, fontSize: "14px" }}>
+                          <strong>Meeting ID:</strong> {event.virtualMeetingId}
+                        </p>
+                      )}
+                      {event.virtualPassword && (
+                        <p style={{ margin: 0, fontSize: "14px" }}>
+                          <strong>Password:</strong> {event.virtualPassword}
+                        </p>
+                      )}
+                    </div>
                   ) : (
                     event.location
                   )}
