@@ -315,6 +315,7 @@ export default function AddEventPanel({
           onCreate();
           setFormData(EMPTY_FORM);
           console.log("CREATED EVENT");
+          onClose();
         } else {
           setFormErrors((prev) => ({
             ...prev,

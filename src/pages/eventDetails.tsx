@@ -101,26 +101,25 @@ export default function EventPage() {
                   "https://calendar-image-upload.s3.us-east-2.amazonaws.com/elementor-placeholder-image.webp"
                 }
                 alt="Event Image"
-                style={{ height: "100%", width: "100%", objectFit: "cover" }}
+                style={{ height: "100%", width: "100%", objectFit: "contain" }}
               />
             </div>
             <div style={styles.descriptionBox}>
               <p style={styles.descriptionText}>
-              {expanded ? event.description : truncatedDescription}
+                {expanded ? event.description : truncatedDescription}
               </p>
-              {!expanded && event.description && event.description.length > 600 && (
-                <button
-                  onClick={handleToggleExpand}
-                  style={styles.moreButton}
-                >
-                  more
-                </button>
-              )}
+              {!expanded &&
+                event.description &&
+                event.description.length > 600 && (
+                  <button
+                    onClick={handleToggleExpand}
+                    style={styles.moreButton}
+                  >
+                    more
+                  </button>
+                )}
               {expanded && (
-                <button
-                  onClick={handleToggleExpand}
-                  style={styles.moreButton}
-                >
+                <button onClick={handleToggleExpand} style={styles.moreButton}>
                   less
                 </button>
               )}
@@ -132,8 +131,18 @@ export default function EventPage() {
                 </h2>
                 <address style={styles.address}>
                   {event.isVirtual ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <a href={event.location} target="_blank" rel="noopener noreferrer">
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <a
+                        href={event.location}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {event.location}
                       </a>
                       {event.virtualMeetingId && (
@@ -217,7 +226,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   imagePlaceholder: {
     height: "300px",
     width: "100%",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "transparent",
     marginBottom: "16px",
   },
   descriptionBox: {
@@ -268,6 +277,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
     textAlign: "right",
     marginTop: "0px",
-    display: "inline"
+    display: "inline",
   },
 };
