@@ -55,6 +55,7 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
