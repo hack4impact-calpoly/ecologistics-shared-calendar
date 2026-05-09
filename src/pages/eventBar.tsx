@@ -97,10 +97,10 @@ function Event(event: EventDocument) {
 // Main EventBar Component
 export default function EventBar({
   events,
-  totalEvents,
+  onSearchChange,
 }: {
   events: EventDocument[];
-  totalEvents: EventDocument[];
+  onSearchChange: (searchTerm: string) => void;
 }) {
   const styles = useEventBarStyles();
   const [windowHeight, setWindowHeight] = useState<number | null>(null);
@@ -117,26 +117,12 @@ export default function EventBar({
   }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEvents, setFilteredEvents] = useState<EventDocument[]>(
-    events || []
-  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    if (value) {
-      const filtered = (totalEvents || []).filter((event) =>
-        event.title.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredEvents(filtered);
-    } else {
-      setFilteredEvents(events);
-    }
+    onSearchChange(value);
   };
-
-  useEffect(() => {
-    setFilteredEvents(events || []);
-  }, [events]);
 
   return (
     <div
@@ -175,6 +161,7 @@ export default function EventBar({
             marginTop:
               (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
           }}
+          value={searchTerm}
           onChange={handleSearchChange}
 
           // Add onChange event handler if you want to capture input
@@ -183,7 +170,7 @@ export default function EventBar({
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
-        {filteredEvents.map((event) => (
+        {events.map((event) => (
           <Event key={event._id.toString()} {...event} />
         ))}
       </div>

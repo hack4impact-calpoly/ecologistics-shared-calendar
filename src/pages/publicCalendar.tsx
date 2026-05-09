@@ -33,13 +33,17 @@ export interface Event {
   title: string;
 }
 
+type VisibleDateRange = {
+  start: Date;
+  end: Date;
+};
+
 export default function CalendarPage() {
   const { user } = useUser();
   const [events, setEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
   >([]);
-  const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
     [],
   );
@@ -47,6 +51,9 @@ export default function CalendarPage() {
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
+  const [visibleDateRange, setVisibleDateRange] =
+    useState<VisibleDateRange | null>(null);
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
@@ -73,6 +80,18 @@ export default function CalendarPage() {
       );
     });
   }, [events, searchTerm]);
+  const visibleMonthEvents = useMemo(() => {
+    if (!visibleDateRange) {
+      return filteredEvents;
+    }
+
+    return filteredEvents.filter((event) => {
+      const eventStart = new Date(event.startDate);
+      const eventEnd = new Date(event.endDate);
+
+      return eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start;
+    });
+  }, [filteredEvents, visibleDateRange]);
 
   // if the user is logged in, redirect to the calendar page.
   const { session } = useSession();
@@ -85,26 +104,8 @@ export default function CalendarPage() {
   }, [clerk.user]);
 
   useEffect(() => {
-    setFutureEvents(filterFutureEvents(filteredEvents));
-  }, [filteredEvents]);
-
-  useEffect(() => {
     setSelectedDateEvents([]);
   }, [searchTerm]);
-
-  const filterFutureEvents = (events: EventDocument[]) => {
-    const now = new Date();
-    return events
-      .filter((event) => {
-        const eventStart = new Date(event.startDate);
-        const eventEnd = new Date(event.endDate);
-        return (eventStart <= now && eventEnd >= now) || eventStart >= now;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
-      );
-  };
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -112,6 +113,14 @@ export default function CalendarPage() {
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
+  };
+  const handleDatesSet = (dateInfo: {
+    view: { currentStart: Date; currentEnd: Date };
+  }) => {
+    setVisibleDateRange({
+      start: dateInfo.view.currentStart,
+      end: dateInfo.view.currentEnd,
+    });
   };
   const customButtons = useMemo(
     () => ({
@@ -351,6 +360,7 @@ export default function CalendarPage() {
             select={() => {}}
             selectable={true}
             events={calendarEvents}
+            datesSet={handleDatesSet}
             dateClick={handleDateClick}
             eventClick={function (info) {
               router.push({
@@ -367,17 +377,22 @@ export default function CalendarPage() {
               ref={searchInputRef}
               type="text"
               placeholder="Search events..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
+              value={toolbarSearchTerm}
+              onChange={(event) => {
+                setToolbarSearchTerm(event.target.value);
+                setSearchTerm(event.target.value);
+              }}
               style={{ ...styles.toolbarSearchInput, ...toolbarSearchStyle }}
             />
           </div>
         {!isAddingEvent ? (
           <EventBar
             events={
-              selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents
+              selectedDateEvents.length > 0
+                ? selectedDateEvents
+                : visibleMonthEvents
             }
-            totalEvents={filteredEvents}
+            onSearchChange={setSearchTerm}
           />
         ) : (
           <AddEventPanel
