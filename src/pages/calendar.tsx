@@ -81,10 +81,12 @@ export default function CalendarPage() {
     return events.filter((event) => {
       const title = event.title?.toLowerCase() ?? "";
       const description = event.description?.toLowerCase() ?? "";
+      const organization = event.organization?.toLowerCase() ?? "";
 
       return (
         title.includes(normalizedSearchTerm) ||
-        description.includes(normalizedSearchTerm)
+        description.includes(normalizedSearchTerm) ||
+        organization.includes(normalizedSearchTerm)
       );
     });
   }, [events, searchTerm]);

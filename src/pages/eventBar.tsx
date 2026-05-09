@@ -16,7 +16,7 @@ function Event(event: EventDocument) {
   const navigateToEventDetails = () => {
     router.push("/eventDetails/?eventId=" + event._id);
   };
-  
+
   useEffect(() => {
     const truncateText = (text: string, maxLength: number) => {
       if (text.length <= maxLength) {
@@ -24,14 +24,13 @@ function Event(event: EventDocument) {
       }
       return text.substring(0, maxLength) + "...";
     };
-  
+
     if (event?.description) {
       setTruncatedDescription(truncateText(event.description, 400));
     }
-  
+
     console.log(truncatedDescription);
   }, [event?.description]);
-  
 
   return (
     <div
@@ -170,7 +169,7 @@ export default function EventBar({
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
-        {events.map((event) => (
+        {events?.map((event) => (
           <Event key={event._id.toString()} {...event} />
         ))}
       </div>
