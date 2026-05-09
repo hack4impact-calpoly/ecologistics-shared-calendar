@@ -16,7 +16,7 @@ function Event(event: EventDocument) {
   const navigateToEventDetails = () => {
     router.push("/eventDetails/?eventId=" + event._id);
   };
-  
+
   useEffect(() => {
     const truncateText = (text: string, maxLength: number) => {
       if (text.length <= maxLength) {
@@ -24,14 +24,13 @@ function Event(event: EventDocument) {
       }
       return text.substring(0, maxLength) + "...";
     };
-  
+
     if (event?.description) {
       setTruncatedDescription(truncateText(event.description, 400));
     }
-  
+
     console.log(truncatedDescription);
   }, [event?.description]);
-  
 
   return (
     <div
@@ -97,10 +96,10 @@ function Event(event: EventDocument) {
 // Main EventBar Component
 export default function EventBar({
   events,
-  totalEvents,
+  onSearchChange,
 }: {
   events: EventDocument[];
-  totalEvents: EventDocument[];
+  onSearchChange: (searchTerm: string) => void;
 }) {
   const styles = useEventBarStyles();
   const [windowHeight, setWindowHeight] = useState<number | null>(null);
@@ -117,26 +116,12 @@ export default function EventBar({
   }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEvents, setFilteredEvents] = useState<EventDocument[]>(
-    events || []
-  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    if (value) {
-      const filtered = (totalEvents || []).filter((event) =>
-        event.title.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredEvents(filtered);
-    } else {
-      setFilteredEvents(events);
-    }
+    onSearchChange(value);
   };
-
-  useEffect(() => {
-    setFilteredEvents(events || []);
-  }, [events]);
 
   return (
     <div
@@ -163,7 +148,10 @@ export default function EventBar({
             boxSizing: "border-box",
             width: "90%",
             padding: "2% 2%",
-            fontSize: "1.3rem",
+            fontFamily: "Inter, sans-serif",
+            fontSize: "14px",
+            fontWeight: 400,
+            lineHeight: 1,
             color: "#000",
             borderRadius: "1rem",
             border: "0.1rem solid #ccc",
@@ -172,6 +160,7 @@ export default function EventBar({
             marginTop:
               (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
           }}
+          value={searchTerm}
           onChange={handleSearchChange}
 
           // Add onChange event handler if you want to capture input
@@ -180,7 +169,7 @@ export default function EventBar({
       </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
-        {filteredEvents.map((event) => (
+        {events?.map((event) => (
           <Event key={event._id.toString()} {...event} />
         ))}
       </div>

@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import React from "react";
 import useSWR, { mutate } from "swr";
 import AddEventPanel from "../components/addEventPanel";
@@ -33,6 +33,11 @@ export interface Event {
   title: string;
 }
 
+type VisibleDateRange = {
+  start: Date;
+  end: Date;
+};
+
 export default function CalendarPage() {
   const { user } = useUser();
   const EVENTS_KEY = "/api/users/eventRoutes?status=Approved";
@@ -44,8 +49,7 @@ export default function CalendarPage() {
         return res.data as EventDocument[];
       }),
   );
-  const events: EventDocument[] = eventsData ?? [];
-  const [futureEvents, setFutureEvents] = useState<EventDocument[]>([]);
+  const events: EventDocument[] = useMemo(() => eventsData ?? [], [eventsData]);
   const [calendarEvents, setCalendarEvents] = useState<
     FullCalenderRecurringEvent[]
   >([]);
@@ -55,10 +59,49 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
+  const [visibleDateRange, setVisibleDateRange] =
+    useState<VisibleDateRange | null>(null);
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
   const calendarRef = useRef<HTMLDivElement>(null);
+  const fullCalendarRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [toolbarSearchStyle, setToolbarSearchStyle] =
+    useState<React.CSSProperties>({ display: "none" });
+  const filteredEvents = useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return events;
+    }
+
+    return events.filter((event) => {
+      const title = event.title?.toLowerCase() ?? "";
+      const description = event.description?.toLowerCase() ?? "";
+      const organization = event.organization?.toLowerCase() ?? "";
+
+      return (
+        title.includes(normalizedSearchTerm) ||
+        description.includes(normalizedSearchTerm) ||
+        organization.includes(normalizedSearchTerm)
+      );
+    });
+  }, [events, searchTerm]);
+  const visibleMonthEvents = useMemo(() => {
+    if (!visibleDateRange) {
+      return filteredEvents;
+    }
+
+    return filteredEvents.filter((event) => {
+      const eventStart = new Date(event.startDate);
+      const eventEnd = new Date(event.endDate);
+
+      return eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start;
+    });
+  }, [filteredEvents, visibleDateRange]);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -67,10 +110,83 @@ export default function CalendarPage() {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
+  const handleDatesSet = (dateInfo: {
+    view: { currentStart: Date; currentEnd: Date };
+  }) => {
+    setVisibleDateRange({
+      start: dateInfo.view.currentStart,
+      end: dateInfo.view.currentEnd,
+    });
+  };
+  const customButtons = useMemo(
+    () => ({
+      AddEvent: {
+        text: "Add Event",
+        click: function () {
+          setIsAddingEvent((prev) => !prev);
+        },
+        hint: "none",
+      },
+      searchButton: {
+        text: "Search events...",
+        click: () => {
+          searchInputRef.current?.focus();
+        },
+      },
+      filterButton: {
+        text: "Filter",
+        click: () => {}, // no-op
+      },
+    }),
+    [],
+  );
+  const headerToolbar = useMemo(
+    () => ({
+      left: "prev title next",
+      center: "",
+      right:
+        windowWidth >= 786
+          ? "searchButton filterButton AddEvent"
+          : "searchButton filterButton",
+    }),
+    [windowWidth],
+  );
 
   useEffect(() => {
-    setFutureEvents(filterFutureEvents(events));
-  }, [events]);
+    const positionSearchInput = () => {
+      const fullCalendar = fullCalendarRef.current;
+      const searchButton = fullCalendar?.querySelector(
+        ".fc-searchButton-button",
+      ) as HTMLButtonElement | null;
+
+      if (!fullCalendar || !searchButton) {
+        setToolbarSearchStyle({ display: "none" });
+        return;
+      }
+
+      const calendarRect = fullCalendar.getBoundingClientRect();
+      const buttonRect = searchButton.getBoundingClientRect();
+
+      setToolbarSearchStyle({
+        position: "absolute",
+        top: `${buttonRect.top - calendarRect.top}px`,
+        left: `${buttonRect.left - calendarRect.left}px`,
+        width: `${buttonRect.width}px`,
+        height: `${buttonRect.height}px`,
+      });
+    };
+
+    positionSearchInput();
+    window.addEventListener("resize", positionSearchInput);
+
+    return () => {
+      window.removeEventListener("resize", positionSearchInput);
+    };
+  }, [resize, windowWidth]);
+
+  useEffect(() => {
+    setSelectedDateEvents([]);
+  }, [searchTerm]);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -80,23 +196,23 @@ export default function CalendarPage() {
   }, []);
 
   useEffect(() => {
-    if (!events) return;
+    if (!filteredEvents) return;
     setCalendarEvents(
-      events.map((event) => ({
+      filteredEvents.map((event) => ({
         startRecur: event.startDate,
         endRecur: event.endDate,
         title: event.title,
         id: event._id,
       })),
     );
-  }, [events]);
+  }, [filteredEvents]);
 
   // Fetch events from the database
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
     console.log(clickedDate);
 
-    const filteredEvents: EventDocument[] = events.filter(
+    const eventsOnClickedDate: EventDocument[] = filteredEvents.filter(
       (event: EventDocument) => {
         const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
           zone: "UTC",
@@ -120,23 +236,9 @@ export default function CalendarPage() {
         );
       },
     );
-    console.log(filteredEvents);
+    console.log(eventsOnClickedDate);
 
-    setSelectedDateEvents(filteredEvents);
-  };
-
-  const filterFutureEvents = (events: EventDocument[]) => {
-    const now = new Date();
-    return events
-      .filter((event) => {
-        const eventStart = new Date(event.startDate);
-        const eventEnd = new Date(event.endDate);
-        return (eventStart <= now && eventEnd >= now) || eventStart >= now;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),
-      );
+    setSelectedDateEvents(eventsOnClickedDate);
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -144,7 +246,7 @@ export default function CalendarPage() {
       calendarRef.current &&
       !calendarRef.current.contains(event.target as Node)
     ) {
-      setSelectedDateEvents(filterFutureEvents(events));
+      setSelectedDateEvents([]);
     }
   };
 
@@ -153,7 +255,7 @@ export default function CalendarPage() {
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
-  }, [events]);
+  }, [filteredEvents]);
 
   const addEvent = () => {
     mutate(EVENTS_KEY);
@@ -226,7 +328,7 @@ export default function CalendarPage() {
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
           <style>{calendarStyles}</style>
-          <div style={styles.fullCalendar}>
+          <div style={styles.fullCalendar} ref={fullCalendarRef}>
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -238,29 +340,8 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            customButtons={{
-              AddEvent: {
-                text: "Add Event",
-                click: function () {
-                  setIsAddingEvent((prev) => !prev);
-                },
-                hint: "none",
-              },
-              searchButton: {
-            text: "Search events...",
-            click: () => {} // no-op
-            
-            },
-            filterButton: {
-            text: "Filter",
-            click: () => {} // no-op
-            }
-            }}
-            headerToolbar={{
-              left: "prev title next",
-              center: "",
-              right: windowWidth >= 786 ? "searchButton filterButton AddEvent" : "searchButton filterButton ",
-            }}
+            customButtons={customButtons}
+            headerToolbar={headerToolbar}
             buttonIcons={{
               prev: "chevron-left",
               next: "chevron-right",
@@ -271,6 +352,7 @@ export default function CalendarPage() {
             select={() => {}}
             selectable={true}
             events={calendarEvents}
+            datesSet={handleDatesSet}
             dateClick={handleDateClick}
             eventClick={function (info) {
               router.push({
@@ -282,6 +364,17 @@ export default function CalendarPage() {
             }}
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
+          />
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search events..."
+            value={toolbarSearchTerm}
+            onChange={(event) => {
+              setToolbarSearchTerm(event.target.value);
+              setSearchTerm(event.target.value);
+            }}
+            style={{ ...styles.toolbarSearchInput, ...toolbarSearchStyle }}
           />
         </div>
         {windowWidth < 786 && (
@@ -296,9 +389,11 @@ export default function CalendarPage() {
         {!isAddingEvent ? (
           <EventBar
             events={
-              selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents
+              selectedDateEvents.length > 0
+                ? selectedDateEvents
+                : visibleMonthEvents
             }
-            totalEvents={events}
+            onSearchChange={setSearchTerm}
           />
         ) : (
           <AddEventPanel
@@ -316,6 +411,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   fullCalendar: {
     display: "flex",
     flexDirection: "column",
+    position: "relative",
     width: "100%",
     height: "auto",
     borderRadius: "10px", 
@@ -324,6 +420,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "white",
     boxShadow:
       "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
+  toolbarSearchInput: {
+    boxSizing: "border-box",
+    width: "194px",
+    height: "38px",
+    backgroundColor: "white",
+    borderRadius: "9999px",
+    border: "1px solid #D1D5DC",
+    padding: "0 16px",
+    fontFamily: "Inter, sans-serif",
+    fontWeight: 400,
+    fontSize: "14px",
+    lineHeight: 1,
+    color: "#0A0A0A",
+    outline: "none",
+    zIndex: 2,
   },
 };
 
@@ -468,6 +580,8 @@ const calendarStyles = `
     line-height: 1;
     letter-spacing: -0.15px;
     color: rgba(10, 10, 10, 0.5);
+    cursor: text;
+    visibility: hidden;
    }
 
    .fc .fc-filterButton-button{
@@ -481,10 +595,16 @@ const calendarStyles = `
     border-radius: 9999px;
     border: none;
     font-family: Inter, sans-serif;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
     line-height: 1;
     letter-spacing: -0.15px;
     color: rgba(10, 10, 10);
+   }
+
+   input::placeholder {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
    }
  `;
