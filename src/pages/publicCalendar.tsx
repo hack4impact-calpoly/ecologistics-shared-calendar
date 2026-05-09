@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
@@ -46,11 +46,33 @@ export default function CalendarPage() {
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [windowWidth, setWindowWidth] = useState(0);
   const { signOut } = useClerk();
   const router = useRouter();
   const clerk = useClerk();
   const calendarRef = useRef<HTMLDivElement>(null);
+  const fullCalendarRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [toolbarSearchStyle, setToolbarSearchStyle] =
+    useState<React.CSSProperties>({ display: "none" });
+  const filteredEvents = useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return events;
+    }
+
+    return events.filter((event) => {
+      const title = event.title?.toLowerCase() ?? "";
+      const description = event.description?.toLowerCase() ?? "";
+
+      return (
+        title.includes(normalizedSearchTerm) ||
+        description.includes(normalizedSearchTerm)
+      );
+    });
+  }, [events, searchTerm]);
 
   // if the user is logged in, redirect to the calendar page.
   const { session } = useSession();
@@ -63,8 +85,12 @@ export default function CalendarPage() {
   }, [clerk.user]);
 
   useEffect(() => {
-    setFutureEvents(filterFutureEvents(events));
-  }, [events]);
+    setFutureEvents(filterFutureEvents(filteredEvents));
+  }, [filteredEvents]);
+
+  useEffect(() => {
+    setSelectedDateEvents([]);
+  }, [searchTerm]);
 
   const filterFutureEvents = (events: EventDocument[]) => {
     const now = new Date();
@@ -87,6 +113,61 @@ export default function CalendarPage() {
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
   };
+  const customButtons = useMemo(
+    () => ({
+      searchButton: {
+        text: "Search events...",
+        click: () => {
+          searchInputRef.current?.focus();
+        },
+      },
+      filterButton: {
+        text: "Filter",
+        click: () => {}, // no-op
+      },
+    }),
+    [],
+  );
+  const headerToolbar = useMemo(
+    () => ({
+      left: "prev title next",
+      center: "",
+      right: "searchButton filterButton",
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    const positionSearchInput = () => {
+      const fullCalendar = fullCalendarRef.current;
+      const searchButton = fullCalendar?.querySelector(
+        ".fc-searchButton-button",
+      ) as HTMLButtonElement | null;
+
+      if (!fullCalendar || !searchButton) {
+        setToolbarSearchStyle({ display: "none" });
+        return;
+      }
+
+      const calendarRect = fullCalendar.getBoundingClientRect();
+      const buttonRect = searchButton.getBoundingClientRect();
+
+      setToolbarSearchStyle({
+        position: "absolute",
+        top: `${buttonRect.top - calendarRect.top}px`,
+        left: `${buttonRect.left - calendarRect.left}px`,
+        width: `${buttonRect.width}px`,
+        height: `${buttonRect.height}px`,
+      });
+    };
+
+    positionSearchInput();
+    window.addEventListener("resize", positionSearchInput);
+
+    return () => {
+      window.removeEventListener("resize", positionSearchInput);
+    };
+  }, [resize, windowWidth]);
 
   const handleLogout = async () => {
     try {
@@ -107,16 +188,16 @@ export default function CalendarPage() {
   }, []);
 
   useEffect(() => {
-    if (!events) return;
+    if (!filteredEvents) return;
     setCalendarEvents(
-      events.map((event) => ({
+      filteredEvents.map((event) => ({
         startRecur: event.startDate,
         endRecur: event.endDate,
         title: event.title,
         id: event._id,
       })),
     );
-  }, [events]);
+  }, [filteredEvents]);
 
   // Fetch events from the database
   useEffect(() => {
@@ -134,7 +215,7 @@ export default function CalendarPage() {
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
 
-    const filteredEvents: EventDocument[] = events.filter(
+    const eventsOnClickedDate: EventDocument[] = filteredEvents.filter(
       (event: EventDocument) => {
         const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
           zone: "UTC",
@@ -158,7 +239,7 @@ export default function CalendarPage() {
       },
     );
 
-    setSelectedDateEvents(filteredEvents);
+    setSelectedDateEvents(eventsOnClickedDate);
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -246,7 +327,7 @@ export default function CalendarPage() {
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
           <style>{calendarStyles}</style>
-          <div style={styles.fullCalendar}>
+          <div style={styles.fullCalendar} ref={fullCalendarRef}>
             <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -258,26 +339,12 @@ export default function CalendarPage() {
             windowResize={function () {
               setResize(!resize);
             }}
-            headerToolbar={{
-              left: "prev title next",
-              center: "",
-              right: "searchButton filterButton",
-            }}
+            headerToolbar={headerToolbar}
             buttonIcons={{
               prev: "chevron-left",
               next: "chevron-right",
             }}
-            customButtons={{
-            searchButton: {
-            text: "Search events...",
-            click: () => {} // no-op
-            
-            },
-            filterButton: {
-            text: "Filter",
-            click: () => {} // no-op
-            }
-            }}
+            customButtons={customButtons}
             initialView="dayGridMonth"
             nowIndicator={true}
             editable={true}
@@ -296,13 +363,21 @@ export default function CalendarPage() {
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
             />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search events..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              style={{ ...styles.toolbarSearchInput, ...toolbarSearchStyle }}
+            />
           </div>
         {!isAddingEvent ? (
           <EventBar
             events={
               selectedDateEvents.length > 0 ? selectedDateEvents : futureEvents
             }
-            totalEvents={events}
+            totalEvents={filteredEvents}
           />
         ) : (
           <AddEventPanel
@@ -321,6 +396,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   fullCalendar: {
     display: "flex",
     flexDirection: "column",
+    position: "relative",
     width: "100%",
     height: "auto",
     borderRadius: "10px", 
@@ -329,6 +405,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "white",
     boxShadow:
       "0 1px 2px -1px rgba(0, 0, 0, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  },
+  toolbarSearchInput: {
+    boxSizing: "border-box",
+    width: "194px",
+    height: "38px",
+    backgroundColor: "white",
+    borderRadius: "9999px",
+    border: "1px solid #D1D5DC",
+    padding: "0 16px",
+    fontFamily: "Inter, sans-serif",
+    fontWeight: 400,
+    fontSize: "14px",
+    lineHeight: 1,
+    color: "#0A0A0A",
+    outline: "none",
+    zIndex: 2,
   },
 };
 
@@ -472,6 +564,8 @@ const calendarStyles = `
     line-height: 1;
     letter-spacing: -0.15px;
     color: rgba(10, 10, 10, 0.5);
+    cursor: text;
+    visibility: hidden;
    }
 
    .fc .fc-filterButton-button{
@@ -484,11 +578,17 @@ const calendarStyles = `
     background-color: rgb(229, 231, 235);
     border-radius: 9999px;
     border: none;
-    font-weight: 500;
+    font-weight: 400;
     font-family: Inter, sans-serif;
     font-size: 14px;
     line-height: 1;
     letter-spacing: -0.15px;
     color: rgba(10, 10, 10);
+   }
+
+   input::placeholder {
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
    }
  `;
