@@ -82,8 +82,24 @@ export default function AddEventLocationPanel({
 
       <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
+      {mode === "in-person" && (
+        <label style={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            checked={!eventFormData.isDisclosed}
+            onChange={(e) => {
+              setEventFormData((prev) => ({
+                ...prev,
+                isDisclosed: !e.target.checked,
+              }));
+            }}
+          />
+          {" "}Undisclosed Location
+        </label>
+      )}
+
       {/* activates "active" css for button depending on method*/}
-      {mode == "in-person" && (
+      {mode == "in-person" && eventFormData.isDisclosed && (
         <div style={styles.methodContainer}>
           <button
             style={
@@ -105,7 +121,7 @@ export default function AddEventLocationPanel({
           </button>
         </div>
       )}
-      {mode === "in-person" && method === "pin" && (
+      {mode === "in-person" && method === "pin" && eventFormData.isDisclosed && (
         <div
           style={{
             display: "flex",
@@ -155,7 +171,7 @@ export default function AddEventLocationPanel({
           />
         </div>
       )}
-      {mode === "in-person" && method === "search" && (
+      {mode === "in-person" && method === "search" && eventFormData.isDisclosed && (
         <div>
           <AddressAutoFill
             apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
@@ -371,5 +387,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 400,
     color: "#888",
     fontSize: "0.8rem",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    cursor: "pointer",
   },
 };

@@ -26,6 +26,7 @@ export interface AddEventFormType {
   latitude: number | null;
   longitude: number | null;
   locationDescription: string;
+  isDisclosed: boolean;
   virtualMeetingId?: string;
   virtualPassword?: string;
 }
@@ -58,6 +59,7 @@ const EMPTY_FORM = {
   latitude: null,
   longitude: null,
   locationDescription: "",
+  isDisclosed: true,
 };
 
 interface Event {
@@ -69,6 +71,7 @@ interface Event {
   location: string;
   status: string;
   isVirtual: boolean;
+  isDisclosed: boolean;
   imageLink?: string;
   virtualMeetingId?: string;
   virtualPassword?: string;
@@ -149,6 +152,11 @@ export default function AddEventPanel({
   // Keep location rules separate so each panel can block progression
   const getLocationPanelErrors = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
+
+    if (!formData.isDisclosed) {
+      return errors;
+    }
+
     const hasStructuredAddress =
       hasText(formData.street) &&
       hasText(formData.city) &&
@@ -279,7 +287,9 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (formData.mode == "in-person") {
+        if (!formData.isDisclosed) {
+          address = "N/A";
+        } else if (formData.mode == "in-person") {
           const hasStructuredAddress =
             hasText(formData.street) &&
             hasText(formData.city) &&
@@ -302,6 +312,7 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
+          isDisclosed: formData.isDisclosed,
           status:
             user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
