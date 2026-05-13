@@ -23,6 +23,10 @@ export default function CalendarFilterModal({
   onClose,
 }: CalendarFilterModalProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [draftHiddenOrganizations, setDraftHiddenOrganizations] =
+    useState(hiddenOrganizations);
+  const [draftShowVirtual, setDraftShowVirtual] = useState(showVirtual);
+  const [draftShowInPerson, setDraftShowInPerson] = useState(showInPerson);
   const organizations = useMemo(() => {
     return Array.from(
       new Set(events.map((event) => event.organization).filter(Boolean)),
@@ -34,22 +38,29 @@ export default function CalendarFilterModal({
   }, []);
 
   const isOrganizationShown = (organization: string) =>
-    !hiddenOrganizations.includes(organization);
+    !draftHiddenOrganizations.includes(organization);
 
   const handleOrganizationChange = (organization: string, checked: boolean) => {
     if (checked) {
-      onHiddenOrganizationsChange(
-        hiddenOrganizations.filter((name) => name !== organization),
+      setDraftHiddenOrganizations(
+        draftHiddenOrganizations.filter((name) => name !== organization),
       );
       return;
     }
 
-    onHiddenOrganizationsChange([...hiddenOrganizations, organization]);
+    setDraftHiddenOrganizations([...draftHiddenOrganizations, organization]);
   };
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 150);
+  };
+
+  const handleApply = () => {
+    onHiddenOrganizationsChange(draftHiddenOrganizations);
+    onShowVirtualChange(draftShowVirtual);
+    onShowInPersonChange(draftShowInPerson);
+    handleClose();
   };
 
   return (
@@ -110,33 +121,33 @@ export default function CalendarFilterModal({
           <div style={styles.options}>
             <button
               type="button"
-              aria-pressed={showVirtual}
+              aria-pressed={draftShowVirtual}
               style={{
                 ...styles.filterButton,
-                ...(showVirtual
+                ...(draftShowVirtual
                   ? styles.filterButtonActive
                   : styles.filterButtonInactive),
               }}
-              onClick={() => onShowVirtualChange(!showVirtual)}
+              onClick={() => setDraftShowVirtual(!draftShowVirtual)}
             >
               Virtual
             </button>
             <button
               type="button"
-              aria-pressed={showInPerson}
+              aria-pressed={draftShowInPerson}
               style={{
                 ...styles.filterButton,
-                ...(showInPerson
+                ...(draftShowInPerson
                   ? styles.filterButtonActive
                   : styles.filterButtonInactive),
               }}
-              onClick={() => onShowInPersonChange(!showInPerson)}
+              onClick={() => setDraftShowInPerson(!draftShowInPerson)}
             >
               In Person
             </button>
           </div>
         </div>
-        <button style={styles.applyButton} onClick={handleClose} type="button">
+        <button style={styles.applyButton} onClick={handleApply} type="button">
           Apply
         </button>
       </div>
