@@ -11,6 +11,7 @@ import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
+import CalendarFilterModal from "../components/calendarFilterModal";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "../database/eventSchema";
@@ -49,6 +50,7 @@ export default function CalendarPage() {
   );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
@@ -134,7 +136,9 @@ export default function CalendarPage() {
       },
       filterButton: {
         text: "Filter",
-        click: () => {}, // no-op
+        click: () => {
+          setIsFilterOpen(true);
+        },
       },
     }),
     [],
@@ -335,6 +339,12 @@ export default function CalendarPage() {
     <Layout>
       {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
+      )}
+      {isFilterOpen && (
+        <CalendarFilterModal
+          events={events}
+          onClose={() => setIsFilterOpen(false)}
+        />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
           <style>{calendarStyles}</style>
