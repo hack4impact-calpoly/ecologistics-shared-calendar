@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { EventDocument } from "../database/eventSchema";
 
 type CalendarFilterModalProps = {
@@ -22,11 +22,19 @@ export default function CalendarFilterModal({
   onShowInPersonChange,
   onClose,
 }: CalendarFilterModalProps) {
+  const [isVisible, setIsVisible] = useState(false);
   const organizations = useMemo(() => {
     return Array.from(
       new Set(events.map((event) => event.organization).filter(Boolean)),
     ).sort();
   }, [events]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setIsVisible(true));
+  }, []);
+
+  const isOrganizationShown = (organization: string) =>
+    !hiddenOrganizations.includes(organization);
 
   const handleOrganizationChange = (organization: string, checked: boolean) => {
     if (checked) {
@@ -39,11 +47,30 @@ export default function CalendarFilterModal({
     onHiddenOrganizationsChange([...hiddenOrganizations, organization]);
   };
 
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(onClose, 150);
+  };
+
   return (
     <>
-      <div style={styles.overlay} onClick={onClose} />
-      <div style={styles.modal}>
-        <button style={styles.closeButton} onClick={onClose} type="button">
+      <div
+        style={{
+          ...styles.overlay,
+          opacity: isVisible ? 1 : 0,
+        }}
+        onClick={handleClose}
+      />
+      <div
+        style={{
+          ...styles.modal,
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible
+            ? "translate(-50%, -50%) scale(1)"
+            : "translate(-50%, -48%) scale(0.98)",
+        }}
+      >
+        <button style={styles.closeButton} onClick={handleClose} type="button">
           x
         </button>
         <h2 style={styles.title}>Filter Events</h2>
@@ -52,47 +79,64 @@ export default function CalendarFilterModal({
           <div style={styles.options}>
             {organizations.length > 0 ? (
               organizations.map((organization) => (
-                <label key={organization} style={styles.option}>
-                  <input
-                    type="checkbox"
-                    checked={!hiddenOrganizations.includes(organization)}
-                    onChange={(event) =>
-                      handleOrganizationChange(
-                        organization,
-                        event.target.checked,
-                      )
-                    }
-                  />
+                <button
+                  key={organization}
+                  type="button"
+                  aria-pressed={isOrganizationShown(organization)}
+                  style={{
+                    ...styles.filterButton,
+                    ...(isOrganizationShown(organization)
+                      ? styles.filterButtonActive
+                      : styles.filterButtonInactive),
+                  }}
+                  onClick={() =>
+                    handleOrganizationChange(
+                      organization,
+                      !isOrganizationShown(organization),
+                    )
+                  }
+                >
                   {organization}
-                </label>
+                </button>
               ))
             ) : (
               <p style={styles.emptyText}>No organizations available.</p>
             )}
           </div>
         </div>
+        <div style={styles.divider} />
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Location</h3>
           <div style={styles.options}>
-            <label style={styles.option}>
-              <input
-                type="checkbox"
-                checked={showVirtual}
-                onChange={(event) => onShowVirtualChange(event.target.checked)}
-              />
+            <button
+              type="button"
+              aria-pressed={showVirtual}
+              style={{
+                ...styles.filterButton,
+                ...(showVirtual
+                  ? styles.filterButtonActive
+                  : styles.filterButtonInactive),
+              }}
+              onClick={() => onShowVirtualChange(!showVirtual)}
+            >
               Virtual
-            </label>
-            <label style={styles.option}>
-              <input
-                type="checkbox"
-                checked={showInPerson}
-                onChange={(event) => onShowInPersonChange(event.target.checked)}
-              />
+            </button>
+            <button
+              type="button"
+              aria-pressed={showInPerson}
+              style={{
+                ...styles.filterButton,
+                ...(showInPerson
+                  ? styles.filterButtonActive
+                  : styles.filterButtonInactive),
+              }}
+              onClick={() => onShowInPersonChange(!showInPerson)}
+            >
               In Person
-            </label>
+            </button>
           </div>
         </div>
-        <button style={styles.applyButton} onClick={onClose} type="button">
+        <button style={styles.applyButton} onClick={handleClose} type="button">
           Apply
         </button>
       </div>
@@ -106,22 +150,24 @@ const styles: { [key: string]: React.CSSProperties } = {
     inset: 0,
     background: "rgba(0, 0, 0, 0.6)",
     zIndex: 999,
+    transition: "opacity 150ms ease",
   },
   modal: {
     position: "fixed",
     top: "50%",
     left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "420px",
+    width: "380px",
     maxWidth: "90vw",
-    maxHeight: "85vh",
+    maxHeight: "75vh",
     overflowY: "auto",
     background: "white",
-    borderRadius: "12px",
-    padding: "24px",
+    borderRadius: "16px",
+    padding: "24px 22px",
     zIndex: 1000,
     boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
     whiteSpace: "normal",
+    fontFamily: '"DM Sans", sans-serif',
+    transition: "opacity 150ms ease, transform 150ms ease",
   },
   closeButton: {
     position: "absolute",
@@ -130,11 +176,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "transparent",
     border: "none",
     fontSize: "20px",
+    fontFamily: '"DM Sans", sans-serif',
     cursor: "pointer",
   },
   title: {
     margin: "0 0 20px",
-    fontSize: "1.5rem",
+    color: "#335543",
+    fontSize: "1.4rem",
+    fontWeight: 700,
+    fontFamily: '"DM Sans", sans-serif',
   },
   section: {
     marginBottom: "20px",
@@ -142,21 +192,44 @@ const styles: { [key: string]: React.CSSProperties } = {
   sectionTitle: {
     margin: "0 0 12px",
     fontSize: "1rem",
+    fontWeight: 700,
+    color: "#335543",
+    fontFamily: '"DM Sans", sans-serif',
   },
   options: {
     display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  option: {
-    display: "flex",
-    alignItems: "center",
+    flexWrap: "wrap",
     gap: "8px",
+  },
+  filterButton: {
+    borderRadius: "9999px",
+    border: "1px solid #989898",
+    padding: "8px 14px",
+    fontFamily: '"DM Sans", sans-serif',
     fontSize: "0.95rem",
+    fontWeight: 400,
+    lineHeight: 1,
+    cursor: "pointer",
+    transition: "background-color 150ms ease, border-color 150ms ease, color 150ms ease",
+  },
+  filterButtonActive: {
+    backgroundColor: "#6d6d6d",
+    borderColor: "#6d6d6d",
+    color: "white",
+  },
+  filterButtonInactive: {
+    backgroundColor: "#f0f0f0",
+    borderColor: "#989898",
+    color: "#333",
+  },
+  divider: {
+    borderTop: "1px solid #D1D5DC",
+    margin: "4px 0 20px",
   },
   emptyText: {
     margin: 0,
     color: "#666",
+    fontFamily: '"DM Sans", sans-serif',
   },
   applyButton: {
     backgroundColor: "#F7AB74",
@@ -164,6 +237,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "none",
     padding: "10px 20px",
     borderRadius: "20px",
+    fontFamily: '"DM Sans", sans-serif',
+    fontSize: "0.95rem",
+    fontWeight: 400,
+    lineHeight: 1,
     cursor: "pointer",
+    transition: "background-color 150ms ease, opacity 150ms ease",
   },
 };
