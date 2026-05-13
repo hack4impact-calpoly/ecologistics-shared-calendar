@@ -17,6 +17,41 @@ export function convertEventDatesToDates(events: EventDocument[]): void {
   });
 }
 
+export function filterEvents(
+  events: EventDocument[],
+  searchTerm: string,
+  hiddenOrganizations: string[],
+  showVirtual: boolean,
+  showInPerson: boolean,
+): EventDocument[] {
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+  return events.filter((event) => {
+    const passesOrganization = !hiddenOrganizations.includes(
+      event.organization,
+    );
+    const passesLocation = event.isVirtual ? showVirtual : showInPerson;
+
+    if (!passesOrganization || !passesLocation) {
+      return false;
+    }
+
+    if (!normalizedSearchTerm) {
+      return true;
+    }
+
+    const title = event.title?.toLowerCase() ?? "";
+    const description = event.description?.toLowerCase() ?? "";
+    const organization = event.organization?.toLowerCase() ?? "";
+
+    return (
+      title.includes(normalizedSearchTerm) ||
+      description.includes(normalizedSearchTerm) ||
+      organization.includes(normalizedSearchTerm)
+    );
+  });
+}
+
 // takes a date object and returns a formatted date string
 export function getFormattedDateString(date: Date): string {
   return date.toLocaleDateString("en-US", {
