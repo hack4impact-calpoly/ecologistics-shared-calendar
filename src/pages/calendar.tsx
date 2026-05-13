@@ -61,6 +61,9 @@ export default function CalendarPage() {
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [hiddenOrganizations, setHiddenOrganizations] = useState<string[]>([]);
+  const [showVirtual, setShowVirtual] = useState(true);
+  const [showInPerson, setShowInPerson] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
   const [visibleDateRange, setVisibleDateRange] =
@@ -76,11 +79,20 @@ export default function CalendarPage() {
   const filteredEvents = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
-    if (!normalizedSearchTerm) {
-      return events;
-    }
-
     return events.filter((event) => {
+      const passesOrganization = !hiddenOrganizations.includes(
+        event.organization,
+      );
+      const passesLocation = event.isVirtual ? showVirtual : showInPerson;
+
+      if (!passesOrganization || !passesLocation) {
+        return false;
+      }
+
+      if (!normalizedSearchTerm) {
+        return true;
+      }
+
       const title = event.title?.toLowerCase() ?? "";
       const description = event.description?.toLowerCase() ?? "";
       const organization = event.organization?.toLowerCase() ?? "";
@@ -91,7 +103,7 @@ export default function CalendarPage() {
         organization.includes(normalizedSearchTerm)
       );
     });
-  }, [events, searchTerm]);
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;
@@ -333,6 +345,12 @@ export default function CalendarPage() {
       {isFilterOpen && (
         <CalendarFilterModal
           events={events}
+          hiddenOrganizations={hiddenOrganizations}
+          onHiddenOrganizationsChange={setHiddenOrganizations}
+          showVirtual={showVirtual}
+          onShowVirtualChange={setShowVirtual}
+          showInPerson={showInPerson}
+          onShowInPersonChange={setShowInPerson}
           onClose={() => setIsFilterOpen(false)}
         />
       )}

@@ -3,11 +3,23 @@ import { EventDocument } from "../database/eventSchema";
 
 type CalendarFilterModalProps = {
   events: EventDocument[];
+  hiddenOrganizations: string[];
+  onHiddenOrganizationsChange: (organizations: string[]) => void;
+  showVirtual: boolean;
+  onShowVirtualChange: (showVirtual: boolean) => void;
+  showInPerson: boolean;
+  onShowInPersonChange: (showInPerson: boolean) => void;
   onClose: () => void;
 };
 
 export default function CalendarFilterModal({
   events,
+  hiddenOrganizations,
+  onHiddenOrganizationsChange,
+  showVirtual,
+  onShowVirtualChange,
+  showInPerson,
+  onShowInPersonChange,
   onClose,
 }: CalendarFilterModalProps) {
   const organizations = useMemo(() => {
@@ -15,6 +27,17 @@ export default function CalendarFilterModal({
       new Set(events.map((event) => event.organization).filter(Boolean)),
     ).sort();
   }, [events]);
+
+  const handleOrganizationChange = (organization: string, checked: boolean) => {
+    if (checked) {
+      onHiddenOrganizationsChange(
+        hiddenOrganizations.filter((name) => name !== organization),
+      );
+      return;
+    }
+
+    onHiddenOrganizationsChange([...hiddenOrganizations, organization]);
+  };
 
   return (
     <>
@@ -30,7 +53,16 @@ export default function CalendarFilterModal({
             {organizations.length > 0 ? (
               organizations.map((organization) => (
                 <label key={organization} style={styles.option}>
-                  <input type="checkbox" defaultChecked />
+                  <input
+                    type="checkbox"
+                    checked={!hiddenOrganizations.includes(organization)}
+                    onChange={(event) =>
+                      handleOrganizationChange(
+                        organization,
+                        event.target.checked,
+                      )
+                    }
+                  />
                   {organization}
                 </label>
               ))
@@ -43,11 +75,19 @@ export default function CalendarFilterModal({
           <h3 style={styles.sectionTitle}>Location</h3>
           <div style={styles.options}>
             <label style={styles.option}>
-              <input type="checkbox" defaultChecked />
+              <input
+                type="checkbox"
+                checked={showVirtual}
+                onChange={(event) => onShowVirtualChange(event.target.checked)}
+              />
               Virtual
             </label>
             <label style={styles.option}>
-              <input type="checkbox" defaultChecked />
+              <input
+                type="checkbox"
+                checked={showInPerson}
+                onChange={(event) => onShowInPersonChange(event.target.checked)}
+              />
               In Person
             </label>
           </div>
