@@ -11,11 +11,12 @@ import React from "react";
 import AddEventPanel from "../components/addEventPanel";
 import Link from "next/link";
 import EventRequestPopup from "../components/eventRequestPopup";
+import CalendarFilterModal from "../components/calendarFilterModal";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "../database/eventSchema";
 import { useRouter } from "next/router";
-import { convertEventDatesToDates } from "../utils/events";
+import { convertEventDatesToDates, filterEvents } from "../utils/events";
 import { DateTime } from "luxon";
 import { useSession } from "@clerk/nextjs";
 import { useUser } from "@clerk/clerk-react";
@@ -49,7 +50,11 @@ export default function CalendarPage() {
   );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [hiddenOrganizations, setHiddenOrganizations] = useState<string[]>([]);
+  const [showVirtual, setShowVirtual] = useState(true);
+  const [showInPerson, setShowInPerson] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
   const [visibleDateRange, setVisibleDateRange] =
@@ -64,24 +69,14 @@ export default function CalendarPage() {
   const [toolbarSearchStyle, setToolbarSearchStyle] =
     useState<React.CSSProperties>({ display: "none" });
   const filteredEvents = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-
-    if (!normalizedSearchTerm) {
-      return events;
-    }
-
-    return events.filter((event) => {
-      const title = event.title?.toLowerCase() ?? "";
-      const description = event.description?.toLowerCase() ?? "";
-      const organization = event.organization?.toLowerCase() ?? "";
-
-      return (
-        title.includes(normalizedSearchTerm) ||
-        description.includes(normalizedSearchTerm) ||
-        organization.includes(normalizedSearchTerm)
-      );
-    });
-  }, [events, searchTerm]);
+    return filterEvents(
+      events,
+      searchTerm,
+      hiddenOrganizations,
+      showVirtual,
+      showInPerson,
+    );
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;
@@ -134,7 +129,9 @@ export default function CalendarPage() {
       },
       filterButton: {
         text: "Filter",
-        click: () => {}, // no-op
+        click: () => {
+          setIsFilterOpen(true);
+        },
       },
     }),
     [],
@@ -335,6 +332,18 @@ export default function CalendarPage() {
     <Layout>
       {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
+      )}
+      {isFilterOpen && (
+        <CalendarFilterModal
+          events={events}
+          hiddenOrganizations={hiddenOrganizations}
+          onHiddenOrganizationsChange={setHiddenOrganizations}
+          showVirtual={showVirtual}
+          onShowVirtualChange={setShowVirtual}
+          showInPerson={showInPerson}
+          onShowInPersonChange={setShowInPerson}
+          onClose={() => setIsFilterOpen(false)}
+        />
       )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
           <style>{calendarStyles}</style>
