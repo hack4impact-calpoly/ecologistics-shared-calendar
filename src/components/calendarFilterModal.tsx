@@ -192,7 +192,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   title: {
     margin: "0 0 20px",
-    color: "#335543",
+    color: "#000000",
     fontSize: "1.4rem",
     fontWeight: 700,
     fontFamily: '"DM Sans", sans-serif',
@@ -204,7 +204,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     margin: "0 0 12px",
     fontSize: "1rem",
     fontWeight: 700,
-    color: "#335543",
+    color: "#000000",
     fontFamily: '"DM Sans", sans-serif',
   },
   options: {
@@ -221,11 +221,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 400,
     lineHeight: 1,
     cursor: "pointer",
-    transition: "background-color 150ms ease, border-color 150ms ease, color 150ms ease",
+    transition:
+      "background-color 150ms ease, border-color 150ms ease, color 150ms ease",
   },
   filterButtonActive: {
-    backgroundColor: "#6d6d6d",
-    borderColor: "#6d6d6d",
+    backgroundColor: "#335543",
+    borderColor: "#335543",
     color: "white",
   },
   filterButtonInactive: {
