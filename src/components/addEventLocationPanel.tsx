@@ -82,30 +82,8 @@ export default function AddEventLocationPanel({
 
       <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
-      {/* activates "active" css for button depending on method*/}
-      {mode == "in-person" && (
-        <div style={styles.methodContainer}>
-          <button
-            style={
-              method === "pin" ? styles.activeMethodButton : styles.methodButton
-            }
-            onClick={() => setMethod("pin")}
-          >
-            Pin
-          </button>
-          <button
-            style={
-              method === "search"
-                ? styles.activeMethodButton
-                : styles.methodButton
-            }
-            onClick={() => setMethod("search")}
-          >
-            Search
-          </button>
-        </div>
-      )}
-      {mode === "in-person" && method === "pin" && (
+   
+      {mode === "in-person" && (
         <div
           style={{
             display: "flex",
@@ -114,6 +92,25 @@ export default function AddEventLocationPanel({
             gap: "12px",
           }}
         >
+          <div>
+          <AddressAutoFill
+            apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
+            onSelect={(data, feature) => {
+              setFormData({ ...formData, lon: data.lon, lat: data.lat });
+              setEventFormData((prev) => ({
+                  ...prev,
+                  street: (feature.properties.street ?? "") as string,
+                  city: (feature.properties.city ?? "") as string,
+                  state: (feature.properties.state_code ?? "") as string,
+                  postalCode: (feature.properties.postcode ?? "") as string,
+                  latitude: data.lat,
+                  longitude: data.lon,
+                  mode: mode,
+                  isVirtual: false,
+              }));
+            }}
+          />
+        </div>
           <div
             style={{
               borderRadius: "12px",
@@ -155,27 +152,7 @@ export default function AddEventLocationPanel({
           />
         </div>
       )}
-      {mode === "in-person" && method === "search" && (
-        <div>
-          <AddressAutoFill
-            apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
-            onSelect={(data, feature) => {
-              setFormData({ ...formData, lon: data.lon, lat: data.lat });
-              setEventFormData((prev) => ({
-                  ...prev,
-                  street: (feature.properties.street ?? "") as string,
-                  city: (feature.properties.city ?? "") as string,
-                  state: (feature.properties.state_code ?? "") as string,
-                  postalCode: (feature.properties.postcode ?? "") as string,
-                  latitude: data.lat,
-                  longitude: data.lon,
-                  mode: mode,
-                  isVirtual: false,
-              }));
-            }}
-          />
-        </div>
-      )}
+      
       {mode === "virtual" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <div>
