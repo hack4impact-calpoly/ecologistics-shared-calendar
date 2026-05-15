@@ -7,8 +7,6 @@
  * Version: 1.0
  */
 
-
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -105,7 +103,7 @@ export function AddressAutoFill({
   useEffect(() => {
     let cancelled = false;
     async function fetch() {
-    //prevents input being autofilled retriggering dropdown
+      //prevents input being autofilled retriggering dropdown
       if (skipNextFetchRef.current) {
         skipNextFetchRef.current = false;
         return;
@@ -162,9 +160,9 @@ export function AddressAutoFill({
           style={styles.autocompleteInput}
           autoComplete="off"
         />
-        {loading && <span>Loading...</span>}
       </div>
-      {dropOpen && (
+      {loading && <span>Loading...</span>}
+      {!loading && dropOpen && (
         <div style={styles.dropdown}>
           {!hasResults ? (
             <div style={{ padding: "8px" }}>No results</div>
@@ -197,7 +195,7 @@ export function AddressAutoFill({
 const styles: { [key: string]: React.CSSProperties } = {
   autocompleteContainer: {
     position: "relative",
-    maxWidth: "400px",
+    maxWidth: "100%",
   },
   autocompleteInput: {
     width: "100%",
