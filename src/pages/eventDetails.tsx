@@ -26,7 +26,6 @@ function parseAddress(address: string): Address {
 
 export default function EventPage() {
   const [event, setEvent] = React.useState<EventDocument | null>(null);
-  const [address, setAddress] = React.useState<Address | null>(null);
   const [truncatedDescription, setTruncatedDescription] = useState("");
   const [expanded, setExpanded] = useState(false);
 
@@ -52,12 +51,6 @@ export default function EventPage() {
 
     fetchEvent();
   }, [eventId]);
-
-  useEffect(() => {
-    if (event && !event.isVirtual) {
-      setAddress(parseAddress(event.location));
-    }
-  }, [event]);
 
   useEffect(() => {
     if (event && event.description) {
@@ -161,7 +154,7 @@ export default function EventPage() {
                   )}
                 </address>
               </div>
-              {address && !event.isVirtual && (
+              {event.latitude && event.longitude && !event.isVirtual && (
                 <div style={styles.mapPlaceholder}>
                   <StaticMap
                     latitude={event.latitude}
