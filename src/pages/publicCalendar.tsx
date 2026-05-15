@@ -12,7 +12,7 @@ import EventBar from "./eventBar";
 import EventRequestPopup from "../components/eventRequestPopup";
 import style1 from "../styles/calendar.module.css";
 
-import { useClerk, useUser } from "@clerk/clerk-react";
+import { useClerk, useSession, useUser } from "@clerk/clerk-react";
 import { useRouter } from "next/router";
 import { EventDocument } from "../database/eventSchema";
 import { convertEventDatesToDates } from "../utils/events";
@@ -32,18 +32,23 @@ type VisibleDateRange = {
 
 export default function CalendarPage() {
   const { user } = useUser();
-  const { signOut } = useClerk();
+  const clerk = useClerk()
   const router = useRouter();
 
   const [events, setEvents] = useState<EventDocument[]>([]);
-  const [calendarEvents, setCalendarEvents] = useState<FullCalendarRecurringEvent[]>([]);
-  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<
+    FullCalendarRecurringEvent[]
+  >([]);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
+    [],
+  );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
-  const [visibleDateRange, setVisibleDateRange] = useState<VisibleDateRange | null>(null);
+  const [visibleDateRange, setVisibleDateRange] =
+    useState<VisibleDateRange | null>(null);
   const [windowWidth, setWindowWidth] = useState(0);
 
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -83,9 +88,21 @@ export default function CalendarPage() {
       const eventStart = new Date(event.startDate);
       const eventEnd = new Date(event.endDate);
 
-      return eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start;
+      return (
+        eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start
+      );
     });
   }, [filteredEvents, visibleDateRange]);
+
+  // if the user is logged in, redirect to the calendar page.
+  const { session } = useSession();
+
+  useEffect(() => {
+    const role = session?.user?.publicMetadata?.role;
+    if (clerk.user && (role === "admin" || role === "approved")) {
+      router.push("/calendar");
+    }
+  }, [clerk.user, router, session?.user?.publicMetadata?.role]);
 
   useEffect(() => {
     setSelectedDateEvents([]);
@@ -198,28 +215,30 @@ export default function CalendarPage() {
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
 
-    const eventsOnClickedDate = filteredEvents.filter((event: EventDocument) => {
-      const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
-        zone: "UTC",
-      })
-        .setZone("America/Los_Angeles")
-        .toISODate();
+    const eventsOnClickedDate = filteredEvents.filter(
+      (event: EventDocument) => {
+        const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
+          zone: "UTC",
+        })
+          .setZone("America/Los_Angeles")
+          .toISODate();
 
-      const eventEnd = DateTime.fromISO(event.endDate.toISOString(), {
-        zone: "UTC",
-      })
-        .setZone("America/Los_Angeles")
-        .toISODate();
+        const eventEnd = DateTime.fromISO(event.endDate.toISOString(), {
+          zone: "UTC",
+        })
+          .setZone("America/Los_Angeles")
+          .toISODate();
 
-      if (!eventStart || !eventEnd) {
-        return false;
-      }
+        if (!eventStart || !eventEnd) {
+          return false;
+        }
 
-      return (
-        clickedDate >= new Date(eventStart) &&
-        clickedDate <= new Date(eventEnd)
-      );
-    });
+        return (
+          clickedDate >= new Date(eventStart) &&
+          clickedDate <= new Date(eventEnd)
+        );
+      },
+    );
 
     setSelectedDateEvents(eventsOnClickedDate);
   };
@@ -244,15 +263,21 @@ export default function CalendarPage() {
   const addEvent = () => {};
 
   function adjustButtons() {
-    const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement | null;
-    const headerCell = document.querySelector(".fc-col-header-cell") as HTMLElement | null;
+    const gridCell = document.querySelector(
+      ".fc-daygrid-day",
+    ) as HTMLElement | null;
+    const headerCell = document.querySelector(
+      ".fc-col-header-cell",
+    ) as HTMLElement | null;
 
     if (!gridCell || !headerCell) return;
 
     const cellWidth = gridCell.offsetWidth * 0.95;
     const cellHeight = headerCell.offsetHeight * 1.5;
 
-    const addButton = document.querySelector(".fc-AddEvent-button") as HTMLElement | null;
+    const addButton = document.querySelector(
+      ".fc-AddEvent-button",
+    ) as HTMLElement | null;
 
     if (addButton) {
       addButton.style.width = `${cellWidth}px`;
@@ -260,8 +285,12 @@ export default function CalendarPage() {
       addButton.style.fontSize = `${cellWidth * 0.15}px`;
     }
 
-    const prevButton = document.querySelector(".fc-prev-button") as HTMLElement | null;
-    const nextButton = document.querySelector(".fc-next-button") as HTMLElement | null;
+    const prevButton = document.querySelector(
+      ".fc-prev-button",
+    ) as HTMLElement | null;
+    const nextButton = document.querySelector(
+      ".fc-next-button",
+    ) as HTMLElement | null;
 
     if (prevButton && nextButton) {
       prevButton.style.width = `${cellHeight * 0.9}px`;
@@ -273,7 +302,9 @@ export default function CalendarPage() {
 
   function setTitleFontSize() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
-    const titleElement = document.querySelector(".fc-toolbar-title") as HTMLElement | null;
+    const titleElement = document.querySelector(
+      ".fc-toolbar-title",
+    ) as HTMLElement | null;
 
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
@@ -448,6 +479,13 @@ const calendarStyles = `
   justify-content: space-between;
   text-transform: uppercase;
   height: 38px;
+}
+.fc-col-header-cell {
+  background: #335543;
+  color: #FFF;
+  height: 44px;
+  border: none;
+  vertical-align: middle;
 }
 
 .fc .fc-toolbar-title {
