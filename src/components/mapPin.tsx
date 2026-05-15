@@ -89,6 +89,10 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
         },
         (error) => {
           console.error("Error getting position:", error);
+          // Fallback to SLO
+          const nextCoords = { lon: -120.6596, lat: 35.2828 };
+          setPinCoords(nextCoords);
+          onPickAddress?.(nextCoords);
         },
       );
       setLoading(false);
@@ -149,7 +153,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-      if(onPickAddress) {
+      if (onPickAddress) {
         onPickAddress({ lon, lat });
       }
 
@@ -202,7 +206,12 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
         {/* Keep controls inside the map so they don't cover panel */}
         <div
           ref={toolbarRef}
-          style={{ position: "absolute", top: "0.5rem", left: "0.5rem", zIndex: 1 }}
+          style={{
+            position: "absolute",
+            top: "0.5rem",
+            left: "0.5rem",
+            zIndex: 1,
+          }}
         />
         <div ref={mapDivRef} style={{ width: "24rem", height: "24rem" }} />
       </div>

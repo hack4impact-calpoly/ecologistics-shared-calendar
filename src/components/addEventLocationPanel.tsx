@@ -37,6 +37,8 @@ export default function AddEventLocationPanel({
     lat: 0,
     desc: "",
   });
+  const [autofillKey, setAutofillKey] = useState(0);
+  const [pinNotif, setPinNotif] = useState(false);
 
   // Keep the parent state in sync so validation can run in one place.
   const setLocationMode = (nextMode: LocationMode) => {
@@ -82,7 +84,6 @@ export default function AddEventLocationPanel({
 
       <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
-   
       {mode === "in-person" && (
         <div
           style={{
@@ -92,14 +93,20 @@ export default function AddEventLocationPanel({
             gap: "12px",
           }}
         >
-          <div>
-          <AddressAutoFill
-            apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
-            onSelect={(data, feature) => {
-              setFormData({ ...formData, lon: data.lon, lat: data.lat });
-              setEventFormData((prev) => ({
+          <div
+            style={{
+              width: "100%",
+            }}
+          >
+            <AddressAutoFill
+              key={autofillKey}
+              apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
+              onSelect={(data, feature) => {
+                setFormData({ ...formData, lon: data.lon, lat: data.lat });
+                setEventFormData((prev) => ({
                   ...prev,
-                  street: (feature.properties.street ?? "") as string,
+                  street:
+                    `${feature.properties.housenumber ?? ""} ${feature.properties.street ?? ""}`.trim() as string,
                   city: (feature.properties.city ?? "") as string,
                   state: (feature.properties.state_code ?? "") as string,
                   postalCode: (feature.properties.postcode ?? "") as string,
@@ -107,10 +114,11 @@ export default function AddEventLocationPanel({
                   longitude: data.lon,
                   mode: mode,
                   isVirtual: false,
-              }));
-            }}
-          />
-        </div>
+                }));
+                setPinNotif(false);
+              }}
+            />
+          </div>
           <div
             style={{
               borderRadius: "12px",
@@ -129,10 +137,23 @@ export default function AddEventLocationPanel({
                   isVirtual: false,
                   latitude: data.lat,
                   longitude: data.lon,
+                  street: "",
+                  city: "",
+                  state: "",
+                  postalCode: "",
+                  locationDescription: "Custom pin location",
                 }));
+                setAutofillKey((k) => k + 1);
+                setPinNotif(true);
               }}
             />
           </div>
+
+          {pinNotif && (
+            <p style={{ fontSize: "1.2rem", color: "#555", margin: 0 }}>
+              📍 Custom location pinned
+            </p>
+          )}
 
           <input
             type="text"
@@ -152,11 +173,15 @@ export default function AddEventLocationPanel({
           />
         </div>
       )}
-      
+
       {mode === "virtual" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+        >
           <div>
-            <p style={styles.fieldLabel}>Meeting Link <span style={{ color: "red" }}>*</span></p>
+            <p style={styles.fieldLabel}>
+              Meeting Link <span style={{ color: "red" }}>*</span>
+            </p>
             <input
               type="url"
               style={styles.input}
@@ -175,7 +200,9 @@ export default function AddEventLocationPanel({
           </div>
 
           <div>
-            <p style={styles.fieldLabel}>Meeting ID <span style={styles.optionalTag}>(optional)</span></p>
+            <p style={styles.fieldLabel}>
+              Meeting ID <span style={styles.optionalTag}>(optional)</span>
+            </p>
             <input
               type="text"
               style={styles.input}
@@ -192,7 +219,9 @@ export default function AddEventLocationPanel({
           </div>
 
           <div>
-            <p style={styles.fieldLabel}>Password <span style={styles.optionalTag}>(optional)</span></p>
+            <p style={styles.fieldLabel}>
+              Password <span style={styles.optionalTag}>(optional)</span>
+            </p>
             <input
               type="text"
               style={styles.input}
@@ -209,7 +238,9 @@ export default function AddEventLocationPanel({
           </div>
         </div>
       )}
-      <div style={styles.errorBox}>{error && <p style={styles.error}>{error}</p>}</div>
+      <div style={styles.errorBox}>
+        {error && <p style={styles.error}>{error}</p>}
+      </div>
 
       <div style={styles.actions}>
         <button style={styles.button} type="button" onClick={onContinue}>

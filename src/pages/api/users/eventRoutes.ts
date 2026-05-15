@@ -18,12 +18,15 @@ interface QueryParams {
 
 async function deleteImage(imageUrl: String) {
   console.log("IN DELETE IMAGE");
-  const response = await axios.delete("http://localhost:3000/api/s3-upload/route", {
-    data: { url: imageUrl },
-    headers: {
-      "Content-Type": "application/json",
+  const response = await axios.delete(
+    "http://localhost:3000/api/s3-upload/route",
+    {
+      data: { url: imageUrl },
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   if (response.status === 200) {
     console.log("Image deleted successfully:", response.data);
@@ -56,7 +59,7 @@ const getQueryObject = (req: NextApiRequest): Partial<QueryParams> => {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   await connectDB();
   if (req.method === "GET") {
@@ -79,6 +82,8 @@ export default async function handler(
         description,
         isVirtual,
         location,
+        latitude,
+        longitude,
         status,
         imageLink,
         virtualMeetingId,
@@ -98,6 +103,8 @@ export default async function handler(
         description,
         isVirtual,
         location,
+        latitude,
+        longitude,
         status,
         imageLink,
         virtualMeetingId,

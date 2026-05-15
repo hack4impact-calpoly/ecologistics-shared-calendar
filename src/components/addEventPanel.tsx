@@ -67,6 +67,8 @@ interface Event {
   endDate: Date;
   description: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   status: string;
   isVirtual: boolean;
   imageLink?: string;
@@ -302,6 +304,8 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
           status:
             user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,

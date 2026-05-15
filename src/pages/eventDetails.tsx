@@ -164,10 +164,8 @@ export default function EventPage() {
               {address && !event.isVirtual && (
                 <div style={styles.mapPlaceholder}>
                   <StaticMap
-                    street={address.street}
-                    state={address.state}
-                    city={address.city}
-                    postalCode={address.postalCode}
+                    latitude={event.latitude}
+                    longitude={event.longitude}
                   />
                 </div>
               )}

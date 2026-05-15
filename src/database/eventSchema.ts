@@ -12,6 +12,8 @@ const EventSchema = new Schema(
       type: String,
       required: true,
     },
+    latitude: { type: Number, required: false },
+    longitude: { type: Number, required: false },
     status: { type: String, required: true, default: 0 },
     imageLink: { type: String, required: false },
     createdBy: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -22,7 +24,7 @@ const EventSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // For type inference that matches the schema.
@@ -36,6 +38,8 @@ export type EventDocument = {
   description?: string;
   isVirtual: boolean;
   location: string;
+  latitude?: number;
+  longitude?: number;
   status: string;
   deniedReason?: string;
   imageLink?: string;
