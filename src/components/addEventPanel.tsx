@@ -313,8 +313,6 @@ export default function AddEventPanel({
           address = parts.join('\n');
         }
 
-        console.log(formData.isDisclosed)
-
         const event: Event = {
           title: formData.title,
           // organization: (user.publicMetadata.organization as string) ?? "",

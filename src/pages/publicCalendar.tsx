@@ -73,7 +73,7 @@ export default function CalendarPage() {
       showInPerson,
       showUndisclosed
     );
-  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual, showUndisclosed]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;

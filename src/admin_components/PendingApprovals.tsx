@@ -116,7 +116,7 @@ export default function PendingApprovals({ initialEvents, initialOrgs }: Pending
     };
 
     fetchPendingEvents();
-  }, []); // Runs once on mount
+  }, [initialEvents]); // Runs once on mount
 
   useEffect(() => {
     if (initialOrgs) return;
@@ -147,7 +147,7 @@ export default function PendingApprovals({ initialEvents, initialOrgs }: Pending
     };
 
     fetchPendingOrganizations();
-  }, []); // Runs once on mount
+  }, [initialOrgs]); // Runs once on mount
 
   const approveEvent = async (id: string) => {
     try {

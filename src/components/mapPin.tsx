@@ -104,7 +104,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     return () => {
       controller.abort();
     };
-  }, [inLon, inLat]);
+  }, [inLon, inLat, onPickAddress]);
 
   // Effect to initialize map on first load and add click handler to place pin and update form address. Also cleans up map on unmount.
   useEffect(() => {
@@ -175,7 +175,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
       sourceRef.current = null;
       pinFeatureRef.current = null;
     };
-  }, [iconStyle]);
+  }, [iconStyle, inLat, inLon, onPickAddress]);
 
   // Effect to recenter map on initial address and move pin to initial address location. Also recenters map when pin is placed.
   useEffect(() => {
