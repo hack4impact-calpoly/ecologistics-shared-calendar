@@ -31,7 +31,6 @@ export default function AddEventLocationPanel({
   const [mode, setMode] = useState<LocationMode>(
     eventFormData.mode === "virtual" ? "virtual" : "in-person",
   ); //active mode
-  const [method, setMethod] = useState<InPersonMethod>("pin"); //active method
   const [formData, setFormData] = useState({
     lon: 0,
     lat: 0,
@@ -85,6 +84,28 @@ export default function AddEventLocationPanel({
       <h3 style={styles.sectionHeader}>Set Event Location</h3>
 
       {mode === "in-person" && (
+        <label style={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            checked={!eventFormData.isDisclosed}
+            onChange={(e) => {
+              setEventFormData((prev) => ({
+                ...prev,
+                isDisclosed: !e.target.checked,
+                street: "",
+                city: "",
+                state: "",
+                postalCode: "",
+                latitude: null,
+                longitude: null,
+              }));
+            }}
+          />
+          {" "}Undisclosed Location
+        </label>
+      )}
+
+      {mode === "in-person" && eventFormData.isDisclosed && (
         <div
           style={{
             display: "flex",
@@ -141,7 +162,7 @@ export default function AddEventLocationPanel({
                   city: "",
                   state: "",
                   postalCode: "",
-                  locationDescription: "Custom pin location",
+                  locationDescription: prev.locationDescription || "Custom location pinned",
                 }));
                 setAutofillKey((k) => k + 1);
                 setPinNotif(true);
@@ -379,5 +400,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 400,
     color: "#888",
     fontSize: "0.8rem",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    cursor: "pointer",
   },
 };

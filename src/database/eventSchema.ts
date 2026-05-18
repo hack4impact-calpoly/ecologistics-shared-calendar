@@ -21,6 +21,7 @@ const EventSchema = new Schema(
     virtualMeetingId: { type: String, required: false },
     virtualPassword: { type: String, required: false },
     additionalInfo: { type: String, required: false },
+    isDisclosed: { type: Boolean, required: false, default: true },
   },
   {
     timestamps: true,
@@ -46,6 +47,7 @@ export type EventDocument = {
   virtualMeetingId?: string;
   virtualPassword?: string;
   virtualInfo?: string;
+  isDisclosed?: boolean;
   createdBy: mongoose.Types.ObjectId;
   _id: mongoose.Types.ObjectId;
 };

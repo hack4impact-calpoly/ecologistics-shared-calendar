@@ -115,14 +115,6 @@ export default function EventBar({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setSearchTerm(value);
-    onSearchChange(value);
-  };
-
   return (
     <div
       style={{
@@ -130,43 +122,8 @@ export default function EventBar({
         flexDirection: "column",
         height: "100%",
         width: windowWidth && windowWidth > 786 ? "75%" : "100%",
-        marginTop: "2%",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          width: "100%",
-          margin: "0 0 4% 0",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search..."
-          style={{
-            boxSizing: "border-box",
-            width: "90%",
-            padding: "2% 2%",
-            fontFamily: "Inter, sans-serif",
-            fontSize: "14px",
-            fontWeight: 400,
-            lineHeight: 1,
-            color: "#000",
-            borderRadius: "1rem",
-            border: "0.1rem solid #ccc",
-            outline: "none",
-            boxShadow: "0 1rem 1rem rgba(0,0,0,0.1)",
-            marginTop:
-              (windowWidth || 0) < (windowHeight || 0) ? "30px" : "0px", // 768px is a common breakpoint for mobile devices
-          }}
-          value={searchTerm}
-          onChange={handleSearchChange}
-
-          // Add onChange event handler if you want to capture input
-          // onChange={handleSearchChange}
-        />
-      </div>
       <div style={styles.styles.mainContainer}>
         {/* add icon here */}
         {events?.map((event) => (
@@ -188,7 +145,6 @@ function useEventBarStyles() {
       maxHeight: "calc(100vh - 200px)",
       width: "100%",
       gap: "1rem",
-      padding: "1rem 0",
       boxSizing: "border-box",
     },
 

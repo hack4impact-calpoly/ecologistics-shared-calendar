@@ -66,6 +66,7 @@ export default function CalendarPage() {
   const [hiddenOrganizations, setHiddenOrganizations] = useState<string[]>([]);
   const [showVirtual, setShowVirtual] = useState(true);
   const [showInPerson, setShowInPerson] = useState(true);
+  const [showUndisclosed, setShowUndisclosed] = useState(true)
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
   const [visibleDateRange, setVisibleDateRange] =
@@ -85,8 +86,9 @@ export default function CalendarPage() {
       hiddenOrganizations,
       showVirtual,
       showInPerson,
+      showUndisclosed
     );
-  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual, showUndisclosed]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;
@@ -340,6 +342,8 @@ export default function CalendarPage() {
           onShowVirtualChange={setShowVirtual}
           showInPerson={showInPerson}
           onShowInPersonChange={setShowInPerson}
+          showUndisclosed={showUndisclosed}
+          onShowUndisclosedChange={setShowUndisclosed}
           onClose={() => setIsFilterOpen(false)}
         />
       )}
@@ -381,6 +385,7 @@ export default function CalendarPage() {
             }}
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
+            height="100%"
           />
           <input
             ref={searchInputRef}
@@ -432,6 +437,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "relative",
     width: "100%",
     height: "auto",
+    minHeight: "60vh",
     borderRadius: "10px",
     gap: "24px",
     padding: "24px",
@@ -533,6 +539,7 @@ const calendarStyles = `
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 /* DAY CELL STRUCTURE */

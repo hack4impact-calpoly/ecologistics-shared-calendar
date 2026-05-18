@@ -150,7 +150,7 @@ export default function EventPage() {
                       )}
                     </div>
                   ) : (
-                    event.location
+                    <span style={{ whiteSpace: 'pre-line' }}>{event.location}</span>
                   )}
                 </address>
               </div>
@@ -230,6 +230,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontFamily: "DM Sans",
     fontSize: "14px",
     margin: "0",
+    whiteSpace: "pre-line",
   },
   locationType: {
     fontFamily: "DM Sans",

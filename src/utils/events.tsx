@@ -23,6 +23,7 @@ export function filterEvents(
   hiddenOrganizations: string[],
   showVirtual: boolean,
   showInPerson: boolean,
+  showUndisclosed: boolean,
 ): EventDocument[] {
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
@@ -30,8 +31,11 @@ export function filterEvents(
     const passesOrganization = !hiddenOrganizations.includes(
       event.organization,
     );
-    const passesLocation = event.isVirtual ? showVirtual : showInPerson;
-
+    const passesLocation = !event.isDisclosed
+        ? showUndisclosed
+        : event.isVirtual
+          ? showVirtual
+          : showInPerson;
     if (!passesOrganization || !passesLocation) {
       return false;
     }

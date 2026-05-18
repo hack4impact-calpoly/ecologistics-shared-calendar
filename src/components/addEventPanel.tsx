@@ -26,6 +26,7 @@ export interface AddEventFormType {
   latitude: number | null;
   longitude: number | null;
   locationDescription: string;
+  isDisclosed: boolean;
   virtualMeetingId?: string;
   virtualPassword?: string;
 }
@@ -58,6 +59,7 @@ const EMPTY_FORM = {
   latitude: null,
   longitude: null,
   locationDescription: "",
+  isDisclosed: true,
 };
 
 interface Event {
@@ -71,6 +73,7 @@ interface Event {
   longitude?: number;
   status: string;
   isVirtual: boolean;
+  isDisclosed: boolean;
   imageLink?: string;
   virtualMeetingId?: string;
   virtualPassword?: string;
@@ -112,7 +115,6 @@ export default function AddEventPanel({
         const result = await response.json();
         if (result.success) {
           setMongoUser(result.data);
-          console.log(result.data);
         }
       } catch (error) {
         console.error("Error fetching Mongo user:", error);
@@ -151,6 +153,11 @@ export default function AddEventPanel({
   // Keep location rules separate so each panel can block progression
   const getLocationPanelErrors = (): Partial<FormErrors> => {
     const errors = {} as Partial<FormErrors>;
+
+    if (!formData.isDisclosed) {
+      return errors;
+    }
+
     const hasStructuredAddress =
       hasText(formData.street) &&
       hasText(formData.city) &&
@@ -254,7 +261,6 @@ export default function AddEventPanel({
 
   const onEventAdd = async (e: React.FormEvent) => {
     e?.preventDefault();
-    onCreate();
     // setFormData(EMPTY_FORM);
     setIsLoading(true);
     setDesCharsTyped(0);
@@ -281,19 +287,30 @@ export default function AddEventPanel({
 
         let address = formData.url || "";
 
-        if (formData.mode == "in-person") {
+        if (!formData.isDisclosed) {
+          address = "N/A";
+        } else if (formData.mode == "in-person") {
           const hasStructuredAddress =
             hasText(formData.street) &&
             hasText(formData.city) &&
             hasText(formData.state) &&
             hasText(formData.postalCode);
 
-          address = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`;
-          if (!hasStructuredAddress) {
-            address =
-              formData.locationDescription.trim() ||
-              `${formData.latitude}, ${formData.longitude}`;
+          const parts = [];
+
+          if (hasStructuredAddress) {
+            parts.push(`${formData.street}, ${formData.city}, ${formData.state}, ${formData.postalCode}`);
           }
+
+          if (hasText(formData.locationDescription)) {
+            parts.push(formData.locationDescription.trim());
+          }
+
+          if (formData.latitude && formData.longitude) {
+            parts.push(`${formData.latitude}, ${formData.longitude}`);
+          }
+
+          address = parts.join('\n');
         }
 
         const event: Event = {
@@ -306,6 +323,7 @@ export default function AddEventPanel({
           location: address,
           latitude: formData.latitude ?? undefined,
           longitude: formData.longitude ?? undefined,
+          isDisclosed: formData.isDisclosed,
           status:
             user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",
           imageLink: uploadResult?.URL,
@@ -414,7 +432,7 @@ export default function AddEventPanel({
         }
         const admin = await admin_response.json();
         const admin_email = admin.data.email;
-        console.log(admin_email);
+        
         await fetch("/api/resend/orgRoutes", {
           method: "POST",
           headers: {
@@ -448,64 +466,25 @@ export default function AddEventPanel({
       }
 
       setIsLoading(false); // End loading
+      onCreate();
     }
   };
 
-  const states = [
-    "AL",
-    "AK",
-    "AZ",
-    "AR",
-    "CA",
-    "CO",
-    "CT",
-    "DE",
-    "FL",
-    "GA",
-    "HI",
-    "ID",
-    "IL",
-    "IN",
-    "IA",
-    "KS",
-    "KY",
-    "LA",
-    "ME",
-    "MD",
-    "MA",
-    "MI",
-    "MN",
-    "MS",
-    "MO",
-    "MT",
-    "NE",
-    "NV",
-    "NH",
-    "NJ",
-    "NM",
-    "NY",
-    "NC",
-    "ND",
-    "OH",
-    "OK",
-    "OR",
-    "PA",
-    "RI",
-    "SC",
-    "SD",
-    "TN",
-    "TX",
-    "UT",
-    "VT",
-    "VA",
-    "WA",
-    "WV",
-    "WI",
-    "WY",
-  ];
-
   return (
     <>
+      <style>
+        {`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      {isLoading && (
+        <div style={styles.loadingOverlay}>
+          <div style={styles.spinner} />
+          <p style={{ color: "white", marginTop: "1rem" }}>Submitting event...</p>
+        </div>
+      )}
       {panelType === "start" && (
         <form style={styles.container} onSubmit={onEventAdd}>
           <MdArrowBack onClick={onClose} style={styles.back} size={25} />
@@ -660,6 +639,14 @@ export default function AddEventPanel({
           onBack={() => handleBack("location")}
           onClose={onClose}
           onSubmit={onEventAdd}
+          onDetailsChange={(details) =>
+            setFormData((prev) => ({
+              ...prev,
+              description: details
+                ? `${prev.description}\n\nAdditional details:\n${details}`
+                : prev.description,
+            }))
+          }
           onPhotoChange={(photo) => setFormData((prev) => ({ ...prev, photo }))}
         />
       )}
@@ -781,5 +768,26 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   characterCount: {
     color: "grey",
+  },
+  loadingOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+  spinner: {
+    width: "48px",
+    height: "48px",
+    border: "5px solid rgba(255,255,255,0.3)",
+    borderTop: "5px solid white",
+    borderRadius: "50%",
+    animation: "spin 0.8s linear infinite",
   },
 };

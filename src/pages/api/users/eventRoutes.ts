@@ -88,6 +88,7 @@ export default async function handler(
         imageLink,
         virtualMeetingId,
         virtualPassword,
+        isDisclosed,
       } = await req.body;
 
       // console.log("AFTER: ", req.body);
@@ -109,6 +110,7 @@ export default async function handler(
         imageLink,
         virtualMeetingId,
         virtualPassword,
+        isDisclosed,
         createdBy: user._id,
       });
 
