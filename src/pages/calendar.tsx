@@ -11,20 +11,22 @@ import React from "react";
 import useSWR, { mutate } from "swr";
 import AddEventPanel from "../components/addEventPanel";
 import EventRequestPopup from "../components/eventRequestPopup";
+import CalendarFilterModal from "../components/calendarFilterModal";
 import style1 from "../styles/calendar.module.css";
 import { useClerk } from "@clerk/clerk-react";
 import { EventDocument } from "../database/eventSchema";
 import { useRouter } from "next/router";
-import { convertEventDatesToDates } from "../utils/events";
+import { convertEventDatesToDates, filterEvents } from "../utils/events";
 import { DateTime } from "luxon";
 import { useUser } from "@clerk/clerk-react";
-import AddEventLocationPanel from "../components/addEventLocationPanel";
 
 // Recurring because events may span multiple days.
 // This still works for single-day events.
-export interface FullCalenderRecurringEvent {
+export interface FullCalendarRecurringEvent {
   startRecur: Date;
   endRecur: Date;
+  title: string;
+  id: string;
 }
 
 export interface Event {
@@ -40,6 +42,7 @@ type VisibleDateRange = {
 
 export default function CalendarPage() {
   const { user } = useUser();
+
   const EVENTS_KEY = "/api/users/eventRoutes?status=Approved";
   const { data: eventsData } = useSWR(EVENTS_KEY, (url: string) =>
     fetch(url)
@@ -51,20 +54,24 @@ export default function CalendarPage() {
   );
   const events: EventDocument[] = useMemo(() => eventsData ?? [], [eventsData]);
   const [calendarEvents, setCalendarEvents] = useState<
-    FullCalenderRecurringEvent[]
+    FullCalendarRecurringEvent[]
   >([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
     [],
   );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [hiddenOrganizations, setHiddenOrganizations] = useState<string[]>([]);
+  const [showVirtual, setShowVirtual] = useState(true);
+  const [showInPerson, setShowInPerson] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
   const [visibleDateRange, setVisibleDateRange] =
     useState<VisibleDateRange | null>(null);
   const [windowWidth, setWindowWidth] = useState(0);
-  const { signOut } = useClerk();
+
   const router = useRouter();
   const calendarRef = useRef<HTMLDivElement>(null);
   const fullCalendarRef = useRef<HTMLDivElement>(null);
@@ -72,24 +79,14 @@ export default function CalendarPage() {
   const [toolbarSearchStyle, setToolbarSearchStyle] =
     useState<React.CSSProperties>({ display: "none" });
   const filteredEvents = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-
-    if (!normalizedSearchTerm) {
-      return events;
-    }
-
-    return events.filter((event) => {
-      const title = event.title?.toLowerCase() ?? "";
-      const description = event.description?.toLowerCase() ?? "";
-      const organization = event.organization?.toLowerCase() ?? "";
-
-      return (
-        title.includes(normalizedSearchTerm) ||
-        description.includes(normalizedSearchTerm) ||
-        organization.includes(normalizedSearchTerm)
-      );
-    });
-  }, [events, searchTerm]);
+    return filterEvents(
+      events,
+      searchTerm,
+      hiddenOrganizations,
+      showVirtual,
+      showInPerson,
+    );
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;
@@ -99,17 +96,26 @@ export default function CalendarPage() {
       const eventStart = new Date(event.startDate);
       const eventEnd = new Date(event.endDate);
 
-      return eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start;
+      return (
+        eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start
+      );
     });
   }, [filteredEvents, visibleDateRange]);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
   const handleDatesSet = (dateInfo: {
     view: { currentStart: Date; currentEnd: Date };
   }) => {
@@ -135,7 +141,9 @@ export default function CalendarPage() {
       },
       filterButton: {
         text: "Filter",
-        click: () => {}, // no-op
+        click: () => {
+          setIsFilterOpen(true);
+        },
       },
     }),
     [],
@@ -189,20 +197,13 @@ export default function CalendarPage() {
   }, [searchTerm]);
 
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     if (!filteredEvents) return;
     setCalendarEvents(
       filteredEvents.map((event) => ({
         startRecur: event.startDate,
         endRecur: event.endDate,
         title: event.title,
-        id: event._id,
+        id: String(event._id),
       })),
     );
   }, [filteredEvents]);
@@ -262,36 +263,40 @@ export default function CalendarPage() {
   };
 
   function adjustButtons() {
-    const gridCell = document.querySelector(".fc-daygrid-day");
-    const headerCell = document.querySelector(".fc-col-header-cell");
+    const gridCell = document.querySelector(
+      ".fc-daygrid-day",
+    ) as HTMLElement | null;
+    const headerCell = document.querySelector(
+      ".fc-col-header-cell",
+    ) as HTMLElement | null;
 
-    if (gridCell) {
-      const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement;
-      const headerCell = document.querySelector(
-        ".fc-col-header-cell",
-      ) as HTMLElement;
-      const cellWidth = gridCell.offsetWidth * 0.95;
-      const cellHeight = headerCell.offsetHeight * 1.5;
-      const addButton = document.querySelector(
-        ".fc-AddEvent-button",
-      ) as HTMLElement;
-      if (addButton) {
-        addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 1.12}px`;
-        addButton.style.fontSize = `${cellWidth * 0.15}px`;
-      }
-      const prevButton = document.querySelector(
-        ".fc-prev-button",
-      ) as HTMLElement;
-      const nextButton = document.querySelector(
-        ".fc-next-button",
-      ) as HTMLElement;
-      if (prevButton && nextButton) {
-        prevButton.style.width = `${cellHeight * 0.9}px`;
-        nextButton.style.width = `${cellHeight * 0.9}px`;
-        prevButton.style.height = `${cellHeight * 0.9}px`;
-        nextButton.style.height = `${cellHeight * 0.9}px`;
-      }
+    if (!gridCell || !headerCell) return;
+
+    const cellWidth = gridCell.offsetWidth * 0.95;
+    const cellHeight = headerCell.offsetHeight * 1.5;
+
+    const addButton = document.querySelector(
+      ".fc-AddEvent-button",
+    ) as HTMLElement | null;
+
+    if (addButton) {
+      addButton.style.width = `${cellWidth}px`;
+      addButton.style.height = `${cellHeight * 1.12}px`;
+      addButton.style.fontSize = `${cellWidth * 0.15}px`;
+    }
+
+    const prevButton = document.querySelector(
+      ".fc-prev-button",
+    ) as HTMLElement | null;
+    const nextButton = document.querySelector(
+      ".fc-next-button",
+    ) as HTMLElement | null;
+
+    if (prevButton && nextButton) {
+      prevButton.style.width = `${cellHeight * 0.9}px`;
+      nextButton.style.width = `${cellHeight * 0.9}px`;
+      prevButton.style.height = `${cellHeight * 0.9}px`;
+      nextButton.style.height = `${cellHeight * 0.9}px`;
     }
   }
 
@@ -299,7 +304,7 @@ export default function CalendarPage() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
     const titleElement = document.querySelector(
       ".fc-toolbar-title",
-    ) as HTMLElement;
+    ) as HTMLElement | null;
 
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
@@ -323,12 +328,24 @@ export default function CalendarPage() {
 
   return (
     <Layout>
-      {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
+      {isShowingEventPopUp && user?.publicMetadata?.role !== "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
+      {isFilterOpen && (
+        <CalendarFilterModal
+          events={events}
+          hiddenOrganizations={hiddenOrganizations}
+          onHiddenOrganizationsChange={setHiddenOrganizations}
+          showVirtual={showVirtual}
+          onShowVirtualChange={setShowVirtual}
+          showInPerson={showInPerson}
+          onShowInPersonChange={setShowInPerson}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
-          <style>{calendarStyles}</style>
-          <div style={styles.fullCalendar} ref={fullCalendarRef}>
+        <style>{calendarStyles}</style>
+        <div style={styles.fullCalendar} ref={fullCalendarRef}>
           <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
@@ -337,8 +354,8 @@ export default function CalendarPage() {
               timeGridPlugin,
               bootstrap5Plugin,
             ]}
-            windowResize={function () {
-              setResize(!resize);
+            windowResize={() => {
+              setResize((previousResize) => !previousResize);
             }}
             customButtons={customButtons}
             headerToolbar={headerToolbar}
@@ -347,14 +364,14 @@ export default function CalendarPage() {
               next: "chevron-right",
             }}
             initialView="dayGridMonth"
-            nowIndicator={true}
-            editable={true}
+            nowIndicator
+            editable
+            selectable
             select={() => {}}
-            selectable={true}
             events={calendarEvents}
             datesSet={handleDatesSet}
             dateClick={handleDateClick}
-            eventClick={function (info) {
+            eventClick={(info) => {
               router.push({
                 pathname: "/eventDetails",
                 query: {
@@ -400,7 +417,8 @@ export default function CalendarPage() {
             onClose={() => setIsAddingEvent(false)}
             onCreate={() => setIsShowingEventPopUp(true)}
             addEvent={addEvent}
-          />)}
+          />
+        )}
       </div>
     </Layout>
   );
@@ -414,7 +432,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: "relative",
     width: "100%",
     height: "auto",
-    borderRadius: "10px", 
+    borderRadius: "10px",
     gap: "24px",
     padding: "24px",
     background: "white",
@@ -440,171 +458,189 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 const calendarStyles = `
-   .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #FFFFFF;
-     border: none;
-     color: #0A0A0A;  
-     width: 36px;
-     height: 36px;
-     border-radius: 8px; 
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-size: 16px;
-     line-height: 1;
-     padding: 0;
-   }
-
-   .fc .fc-prev-button:hover,
-   .fc .fc-next-button:hover,
-   .fc .fc-AddEvent-button:hover {
-     background-color: #eaeaea; 
-   }
-
-   .fc-prev-button {
-     height: 38px;
-     padding: 8px;
-   }
-
-   .fc-next-button {
-     margin-right: 3%;
-     height: 38px;
-     padding: 8px;
-   }
-
-   .fc-header-toolbar {
-     display: flex;
-     justify-content: space-between;
-     text-transform: uppercase;
-     height: 38px;
-   }
-
-   .fc .fc-toolbar-title {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     margin-right: 2.5%;
-     height: 38px;
-     font-size: 32px;
-   }
-
-   .fc-toolbar-chunk {
-     display: flex;
-     align-items: center;
-     justify-content: start;
-     height: 38px;
-   }
-
-   .fc-toolbar-chunk:nth-child(2) {
-     justify-content: center;
-   }
-
-   .fc-toolbar-chunk:last-child {
-     justify-content: end;
-   }
-
-   .fc-col-header-cell {
-     background: #335543;
-     color: #FFF;
-     height: 44px;
-     border: none;
-     vertical-align: middle;
-   }
-
-   .fc .fc-scrollgrid-sync-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    }
-
-   .fc .fc-AddEvent-button {
-     background-color: #F7AB74;
-     color: black;
-     border-radius: 0.9em;
-     border-color: #F7AB74;
-     font-size: 1.1em;
-     border: none;
-     width: 120px; /* Adjust the width as needed */
-     height: 38px; /* Adjust the height as needed */
-   }
-
-   .fc .fc-daygrid-event-harness {
-     max-width: 100%;
-   }
-
-
-   .fc .fc-event {
-     background-color: #F7AB74;
-     border-color: #F7AB74;
-     color: black;
-     border-radius: 1em;
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-     padding: 5%;
-     padding-right: 25%;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     box-sizing: border-box;
-     display: block;
-   }
-
-   .fc-daygrid-event {
-  white-space: normal !important;
-  align-items: normal !important;
+/* NAV BUTTONS */
+.fc .fc-prev-button, .fc .fc-next-button {
+  background-color: #FFFFFF;
+  border: none;
+  color: #0A0A0A;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  padding: 0;
 }
 
-   .fc-daygrid-event-dot {
-     display: none;
-   }
+.fc .fc-prev-button:hover,
+.fc .fc-next-button:hover,
+.fc .fc-AddEvent-button:hover {
+  background-color: #eaeaea;
+}
 
-   .fc .fc-daygrid-day,
-   .fc .fc-daygrid {
-     border: 1px solid #ddd;
-     border-right: 1px solid #ddd;
-   }
-  
-   .fc .fc-searchButton-button {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 194px;
-    height: 38px;
-    background-color: white;
-    border-radius: 9999px;
-    border: 1px solid #D1D5DC;
-    padding: 0 16px;
-    font-family: Inter, sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: -0.15px;
-    color: rgba(10, 10, 10, 0.5);
-    cursor: text;
-    visibility: hidden;
-   }
+.fc-prev-button,
+.fc-next-button {
+  height: 38px;
+  padding: 8px;
+}
 
-   .fc .fc-filterButton-button{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 65.56px;
-    height: 38px;
-    background-color: rgb(229, 231, 235);
-    border-radius: 9999px;
+.fc-next-button {
+  margin-right: 3%;
+}
+
+/* HEADER */
+.fc-header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  height: 38px;
+}
+.fc-col-header-cell {
+  background: #335543;
+  color: #FFF;
+  height: 44px;
+  border: none;
+  vertical-align: middle;
+}
+
+.fc .fc-toolbar-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 2.5%;
+  height: 38px;
+  font-size: 32px;
+}
+
+.fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 38px;
+}
+
+.fc-toolbar-chunk:nth-child(2) {
+  justify-content: center;
+}
+
+.fc-toolbar-chunk:last-child {
+  justify-content: flex-end;
+}
+
+/* HEADER CELL TEXT */
+.fc .fc-col-header-cell .fc-scrollgrid-sync-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* DAY CELL STRUCTURE */
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.fc .fc-daygrid-day-top {
+  justify-content: center;
+}
+
+/* EVENTS CONTAINER */
+.fc .fc-daygrid-day-events {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.fc .fc-daygrid-event-harness {
+  display: block !important;
+  position: relative !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  margin: 2px 0 !important;
+}
+
+/* EVENT BLOCK */
+.fc .fc-daygrid-event {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  white-space: normal !important;
+}
+
+/* ACTUAL EVENT STYLE */
+.fc .fc-event {
+  width: 100% !important;
+  box-sizing: border-box;
+  background-color: #F7AB74;
+  border-color: #F7AB74;
+  color: black;
+  border-radius: 1em;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 4px 6px;
+}
+
+/* REMOVE DOT */
+.fc-daygrid-event-dot {
+  display: none;
+}
+
+/* GRID */
+.fc .fc-daygrid-day,
+.fc .fc-daygrid {
+  border: 1px solid #ddd;
+}
+
+/* SEARCH BUTTON */
+.fc .fc-searchButton-button {
+  display: flex;
+  align-items: center;
+  width: 194px;
+  height: 38px;
+  background-color: white;
+  border-radius: 9999px;
+  border: 1px solid #D1D5DC;
+  padding: 0 16px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  color: rgba(10, 10, 10, 0.5);
+  visibility: hidden;
+}
+
+/* FILTER BUTTON */
+.fc .fc-filterButton-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 65px;
+  height: 38px;
+  background-color: rgb(229, 231, 235);
+  border-radius: 9999px;
+  border: none;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+/* ADD BUTTON */
+.fc .fc-AddEvent-button {
+    background-color: #F7AB74;
+    color: black;
+    border-radius: 0.9em;
+    border-color: #F7AB74;
+    font-size: 1.1em;
     border: none;
-    font-family: Inter, sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: -0.15px;
-    color: rgba(10, 10, 10);
-   }
+    width: 120px; /* Adjust the width as needed */
+    height: 38px; /* Adjust the height as needed */
+}
 
-   input::placeholder {
-    font-family: Inter, sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-   }
- `;
+/* INPUT */
+input::placeholder {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+`;

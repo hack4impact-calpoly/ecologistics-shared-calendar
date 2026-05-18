@@ -69,6 +69,8 @@ interface Event {
   endDate: Date;
   description: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   status: string;
   isVirtual: boolean;
   isDisclosed: boolean;
@@ -312,6 +314,8 @@ export default function AddEventPanel({
           description: formData.description,
           isVirtual: formData.isVirtual,
           location: address,
+          latitude: formData.latitude ?? undefined,
+          longitude: formData.longitude ?? undefined,
           isDisclosed: formData.isDisclosed,
           status:
             user?.publicMetadata?.role === "admin" ? "Approved" : "Pending",

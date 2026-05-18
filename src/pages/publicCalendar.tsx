@@ -3,34 +3,27 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import EventBar from "./eventBar";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useEffect, useMemo, useState, useRef } from "react";
-import React from "react";
-import AddEventPanel from "../components/addEventPanel";
-import Link from "next/link";
-import EventRequestPopup from "../components/eventRequestPopup";
-import style1 from "../styles/calendar.module.css";
-import { useClerk } from "@clerk/clerk-react";
-import { EventDocument } from "../database/eventSchema";
-import { useRouter } from "next/router";
-import { convertEventDatesToDates } from "../utils/events";
-import { DateTime } from "luxon";
-import { useSession } from "@clerk/nextjs";
-import { useUser } from "@clerk/clerk-react";
 
-// Recurring because events may span multiple days.
-// This still works for single-day events.
-export interface FullCalenderRecurringEvent {
+import { useEffect, useMemo, useState, useRef } from "react";
+import AddEventPanel from "../components/addEventPanel";
+import EventBar from "./eventBar";
+import EventRequestPopup from "../components/eventRequestPopup";
+import CalendarFilterModal from "../components/calendarFilterModal";
+import style1 from "../styles/calendar.module.css";
+
+import { useClerk, useSession, useUser } from "@clerk/clerk-react";
+import { useRouter } from "next/router";
+import { EventDocument } from "../database/eventSchema";
+import { convertEventDatesToDates, filterEvents } from "../utils/events";
+import { DateTime } from "luxon";
+
+export interface FullCalendarRecurringEvent {
   startRecur: Date;
   endRecur: Date;
-}
-
-export interface Event {
-  startDate: Date;
-  endDate: Date;
   title: string;
+  id: string;
 }
 
 type VisibleDateRange = {
@@ -40,48 +33,45 @@ type VisibleDateRange = {
 
 export default function CalendarPage() {
   const { user } = useUser();
+  const clerk = useClerk()
+  const router = useRouter();
+
   const [events, setEvents] = useState<EventDocument[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<
-    FullCalenderRecurringEvent[]
+    FullCalendarRecurringEvent[]
   >([]);
   const [selectedDateEvents, setSelectedDateEvents] = useState<EventDocument[]>(
     [],
   );
   const [resize, setResize] = useState(false);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isShowingEventPopUp, setIsShowingEventPopUp] = useState(false);
+  const [hiddenOrganizations, setHiddenOrganizations] = useState<string[]>([]);
+  const [showVirtual, setShowVirtual] = useState(true);
+  const [showInPerson, setShowInPerson] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [toolbarSearchTerm, setToolbarSearchTerm] = useState("");
   const [visibleDateRange, setVisibleDateRange] =
     useState<VisibleDateRange | null>(null);
   const [windowWidth, setWindowWidth] = useState(0);
-  const { signOut } = useClerk();
-  const router = useRouter();
-  const clerk = useClerk();
+
   const calendarRef = useRef<HTMLDivElement>(null);
   const fullCalendarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+
   const [toolbarSearchStyle, setToolbarSearchStyle] =
     useState<React.CSSProperties>({ display: "none" });
+
   const filteredEvents = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-
-    if (!normalizedSearchTerm) {
-      return events;
-    }
-
-    return events.filter((event) => {
-      const title = event.title?.toLowerCase() ?? "";
-      const description = event.description?.toLowerCase() ?? "";
-      const organization = event.organization?.toLowerCase() ?? "";
-
-      return (
-        title.includes(normalizedSearchTerm) ||
-        description.includes(normalizedSearchTerm) ||
-        organization.includes(normalizedSearchTerm)
-      );
-    });
-  }, [events, searchTerm]);
+    return filterEvents(
+      events,
+      searchTerm,
+      hiddenOrganizations,
+      showVirtual,
+      showInPerson,
+    );
+  }, [events, hiddenOrganizations, searchTerm, showInPerson, showVirtual]);
   const visibleMonthEvents = useMemo(() => {
     if (!visibleDateRange) {
       return filteredEvents;
@@ -91,7 +81,9 @@ export default function CalendarPage() {
       const eventStart = new Date(event.startDate);
       const eventEnd = new Date(event.endDate);
 
-      return eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start;
+      return (
+        eventStart < visibleDateRange.end && eventEnd >= visibleDateRange.start
+      );
     });
   }, [filteredEvents, visibleDateRange]);
 
@@ -103,7 +95,7 @@ export default function CalendarPage() {
     if (clerk.user && (role === "admin" || role === "approved")) {
       router.push("/calendar");
     }
-  }, [clerk.user]);
+  }, [clerk.user, router, session?.user?.publicMetadata?.role]);
 
   useEffect(() => {
     setSelectedDateEvents([]);
@@ -111,11 +103,18 @@ export default function CalendarPage() {
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
   const handleDatesSet = (dateInfo: {
     view: { currentStart: Date; currentEnd: Date };
   }) => {
@@ -124,6 +123,7 @@ export default function CalendarPage() {
       end: dateInfo.view.currentEnd,
     });
   };
+
   const customButtons = useMemo(
     () => ({
       searchButton: {
@@ -134,11 +134,14 @@ export default function CalendarPage() {
       },
       filterButton: {
         text: "Filter",
-        click: () => {}, // no-op
+        click: () => {
+          setIsFilterOpen(true);
+        },
       },
     }),
     [],
   );
+
   const headerToolbar = useMemo(
     () => ({
       left: "prev title next",
@@ -180,43 +183,24 @@ export default function CalendarPage() {
     };
   }, [resize, windowWidth]);
 
-  const handleLogout = async () => {
-    try {
-      // Call signOut function to log out the current user
-      await signOut();
-      // Redirect to a different page after logout if needed
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
-  };
-
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!filteredEvents) return;
     setCalendarEvents(
       filteredEvents.map((event) => ({
         startRecur: event.startDate,
         endRecur: event.endDate,
         title: event.title,
-        id: event._id,
+        id: String(event._id),
       })),
     );
   }, [filteredEvents]);
 
-  // Fetch events from the database
   useEffect(() => {
     fetch("/api/users/eventRoutes?status=Approved")
       .then((res) => res.json())
       .then((res) => {
-        convertEventDatesToDates(res.data as EventDocument[]);
-        setEvents(res.data as EventDocument[]);
+        const rawEvents = res.data ?? [];
+        convertEventDatesToDates(rawEvents as EventDocument[]);
+        setEvents(rawEvents as EventDocument[]);
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
@@ -226,13 +210,14 @@ export default function CalendarPage() {
   const handleDateClick = (arg: { dateStr: string }) => {
     const clickedDate = new Date(arg.dateStr);
 
-    const eventsOnClickedDate: EventDocument[] = filteredEvents.filter(
+    const eventsOnClickedDate = filteredEvents.filter(
       (event: EventDocument) => {
         const eventStart = DateTime.fromISO(event.startDate.toISOString(), {
           zone: "UTC",
         })
           .setZone("America/Los_Angeles")
           .toISODate();
+
         const eventEnd = DateTime.fromISO(event.endDate.toISOString(), {
           zone: "UTC",
         })
@@ -253,17 +238,18 @@ export default function CalendarPage() {
     setSelectedDateEvents(eventsOnClickedDate);
   };
 
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (
-      calendarRef.current &&
-      !calendarRef.current.contains(event.target as Node)
-    ) {
-      setSelectedDateEvents([]);
-    }
-  };
-
   useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setSelectedDateEvents([]);
+      }
+    };
+
     document.addEventListener("click", handleOutsideClick);
+
     return () => {
       document.removeEventListener("click", handleOutsideClick);
     };
@@ -272,36 +258,40 @@ export default function CalendarPage() {
   const addEvent = () => {};
 
   function adjustButtons() {
-    const gridCell = document.querySelector(".fc-daygrid-day");
-    const headerCell = document.querySelector(".fc-col-header-cell");
+    const gridCell = document.querySelector(
+      ".fc-daygrid-day",
+    ) as HTMLElement | null;
+    const headerCell = document.querySelector(
+      ".fc-col-header-cell",
+    ) as HTMLElement | null;
 
-    if (gridCell) {
-      const gridCell = document.querySelector(".fc-daygrid-day") as HTMLElement;
-      const headerCell = document.querySelector(
-        ".fc-col-header-cell",
-      ) as HTMLElement;
-      const cellWidth = gridCell.offsetWidth * 0.95;
-      const cellHeight = headerCell.offsetHeight * 1.5;
-      const addButton = document.querySelector(
-        ".fc-AddEvent-button",
-      ) as HTMLElement;
-      if (addButton) {
-        addButton.style.width = `${cellWidth}px`;
-        addButton.style.height = `${cellHeight * 1.12}px`;
-        addButton.style.fontSize = `${cellWidth * 0.15}px`;
-      }
-      const prevButton = document.querySelector(
-        ".fc-prev-button",
-      ) as HTMLElement;
-      const nextButton = document.querySelector(
-        ".fc-next-button",
-      ) as HTMLElement;
-      if (prevButton && nextButton) {
-        prevButton.style.width = `${cellHeight * 0.9}px`;
-        nextButton.style.width = `${cellHeight * 0.9}px`;
-        prevButton.style.height = `${cellHeight * 0.9}px`;
-        nextButton.style.height = `${cellHeight * 0.9}px`;
-      }
+    if (!gridCell || !headerCell) return;
+
+    const cellWidth = gridCell.offsetWidth * 0.95;
+    const cellHeight = headerCell.offsetHeight * 1.5;
+
+    const addButton = document.querySelector(
+      ".fc-AddEvent-button",
+    ) as HTMLElement | null;
+
+    if (addButton) {
+      addButton.style.width = `${cellWidth}px`;
+      addButton.style.height = `${cellHeight * 1.12}px`;
+      addButton.style.fontSize = `${cellWidth * 0.15}px`;
+    }
+
+    const prevButton = document.querySelector(
+      ".fc-prev-button",
+    ) as HTMLElement | null;
+    const nextButton = document.querySelector(
+      ".fc-next-button",
+    ) as HTMLElement | null;
+
+    if (prevButton && nextButton) {
+      prevButton.style.width = `${cellHeight * 0.9}px`;
+      nextButton.style.width = `${cellHeight * 0.9}px`;
+      prevButton.style.height = `${cellHeight * 0.9}px`;
+      nextButton.style.height = `${cellHeight * 0.9}px`;
     }
   }
 
@@ -309,7 +299,7 @@ export default function CalendarPage() {
     const gridCells = document.querySelectorAll(".fc-daygrid-day");
     const titleElement = document.querySelector(
       ".fc-toolbar-title",
-    ) as HTMLElement;
+    ) as HTMLElement | null;
 
     if (gridCells.length > 0 && titleElement) {
       const cellWidth = (gridCells[0] as HTMLElement).offsetWidth;
@@ -323,8 +313,10 @@ export default function CalendarPage() {
   useEffect(() => {
     adjustButtons();
     setTitleFontSize();
+
     window.addEventListener("resize", adjustButtons);
     window.addEventListener("resize", setTitleFontSize);
+
     return () => {
       window.removeEventListener("resize", adjustButtons);
       window.removeEventListener("resize", setTitleFontSize);
@@ -333,13 +325,26 @@ export default function CalendarPage() {
 
   return (
     <Layout>
-      {isShowingEventPopUp && user?.publicMetadata?.role != "admin" && (
+      {isShowingEventPopUp && user?.publicMetadata?.role !== "admin" && (
         <EventRequestPopup onClose={() => setIsShowingEventPopUp(false)} />
       )}
+      {isFilterOpen && (
+        <CalendarFilterModal
+          events={events}
+          hiddenOrganizations={hiddenOrganizations}
+          onHiddenOrganizationsChange={setHiddenOrganizations}
+          showVirtual={showVirtual}
+          onShowVirtualChange={setShowVirtual}
+          showInPerson={showInPerson}
+          onShowInPersonChange={setShowInPerson}
+          onClose={() => setIsFilterOpen(false)}
+        />
+      )}
       <div className={style1.calendarPageContainer} ref={calendarRef}>
-          <style>{calendarStyles}</style>
-          <div style={styles.fullCalendar} ref={fullCalendarRef}>
-            <FullCalendar
+        <style>{calendarStyles}</style>
+
+        <div style={styles.fullCalendar} ref={fullCalendarRef}>
+          <FullCalendar
             themeSystem="bootstrap5"
             plugins={[
               dayGridPlugin,
@@ -347,8 +352,8 @@ export default function CalendarPage() {
               timeGridPlugin,
               bootstrap5Plugin,
             ]}
-            windowResize={function () {
-              setResize(!resize);
+            windowResize={() => {
+              setResize((previousResize) => !previousResize);
             }}
             headerToolbar={headerToolbar}
             buttonIcons={{
@@ -357,14 +362,14 @@ export default function CalendarPage() {
             }}
             customButtons={customButtons}
             initialView="dayGridMonth"
-            nowIndicator={true}
-            editable={true}
+            nowIndicator
+            editable
+            selectable
             select={() => {}}
-            selectable={true}
             events={calendarEvents}
             datesSet={handleDatesSet}
             dateClick={handleDateClick}
-            eventClick={function (info) {
+            eventClick={(info) => {
               router.push({
                 pathname: "/eventDetails",
                 query: {
@@ -374,19 +379,21 @@ export default function CalendarPage() {
             }}
             eventTextColor="black"
             eventBackgroundColor="#F7AB74"
-            />
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search events..."
-              value={toolbarSearchTerm}
-              onChange={(event) => {
-                setToolbarSearchTerm(event.target.value);
-                setSearchTerm(event.target.value);
-              }}
-              style={{ ...styles.toolbarSearchInput, ...toolbarSearchStyle }}
-            />
-          </div>
+          />
+
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search events..."
+            value={toolbarSearchTerm}
+            onChange={(event) => {
+              setToolbarSearchTerm(event.target.value);
+              setSearchTerm(event.target.value);
+            }}
+            style={{ ...styles.toolbarSearchInput, ...toolbarSearchStyle }}
+          />
+        </div>
+
         {!isAddingEvent ? (
           <EventBar
             events={
@@ -409,14 +416,13 @@ export default function CalendarPage() {
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
-  spaced: {},
   fullCalendar: {
     display: "flex",
     flexDirection: "column",
     position: "relative",
     width: "100%",
     height: "auto",
-    borderRadius: "10px", 
+    borderRadius: "10px",
     gap: "24px",
     padding: "24px",
     background: "white",
@@ -442,170 +448,178 @@ const styles: { [key: string]: React.CSSProperties } = {
 };
 
 const calendarStyles = `
-   .fc .fc-prev-button, .fc .fc-next-button {
-     background-color: #FFFFFF;
-     border: none;
-     color: #0A0A0A;  
-     width: 36px;
-     height: 36px;
-     border-radius: 8px; 
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-size: 16px;
-     line-height: 1;
-     padding: 0;
-   }
+/* NAV BUTTONS */
+.fc .fc-prev-button, .fc .fc-next-button {
+  background-color: #FFFFFF;
+  border: none;
+  color: #0A0A0A;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  padding: 0;
+}
 
-   .fc .fc-prev-button:hover,
-   .fc .fc-next-button:hover,
-   .fc .fc-AddEvent-button:hover {
-     background-color: #eaeaea; 
-   }
+.fc .fc-prev-button:hover,
+.fc .fc-next-button:hover,
+.fc .fc-AddEvent-button:hover {
+  background-color: #eaeaea;
+}
 
-   .fc-prev-button {
-     height: 38px;
-     padding: 8px;
-   }
+.fc-prev-button,
+.fc-next-button {
+  height: 38px;
+  padding: 8px;
+}
 
-   .fc-next-button {
-     margin-right: 3%;
-     height: 38px;
-     padding: 8px;
-   }
+.fc-next-button {
+  margin-right: 3%;
+}
 
-   .fc-header-toolbar {
-     display: flex;
-     justify-content: space-between;
-     text-transform: uppercase;
-     height: 38px;
-   }
+/* HEADER */
+.fc-header-toolbar {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  height: 38px;
+}
+.fc-col-header-cell {
+  background: #335543;
+  color: #FFF;
+  height: 44px;
+  border: none;
+  vertical-align: middle;
+}
 
-   .fc .fc-toolbar-title {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     margin-right: 2.5%;
-     height: 38px;
-     font-size: 32px;
-   }
+.fc .fc-toolbar-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 2.5%;
+  height: 38px;
+  font-size: 32px;
+}
 
-   .fc-toolbar-chunk {
-     display: flex;
-     align-items: center;
-     justify-content: start;
-     height: 38px;
-   }
+.fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 38px;
+}
 
-   .fc-toolbar-chunk:nth-child(2) {
-     justify-content: center;
-   }
+.fc-toolbar-chunk:nth-child(2) {
+  justify-content: center;
+}
 
-   .fc-toolbar-chunk:last-child {
-     justify-content: end;
-   }
+.fc-toolbar-chunk:last-child {
+  justify-content: flex-end;
+}
 
-   .fc-col-header-cell {
-     background: #335543;
-     color: #FFF;
-     height: 44px;
-     border: none;
-     vertical-align: middle;
-   }
+/* HEADER CELL TEXT */
+.fc .fc-col-header-cell .fc-scrollgrid-sync-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-   .fc .fc-scrollgrid-sync-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    }
+/* DAY CELL STRUCTURE */
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
 
-   .fc .fc-AddEvent-button {
-     background-color: #F7AB74;
-     color: black;
-     border-radius: 0.9em;
-     border-color: #F7AB74;
-     font-size: 1.1em;
-     border: none;
-     width: 120px; /* Adjust the width as needed */
-     height: 38px; /* Adjust the height as needed */
-   }
+.fc .fc-daygrid-day-top {
+  justify-content: center;
+}
 
-   .fc .fc-daygrid-event-harness {
-     max-width: 100%;
-   }
+/* EVENTS CONTAINER */
+.fc .fc-daygrid-day-events {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 0 4px;
+  box-sizing: border-box;
+}
 
-   .fc .fc-event {
-     background-color: #F7AB74;
-     border-color: #F7AB74;
-     color: black;
-     border-radius: 1em;
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-     padding: 5%;
-     padding-right: 25%;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     box-sizing: border-box;
-     display: block;
-   }
+.fc .fc-daygrid-event-harness {
+  display: block !important;
+  position: relative !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  margin: 2px 0 !important;
+}
 
-   .fc-daygrid-event-dot {
-     display: none;
-   }
+/* EVENT BLOCK */
+.fc .fc-daygrid-event {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  white-space: normal !important;
+}
 
-   .fc-daygrid-event {
-	white-space: normal !important;
-	align-items: normal !important;
-    }
+/* ACTUAL EVENT STYLE */
+.fc .fc-event {
+  width: 100% !important;
+  box-sizing: border-box;
+  background-color: #F7AB74;
+  border-color: #F7AB74;
+  color: black;
+  border-radius: 1em;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 4px 6px;
+}
 
-   .fc .fc-daygrid-day,
-   .fc .fc-daygrid {
-     border: 1px solid #ddd;
-     border-right: 1px solid #ddd;
-   }
+/* REMOVE DOT */
+.fc-daygrid-event-dot {
+  display: none;
+}
 
-   .fc .fc-searchButton-button {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 194px;
-    height: 38px;
-    background-color: white;
-    border-radius: 9999px;
-    border: 1px solid #D1D5DC;
-    padding: 0 16px;
-    font-family: Inter, sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: -0.15px;
-    color: rgba(10, 10, 10, 0.5);
-    cursor: text;
-    visibility: hidden;
-   }
+/* GRID */
+.fc .fc-daygrid-day,
+.fc .fc-daygrid {
+  border: 1px solid #ddd;
+}
 
-   .fc .fc-filterButton-button{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 65.56px;
-    height: 38px;
-    background-color: rgb(229, 231, 235);
-    border-radius: 9999px;
-    border: none;
-    font-weight: 400;
-    font-family: Inter, sans-serif;
-    font-size: 14px;
-    line-height: 1;
-    letter-spacing: -0.15px;
-    color: rgba(10, 10, 10);
-   }
+/* SEARCH BUTTON */
+.fc .fc-searchButton-button {
+  display: flex;
+  align-items: center;
+  width: 194px;
+  height: 38px;
+  background-color: white;
+  border-radius: 9999px;
+  border: 1px solid #D1D5DC;
+  padding: 0 16px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  color: rgba(10, 10, 10, 0.5);
+  visibility: hidden;
+}
 
-   input::placeholder {
-    font-family: Inter, sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-   }
- `;
+/* FILTER BUTTON */
+.fc .fc-filterButton-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 65px;
+  height: 38px;
+  background-color: rgb(229, 231, 235);
+  border-radius: 9999px;
+  border: none;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+
+/* INPUT */
+input::placeholder {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+}
+`;
