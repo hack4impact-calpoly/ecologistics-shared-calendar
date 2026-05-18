@@ -92,6 +92,12 @@ export default function AddEventLocationPanel({
               setEventFormData((prev) => ({
                 ...prev,
                 isDisclosed: !e.target.checked,
+                street: "",
+                city: "",
+                state: "",
+                postalCode: "",
+                latitude: null,
+                longitude: null,
               }));
             }}
           />
@@ -156,7 +162,7 @@ export default function AddEventLocationPanel({
                   city: "",
                   state: "",
                   postalCode: "",
-                  locationDescription: "Custom pin location",
+                  locationDescription: prev.locationDescription || "Custom location pinned",
                 }));
                 setAutofillKey((k) => k + 1);
                 setPinNotif(true);
