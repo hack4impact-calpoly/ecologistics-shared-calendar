@@ -9,6 +9,8 @@ type CalendarFilterModalProps = {
   onShowVirtualChange: (showVirtual: boolean) => void;
   showInPerson: boolean;
   onShowInPersonChange: (showInPerson: boolean) => void;
+  showUndisclosed: boolean;
+  onShowUndisclosedChange: (show: boolean) => void;
   onClose: () => void;
 };
 
@@ -20,6 +22,8 @@ export default function CalendarFilterModal({
   onShowVirtualChange,
   showInPerson,
   onShowInPersonChange,
+  showUndisclosed,
+  onShowUndisclosedChange,
   onClose,
 }: CalendarFilterModalProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -27,6 +31,7 @@ export default function CalendarFilterModal({
     useState(hiddenOrganizations);
   const [draftShowVirtual, setDraftShowVirtual] = useState(showVirtual);
   const [draftShowInPerson, setDraftShowInPerson] = useState(showInPerson);
+  const [draftShowUndisclosed, setDraftShowUndisclosed] = useState(showUndisclosed);
   const organizations = useMemo(() => {
     return Array.from(
       new Set(events.map((event) => event.organization).filter(Boolean)),
@@ -60,6 +65,7 @@ export default function CalendarFilterModal({
     onHiddenOrganizationsChange(draftHiddenOrganizations);
     onShowVirtualChange(draftShowVirtual);
     onShowInPersonChange(draftShowInPerson);
+    onShowUndisclosedChange(draftShowUndisclosed);
     handleClose();
   };
 
@@ -145,11 +151,50 @@ export default function CalendarFilterModal({
             >
               In Person
             </button>
+            <button
+              type="button"
+              aria-pressed={draftShowUndisclosed}
+              style={{
+                ...styles.filterButton,
+                ...(draftShowUndisclosed
+                  ? styles.filterButtonActive
+                  : styles.filterButtonInactive),
+              }}
+              onClick={() => setDraftShowUndisclosed(!draftShowUndisclosed)}
+            >
+              Undisclosed
+            </button>
           </div>
         </div>
-        <button style={styles.applyButton} onClick={handleApply} type="button">
-          Apply
-        </button>
+        <div style={styles.footer}>
+          <button
+            style={styles.selectAllButton}
+            onClick={() => {
+              setDraftHiddenOrganizations([]);
+              setDraftShowVirtual(true);
+              setDraftShowInPerson(true);
+              setDraftShowUndisclosed(true);
+            }}
+            type="button"
+          >
+            Select All
+          </button>
+          <button
+            style={styles.selectAllButton}
+            onClick={() => {
+              setDraftHiddenOrganizations(organizations as string[]);
+              setDraftShowVirtual(false);
+              setDraftShowInPerson(false);
+              setDraftShowUndisclosed(false);
+            }}
+            type="button"
+          >
+            Deselect All
+          </button>
+          <button style={styles.applyButton} onClick={handleApply} type="button">
+            Apply
+          </button>
+        </div>
       </div>
     </>
   );
@@ -255,5 +300,29 @@ const styles: { [key: string]: React.CSSProperties } = {
     lineHeight: 1,
     cursor: "pointer",
     transition: "background-color 150ms ease, opacity 150ms ease",
+  },
+  footer: {
+    position: "sticky",
+    bottom: 0,
+    background: "white",
+    paddingTop: "12px",
+    marginTop: "8px",
+    borderTop: "1px solid #D1D5DC",
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+  },
+  selectAllButton: {
+    borderRadius: "9999px",
+    border: "1px solid #989898",
+    padding: "10px 14px",
+    fontFamily: '"DM Sans", sans-serif',
+    fontSize: "0.95rem",
+    fontWeight: 400,
+    lineHeight: 1,
+    cursor: "pointer",
+    backgroundColor: "#f0f0f0",
+    color: "#333",
+    transition: "background-color 150ms ease",
   },
 };
