@@ -35,6 +35,7 @@ type SelectedAddress = {
 
 type AddressAutoFillProps = {
   apiKey: string;
+  initialAddress?: string;
   onSelect?: (selected: SelectedAddress, feature: GeoapifyFeature) => void;
   placeholder?: string;
   minChars?: number;
@@ -71,6 +72,7 @@ async function fetchGeoapifyAutocomplete(params: {
 
 export function AddressAutoFill({
   apiKey,
+  initialAddress,
   onSelect,
   placeholder = "Search for an address",
   minChars = 3,
@@ -78,7 +80,7 @@ export function AddressAutoFill({
   debounceMs = 300,
 }: AddressAutoFillProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialAddress);
   const debouncedInput = useDebouncedValue(input, debounceMs);
   const [items, setItems] = useState<GeoapifyFeature[]>([]);
   const [dropOpen, setDropOpen] = useState(false);
