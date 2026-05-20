@@ -32,8 +32,8 @@ export default function AddEventLocationPanel({
     eventFormData.mode === "virtual" ? "virtual" : "in-person",
   ); //active mode
   const [formData, setFormData] = useState({
-    lon: 0,
-    lat: 0,
+    lon: eventFormData.longitude ?? 0,
+    lat: eventFormData.latitude ?? 0,
   });
   const [autofillKey, setAutofillKey] = useState(0);
   const [pinNotif, setPinNotif] = useState(false);
@@ -130,7 +130,7 @@ export default function AddEventLocationPanel({
             }}
           >
             <AddressAutoFill
-              key={1}
+              key={autofillKey}
               initialAddress={
                 !eventFormData.street && !eventFormData.city
                   ? "" // Keep it completely empty if there's no address data yet
@@ -163,10 +163,14 @@ export default function AddEventLocationPanel({
             }}
           >
             <MapPin
-              inLon={formData.lon ?? eventFormData.longitude ?? 0}
-              inLat={formData.lat ?? eventFormData.latitude ?? 0}
+              inLon={formData.lon}
+              inLat={formData.lat}
               onPickAddress={(data) => {
-                setFormData({ ...formData, lon: data.lon, lat: data.lat });
+                setFormData((prev) => ({
+                  ...prev,
+                  lon: data.lon,
+                  lat: data.lat,
+                }));
                 setEventFormData((prev) => ({
                   ...prev,
                   mode: "in-person",
@@ -177,8 +181,6 @@ export default function AddEventLocationPanel({
                   city: "",
                   state: "",
                   postalCode: "",
-                  locationDescription:
-                    prev.locationDescription || "Custom location pinned",
                 }));
                 setAutofillKey((k) => k + 1);
                 setPinNotif(true);
@@ -196,8 +198,13 @@ export default function AddEventLocationPanel({
             type="text"
             style={styles.input}
             className="event-input"
-            onChange={(e) => setLocationDetails(e.target.value)}
-            value={locationDetails || eventFormData.locationDescription}
+            onChange={(e) =>
+              setEventFormData((prev) => ({
+                ...prev,
+                locationDescription: e.target.value,
+              }))
+            }
+            value={eventFormData.locationDescription || ""}
             placeholder="Add description of location (optional)"
           />
         </div>
@@ -272,7 +279,7 @@ export default function AddEventLocationPanel({
       </div>
 
       <div style={styles.actions}>
-        <button style={styles.button} type="button" onClick={handleContinue}>
+        <button style={styles.button} type="button" onClick={onContinue}>
           Continue
         </button>
       </div>

@@ -46,9 +46,17 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
   const mapDivRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
+  const onPickAddressRef = useRef(onPickAddress);
   const mapRef = useRef<Map | null>(null);
   const sourceRef = useRef<VectorSource | null>(null);
   const pinFeatureRef = useRef<Feature<Point> | null>(null);
+  const inLonRef = useRef(inLon);
+  const inLatRef = useRef(inLat);
+
+  useEffect(() => {
+    inLonRef.current = inLon;
+    inLatRef.current = inLat;
+  }, [inLon, inLat]);
 
   const [addressCoords, setAddressCoords] = useState<{
     lon: number;
@@ -71,6 +79,10 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     [],
   );
 
+  useEffect(() => {
+    onPickAddressRef.current = onPickAddress;
+  }, [onPickAddress]);
+
   // Effect to geocode address and get coordinates for map center/pin on initial load and when address changes. Also handles loading state for geocoding.
   useEffect(() => {
     const controller = new AbortController();
@@ -85,14 +97,14 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
           };
 
           setPinCoords(nextCoords);
-          onPickAddress?.(nextCoords);
+          onPickAddressRef.current?.(nextCoords);
         },
         (error) => {
           console.error("Error getting position:", error);
           // Fallback to SLO
           const nextCoords = { lon: -120.6596, lat: 35.2828 };
           setPinCoords(nextCoords);
-          onPickAddress?.(nextCoords);
+          onPickAddressRef.current?.(nextCoords);
         },
       );
       setLoading(false);
@@ -104,12 +116,14 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     return () => {
       controller.abort();
     };
-  }, [inLon, inLat, onPickAddress]);
+  }, [inLon, inLat]);
 
   // Effect to initialize map on first load and add click handler to place pin and update form address. Also cleans up map on unmount.
   useEffect(() => {
     if (!mapDivRef.current || !toolbarRef.current) return;
     if (mapRef.current) return;
+    const initialLon = inLonRef.current;
+    const initialLat = inLatRef.current;
 
     const source = new VectorSource();
     sourceRef.current = source;
@@ -126,7 +140,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
         new VectorLayer({ source }),
       ],
       view: new View({
-        center: fromLonLat([inLon, inLat]),
+        center: fromLonLat([initialLon, initialLat]),
         zoom: 2,
       }),
     });
@@ -137,7 +151,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
     );
 
     const pinFeature = new Feature({
-      geometry: new Point(fromLonLat([inLon, inLat])),
+      geometry: new Point(fromLonLat([initialLon, initialLat])),
     });
     pinFeature.setStyle(iconStyle);
     pinFeatureRef.current = pinFeature;
@@ -153,8 +167,8 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
       const clickedPoint = evt.coordinate as [number, number];
       const [lon, lat] = toLonLat(clickedPoint);
       setPinCoords({ lon, lat });
-      if (onPickAddress) {
-        onPickAddress({ lon, lat });
+      if (onPickAddressRef.current) {
+        onPickAddressRef.current({ lon, lat });
       }
 
       feat.setGeometry(new Point(clickedPoint));
@@ -175,7 +189,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
       sourceRef.current = null;
       pinFeatureRef.current = null;
     };
-  }, [iconStyle, inLat, inLon, onPickAddress]);
+  }, [iconStyle]);
 
   // Effect to recenter map on initial address and move pin to initial address location. Also recenters map when pin is placed.
   useEffect(() => {
@@ -196,7 +210,7 @@ export default function MapPin({ inLon, inLat, onPickAddress }: MapPinProps) {
 
     map.updateSize();
     requestAnimationFrame(() => map.updateSize());
-  }, [pinCoords, inLon, inLat]);
+  }, [pinCoords]);
 
   return (
     <div>
