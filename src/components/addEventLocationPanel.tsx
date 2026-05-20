@@ -110,8 +110,8 @@ export default function AddEventLocationPanel({
                 longitude: null,
               }));
             }}
-          />
-          {" "}Undisclosed Location
+          />{" "}
+          Undisclosed Location
         </label>
       )}
 
@@ -163,8 +163,8 @@ export default function AddEventLocationPanel({
             }}
           >
             <MapPin
-              inLon={formData.lon || eventFormData.longitude}
-              inLat={formData.lat || eventFormData.latitude}
+              inLon={formData.lon ?? eventFormData.longitude ?? 0}
+              inLat={formData.lat ?? eventFormData.latitude ?? 0}
               onPickAddress={(data) => {
                 setFormData({ ...formData, lon: data.lon, lat: data.lat });
                 setEventFormData((prev) => ({
@@ -177,7 +177,8 @@ export default function AddEventLocationPanel({
                   city: "",
                   state: "",
                   postalCode: "",
-                  locationDescription: prev.locationDescription || "Custom location pinned",
+                  locationDescription:
+                    prev.locationDescription || "Custom location pinned",
                 }));
                 setAutofillKey((k) => k + 1);
                 setPinNotif(true);

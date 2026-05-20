@@ -110,7 +110,7 @@ export function AddressAutoFill({
         skipNextFetchRef.current = false;
         return;
       }
-      const text = debouncedInput.trim();
+      const text = debouncedInput?.trim() ?? "";
       if (text.length < minChars) {
         setItems([]);
         setDropOpen(false);
