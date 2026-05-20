@@ -23,6 +23,7 @@ export default function AddEventMisc({
   const [details, setDetails] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [desCharsTyped, setDesCharsTyped] = useState(0);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -31,7 +32,7 @@ export default function AddEventMisc({
     onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0] ?? null;
       setPhoto(file);
-      onDetailsChange(details)
+      onDetailsChange(details);
       onPhotoChange(file);
       if (file) setImagePreviewUrl(URL.createObjectURL(file));
     },
@@ -48,8 +49,17 @@ export default function AddEventMisc({
         style={styles.textarea}
         placeholder="eg. Lorem Ipsum"
         value={details}
-        onChange={(e) => setDetails(e.target.value)}
+        onChange={(e) => {
+          const currLength = e.target.value.length;
+          if (currLength <= 1500) {
+            setDetails(e.target.value);
+            setDesCharsTyped(currLength);
+          }
+        }}
       />
+      <p style={styles.characterCount}>
+        Characters Typed: {desCharsTyped}/1500
+      </p>
 
       <h4>Insert Image</h4>
       <div {...getRootProps()} style={styles.uploadContainer}>
@@ -67,7 +77,9 @@ export default function AddEventMisc({
         ) : (
           <div>
             <label style={styles.uploadButton}>
-              {isDragActive ? "Drop the files here." : "Drag and drop or select image."}
+              {isDragActive
+                ? "Drop the files here."
+                : "Drag and drop or select image."}
             </label>
             <MdOutlineFileUpload size={30} />
           </div>
@@ -106,6 +118,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "0.625rem",
     borderRadius: "0.625rem",
     border: "1px solid #989898",
+    resize: "vertical",
+    boxSizing: "border-box",
   },
   uploadContainer: {
     textAlign: "center",
@@ -148,5 +162,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: "0",
     margin: "0.3125rem",
     cursor: "pointer",
+  },
+  characterCount: {
+    color: "grey",
   },
 };

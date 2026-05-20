@@ -34,10 +34,10 @@ export default function AddEventLocationPanel({
   const [formData, setFormData] = useState({
     lon: 0,
     lat: 0,
-    desc: "",
   });
   const [autofillKey, setAutofillKey] = useState(0);
   const [pinNotif, setPinNotif] = useState(false);
+  const [locationDetails, setLocationDetails] = useState("");
 
   // Keep the parent state in sync so validation can run in one place.
   const setLocationMode = (nextMode: LocationMode) => {
@@ -47,6 +47,16 @@ export default function AddEventLocationPanel({
       mode: nextMode,
       isVirtual: nextMode === "virtual",
     }));
+  };
+
+  const handleContinue = () => {
+    setEventFormData((prev) => ({
+      ...prev,
+      locationDescription: locationDetails,
+    }));
+
+    // Now that state is updated, proceed to the next step
+    onContinue();
   };
 
   return (
@@ -100,8 +110,8 @@ export default function AddEventLocationPanel({
                 longitude: null,
               }));
             }}
-          />
-          {" "}Undisclosed Location
+          />{" "}
+          Undisclosed Location
         </label>
       )}
 
@@ -120,7 +130,12 @@ export default function AddEventLocationPanel({
             }}
           >
             <AddressAutoFill
-              key={autofillKey}
+              key={1}
+              initialAddress={
+                !eventFormData.street && !eventFormData.city
+                  ? "" // Keep it completely empty if there's no address data yet
+                  : `${eventFormData.street || ""}, ${eventFormData.city || ""}, ${eventFormData.state || ""} ${eventFormData.postalCode || ""}`.trim()
+              }
               apiKey={process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY as string}
               onSelect={(data, feature) => {
                 setFormData({ ...formData, lon: data.lon, lat: data.lat });
@@ -148,8 +163,8 @@ export default function AddEventLocationPanel({
             }}
           >
             <MapPin
-              inLon={formData.lon}
-              inLat={formData.lat}
+              inLon={formData.lon ?? eventFormData.longitude ?? 0}
+              inLat={formData.lat ?? eventFormData.latitude ?? 0}
               onPickAddress={(data) => {
                 setFormData({ ...formData, lon: data.lon, lat: data.lat });
                 setEventFormData((prev) => ({
@@ -162,7 +177,8 @@ export default function AddEventLocationPanel({
                   city: "",
                   state: "",
                   postalCode: "",
-                  locationDescription: prev.locationDescription || "Custom location pinned",
+                  locationDescription:
+                    prev.locationDescription || "Custom location pinned",
                 }));
                 setAutofillKey((k) => k + 1);
                 setPinNotif(true);
@@ -180,16 +196,8 @@ export default function AddEventLocationPanel({
             type="text"
             style={styles.input}
             className="event-input"
-            onChange={(e) => {
-              setFormData({ ...formData, desc: e.target.value });
-              setEventFormData((prev) => ({
-                ...prev,
-                mode: "in-person",
-                isVirtual: false,
-                locationDescription: e.target.value,
-              }));
-            }}
-            value={formData.desc}
+            onChange={(e) => setLocationDetails(e.target.value)}
+            value={locationDetails || eventFormData.locationDescription}
             placeholder="Add description of location (optional)"
           />
         </div>
@@ -264,7 +272,7 @@ export default function AddEventLocationPanel({
       </div>
 
       <div style={styles.actions}>
-        <button style={styles.button} type="button" onClick={onContinue}>
+        <button style={styles.button} type="button" onClick={handleContinue}>
           Continue
         </button>
       </div>
