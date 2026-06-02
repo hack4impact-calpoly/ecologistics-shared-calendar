@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MdArrowBack } from "react-icons/md";
 import { MdClose } from "react-icons/md";
+import { MdWarning } from "react-icons/md";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
@@ -24,12 +25,35 @@ export default function AddEventMisc({
   const [photo, setPhoto] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [desCharsTyped, setDesCharsTyped] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      "image/*": [".jpeg", ".jpg", ".png"],
+      "image/jpeg": [".jpeg", ".jpg"],
+      "image/png": [".png"],
     },
-    onDrop: (acceptedFiles: File[]) => {
+    maxSize: MAX_FILE_SIZE,
+    onDrop: (acceptedFiles: File[], rejectedFiles) => {
+      setUploadError(null);
+
+      if (rejectedFiles.length > 0) {
+        const error = rejectedFiles[0].errors[0];
+        if (error.code === "file-too-large") {
+          setUploadError(
+            "Image exceeds the 10MB size limit. Please choose a smaller file.",
+          );
+        } else if (error.code === "file-invalid-type") {
+          setUploadError(
+            "Invalid file type. Please upload a JPEG or PNG image.",
+          );
+        } else {
+          setUploadError("Failed to upload image. Please try again.");
+        }
+        return;
+      }
+
       const file = acceptedFiles[0] ?? null;
       setPhoto(file);
       onDetailsChange(details);
@@ -85,6 +109,15 @@ export default function AddEventMisc({
           </div>
         )}
       </div>
+      {uploadError && (
+        <p style={styles.errorMessage}>
+          <MdWarning
+            size={16}
+            style={{ marginRight: "4px", verticalAlign: "middle" }}
+          />
+          {uploadError}
+        </p>
+      )}
 
       <div style={styles.actions}>
         <button type="submit" style={styles.button}>
