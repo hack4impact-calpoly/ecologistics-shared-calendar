@@ -95,10 +95,10 @@ async function sendDynamicEmail(
     : `Update: ${eventTitle}`;
 
   const msg = {
-    from: "onboarding@resend.dev", // "h4ih4h@gmail.com" (or desired ecologistics email),
-    to: "h4ih4h@gmail.com", // emailAddress,
+    from: process.env.RESEND_FROM_EMAIL!,
+    to: emailAddress, // emailAddress,
     subject: subject, // REQUIRED by Resend types
-    text: `Update for your event: ${eventTitle}`, // REQUIRED fallback for non-HTML clients
+    // text: `Update for your event: ${eventTitle}`, // REQUIRED fallback for non-HTML clients
     template: {
       id: templateId,
       variables: {
