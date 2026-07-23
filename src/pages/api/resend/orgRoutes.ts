@@ -90,9 +90,12 @@ async function sendDynamicEmail(
   // // date & time in format : HH:mm - MM/DD/YYYY
   // const date_string : string = `${time} - ${date}`;
 
-  const subject = templateId.includes("approved")
-    ? `Approved: ${eventTitle}`
-    : `Update: ${eventTitle}`;
+  const isApproved = templateId.includes("approved") || templateId.includes("approval");
+  const status = isApproved ? "Approved" : "Update";
+
+  const subject = eventTitle
+    ? `Ecologistics Calendar - ${status}: ${eventTitle}`
+    : `Ecologistics Calendar - ${status}`;
 
   const msg = {
     from: process.env.RESEND_FROM_EMAIL!,
